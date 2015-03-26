@@ -11,13 +11,13 @@ router.post('/login', function(req, res, next) {
   var email = req.body.email
   if(email==="")
   {
-   res.send("Пустой емэйл!")
+    res.json({ msg: "Пустой емэйл!" })
    return
   }
   var password = req.body.password
   if(password==="")
   {
-   res.send("Пустой пароль!")
+   res.json({ msg: "Пустой пароль!" })
    return
   }
   var remember = (req.body.remember!=undefined)
@@ -29,7 +29,7 @@ router.post('/login', function(req, res, next) {
     msg=msg+"не "
   }
   msg=msg+"хочешь, чтобы я тебя запомнил"
-  res.send(msg)
+  res.json({ msg: msg })
 });
 
 module.exports = router;
