@@ -1,20 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
   <head>
     <title>Testero</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen"/>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
   </head>
-  <body>
+  <body class="container-fluid">
     <header>
       <h1>Testero: <span id="page-name">Главная</span></h1>
     </header>
     <div id="content">
-      <form class="form-signin">
-        <h2 class="form-signin-heading">Вход с систему</h2>
-        <input type="text" class="input-block-level" placeholder="Email адрес"/>
-        <input type="password" class="input-block-level" placeholder="Пароль"/>
+      <form>
+        <h2>Вход с систему</h2>
+        <div class="form-group has-feedback">
+          <label>Email-адрес:</label>
+          <input type="email" class="form-control" placeholder="Введите email"
+            aria-describedly="helpBlockEmail"/>
+          <span id="helpBlockEmail" class="help-block">
+            Используйте для входа в систему email-адрес, который Вы вводили при регистрации.
+          </span>
+        </div>
+        <div class="form-group has-feedback">
+          <label>Пароль:</label>
+          <input type="password" class="form-control" placeholder="Введите пароль"/>
+        </div>
         <label class="checkbox">
           <input type="checkbox" value="remember-me"/>
           Запомнить меня
