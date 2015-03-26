@@ -7,28 +7,54 @@
     <link href="css/bootstrap.css" rel="stylesheet" media="screen"/>
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script> 
+        //выполнится после загрузки всего html
+        $(document).ready(function() { 
+          //навешиваем коллбэк на событие отправки формы
+          $("#login-form").submit(function() {
+            var url = "/login"; //куда посылать
+            $.ajax({
+              type: "POST",
+              url: url,
+              data: $("#login-form").serialize(), //сериализация всех полей формы.
+                                                  //при этом, каждый input
+                                                  //должен иметь поле name!
+                                                  //и желательно в name использовать
+                                                  //только буквы, цифры и _.
+              success: function(data)
+              {
+                alert(data); //приём ответа
+              }
+            });
+            return false; //избегание стандартного поведения формы - перехода по url
+                          //а так как в <form> теге не указан конкретный адрес,
+                          //то без этого return страница будет перезагружаться
+          });
+        }); 
+    </script> 
   </head>
   <body class="container-fluid">
     <header>
       <h1>Testero: <span id="page-name">Главная</span></h1>
     </header>
     <div id="content">
-      <form>
+      <form id="login-form">
         <h2>Вход с систему</h2>
         <div class="form-group has-feedback">
           <label>Email-адрес:</label>
           <input type="email" class="form-control" placeholder="Введите email"
-            aria-describedly="helpBlockEmail"/>
+            aria-describedly="helpBlockEmail" name="email"/>
           <span id="helpBlockEmail" class="help-block">
             Используйте для входа в систему email-адрес, который Вы вводили при регистрации.
           </span>
         </div>
         <div class="form-group has-feedback">
           <label>Пароль:</label>
-          <input type="password" class="form-control" placeholder="Введите пароль"/>
+          <input type="password" class="form-control" placeholder="Введите пароль"
+            name="password"/>
         </div>
         <label class="checkbox">
-          <input type="checkbox" value="remember-me"/>
+          <input type="checkbox" value="remember-me" name="remember"/>
           Запомнить меня
         </label>
         <button class="btn btn-large btn-primary" type="submit">Войти</button>

@@ -6,4 +6,30 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.post('/login', function(req, res, next) {
+  console.log("Попытка входа!");
+  var email = req.body.email
+  if(email==="")
+  {
+   res.send("Пустой емэйл!")
+   return
+  }
+  var password = req.body.password
+  if(password==="")
+  {
+   res.send("Пустой пароль!")
+   return
+  }
+  var remember = (req.body.remember!=undefined)
+  console.log("email: "+email)
+  console.log("password: "+password)
+  console.log("remember: "+remember)
+  var msg = "Все данные приняты и ты "
+  if(!remember){
+    msg=msg+"не "
+  }
+  msg=msg+"хочешь, чтобы я тебя запомнил"
+  res.send(msg)
+});
+
 module.exports = router;
