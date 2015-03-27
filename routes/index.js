@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var db = require('../lib/dbtestero');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -9,27 +10,28 @@ router.get('/', function(req, res, next) {
 router.post('/login', function(req, res, next) {
   console.log("Попытка входа!");
   var email = req.body.email
-  if(email==="")
-  {
-    res.json({ msg: "Пустой емэйл!" })
-   return
-  }
   var password = req.body.password
-  if(password==="")
-  {
-   res.json({ msg: "Пустой пароль!" })
-   return
-  }
   var remember = (req.body.remember!=undefined)
   console.log("email: "+email)
-  console.log("password: "+password)
   console.log("remember: "+remember)
-  var msg = "Все данные приняты и ты "
-  if(!remember){
-    msg=msg+"не "
+  db.findUserByEmail(email, function(err, data){
+    if(err || data==null)
+    {
+      res.json({ msg: "Пользователь не найден!" })
+    }
+    else if(data.password==password)
+    {
+      var msg = "Вы вошли!"
+      if(remember) msg+=" Я постараюсь вас запомнить. (Хотя пока я этого не умею.)"
+      res.json({ msg: msg })
+    }
+    else
+    {
+      res.json({ msg: "Неверный пароль!" })
+    }
   }
-  msg=msg+"хочешь, чтобы я тебя запомнил"
-  res.json({ msg: msg })
+  );
+  
 });
 
 module.exports = router;
