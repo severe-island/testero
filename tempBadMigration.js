@@ -24,8 +24,8 @@ userCollection.drop(function(err){
     db.addNewUser('test@test', '1234', function() {
       console.log("password: 1234");
       console.log("Third template has been added.")});
-	}
-	else{
+  }
+  else{
     console.log(err); 
   }
 });

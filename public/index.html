@@ -30,6 +30,16 @@
                           //а так как в <form> теге не указан конкретный адрес,
                           //то без этого return страница будет перезагружаться
           });
+          $("#logout").click(function() {
+            var url = "/logout";
+            $.ajax({
+              type: "POST",
+              url: url,
+              success: function(data){
+                alert(data.msg);
+              }
+            });
+          });
         }); 
     </script> 
   </head>
@@ -62,6 +72,7 @@
         </label>
         <button class="btn btn-large btn-primary" type="submit">Войти</button>
       </form>
+      <button id="logout">Выйти</button>
     </div>
     <footer>
       <p id="copyright">&copy; 2015, Severe Island Team</p>
