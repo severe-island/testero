@@ -1,0 +1,2 @@
+#!/bin/sh
+MODE=production ./bin/www

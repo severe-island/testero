@@ -1,0 +1,2 @@
+#!/bin/sh
+MODE=testing DEBUG=testero ./bin/www
