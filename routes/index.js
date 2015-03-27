@@ -29,10 +29,10 @@ router.post('/login', function(req, res, next) {
     {
       var msg = "Вы вошли!"
       if(remember){
-        req.session.login = true
-        req.session.email = email
-        msg+=" Я постараюсь вас запомнить. Честно."
+        msg+=" Я постараюсь вас запомнить. (Но я ещё не умею)."
       }
+      req.session.login = true
+      req.session.email = email
       res.json({ msg: msg })
     }
     else
