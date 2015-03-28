@@ -12,7 +12,7 @@ router.post('/login', function(req, res, next) {
   console.log(req.session)
   if(req.session.login)
   {
-    res.json({ msg: "Вы уже зашли с почтой "+req.session.email+"!" })
+    res.json({ msg: "Вы уже зашли с почтой "+req.session.email+"!", status: true })
     return;
   }
   console.log("Попытка входа!");
@@ -24,7 +24,7 @@ router.post('/login', function(req, res, next) {
   db.findUserByEmail(email, function(err, data){
     if(err || data==null)
     {
-      res.json({ msg: "Пользователь не найден!" })
+      res.json({ msg: "Пользователь не найден!", status: false })
     }
     else if(data.password==password)
     {
@@ -38,7 +38,7 @@ router.post('/login', function(req, res, next) {
     }
     else
     {
-      res.json({ msg: "Неверный пароль!" })
+      res.json({ msg: "Неверный пароль!", status: false })
     }
   }
   );

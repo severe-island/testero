@@ -10,6 +10,23 @@
     <script> 
         //выполнится после загрузки всего html
         $(document).ready(function() { 
+          $.ajax({
+              type: "POST",
+              url: "/login",
+              success: function(data)
+              {
+                  if(data.status)
+                  {
+                      $("#login-form").hide()
+                      $("#logout-button").removeAttr("disabled")
+                  }
+                  else
+                  {
+                      $("#login-form").show()
+                      $("#logout-button").attr("disabled", "disabled")
+                  }
+              }
+          })
           //навешиваем коллбэк на событие отправки формы
           $("#login-form").submit(function() {
             var url = "/login"; //куда посылать
@@ -24,19 +41,25 @@
               success: function(data)
               {
                 alert(data.msg); //приём ответа
+                $("#logout-button").removeAttr("disabled")
+                $("#login-form").hide()
+                $("#main-menu").show()
               }
             });
             return false; //избегание стандартного поведения формы - перехода по url
                           //а так как в <form> теге не указан конкретный адрес,
                           //то без этого return страница будет перезагружаться
           });
-          $("#logout").click(function() {
+          $("#logout-button").click(function() {
             var url = "/logout";
             $.ajax({
               type: "POST",
               url: url,
               success: function(data){
                 alert(data.msg);
+                $("#logout-button").attr("disabled","disabled")
+                $("#login-form").show()
+                $("#main-menu").hide()
               }
             });
           });
@@ -48,11 +71,12 @@
         <button type="button" class="btn btn-default" aria-label="">
             <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
         </button>
-        <button id="logout" class="btn btn-large btn-primary">Выйти</button>
+        <button id="logout-button" class="btn btn-large btn-primary" disabled>Выйти</button>
         <h1>Testero: <span id="page-name">Главная</span></h1>
     </header>
-    <div id="content">
-      <form id="login-form">
+    <div id="content" class="row">
+      <div class="col-md-4"></div>
+      <form id="login-form" class="col-md-4">
         <h2>Вход с систему</h2>
         <div class="form-group has-feedback">
           <label>Email-адрес:</label>
@@ -73,6 +97,10 @@
         </label>
         <button class="btn btn-large btn-primary" type="submit">Войти</button>
       </form>
+      <div id="main-menu">
+        <p>Hello!</p>
+      </div>
+      <div class="col-md-4"></div>
     </div>
     <footer>
       <p id="copyright">&copy; 2015, Severe Island Team</p>

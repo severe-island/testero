@@ -1,2 +1,2 @@
 #!/bin/sh
-MODE=development DEBUG=testero ./bin/www
+MODE=development DEBUG=testero ./www
