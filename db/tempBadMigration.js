@@ -4,7 +4,7 @@
 //инициализации сервера.
 //Нужен запуск сервера mongod на стандартном порте.
 
-var db = require('./lib/dbtestero');
+var db = require('../lib/dbtestero');
 var userCollection = db.connection.collections['users'];
 
 console.log("Приложение само не завершается. Выйдите, когда будет добавлено три юзера!")
