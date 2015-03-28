@@ -17,7 +17,7 @@
               {
                   if(data.status)
                   {
-                      $("#login").hide()
+                      $("#login-form").hide()
                       $("#logout-button").removeAttr("disabled")
                   }
                   else
@@ -64,17 +64,38 @@
             });
           });
         }); 
-    </script> 
+    </script>
+    <style>
+      body { padding-top: 70px; }
+    </style>
   </head>
   <body class="container-fluid">
     <header class="row">
-      <button type="button" class="btn btn-default" aria-label="">
-          <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
-      </button>
-      <button id="logout-button" class="btn btn-large btn-primary" disabled>Выйти</button>
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <span class="navbar-brand">Testero</span>
+          </div>
+          <div class="collapse navbar-collapse navbar-right">
+            <ul class="nav navbar-nav">
+              <li>
+                <button type="button" class="btn btn-default" aria-label="">
+                  <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+                </button>
+              </li>
+              <li>
+                <button id="logout-button" class="btn btn-large btn-primary" disabled>
+                  Выйти
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
     </header>
+    
     <div id="content" class="row">
-      <h1>Testero: <span id="page-name">Главная</span></h1>
+      <!--h1 id="page-name">Главная</h1-->
       <div id="login">
         <div class="col-md-4"></div>
         <form id="login-form" class="col-md-4">
@@ -100,7 +121,7 @@
         </form>
       </div>
       
-      <div id="main-menu">
+      <div id="main-menu" class="row" hidden="hidden">
         <p>Hello!</p>
       </div>
       <div class="col-md-4"></div>
