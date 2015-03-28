@@ -8,7 +8,7 @@
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
     <script> 
-        $(document).ready(function() { 
+        $(document).ready(function() {
           $.ajax({
               type: "POST",
               url: "/login",
@@ -16,24 +16,22 @@
               {
                   if(data.status)
                   {
-                      $("#login-button").attr("disabled", "disabled")
-                      $("#logout-button").removeAttr("disabled")
+                      $("#login-button").attr("disabled", "disabled");
+                      $("#logout-button").removeAttr("disabled");
                   }
                   else
                   {
-                      $("#login-button").removeAttr("disabled")
-                      $("#logout-button").attr("disabled", "disabled")
+                      $("#login-button").removeAttr("disabled");
+                      $("#logout-button").attr("disabled", "disabled");
                   }
-                  $("#main-menu").show()
-                  #("#main-menu-button").removeAttr("disabled")
+                  $("#main-menu").show();
               }
-          })
-          //навешиваем коллбэк на событие отправки формы
+          });
+
           $("#login-form").submit(function() {
-            var url = "/login"; //куда посылать
             $.ajax({
               type: "POST",
-              url: url,
+              url: "/login",
               data: $("#login").serialize(), //сериализация всех полей формы.
                                                   //при этом, каждый input
                                                   //должен иметь поле name!
@@ -42,21 +40,27 @@
               success: function(data)
               {
                 alert(data.msg); //приём ответа
-                $("#logout-button").removeAttr("disabled")
-                $("#login").hide()
-                $("#main-menu").show()
+                if (data.status)
+                {
+                  $("#logout-button").removeAttr("disabled");
+                  $("#login").hide();
+                  $("#main-menu").show();
+                }
               }
             });
             return false; //избегание стандартного поведения формы - перехода по url
                           //а так как в <form> теге не указан конкретный адрес,
                           //то без этого return страница будет перезагружаться
-          })
+          });
+          
           $("#login-button").click(function() {
-            $("#login").toggle()
-          })
+            $("#login").toggle();
+          });
+          
           $("#main-menu-button").click(function() {
-            $("#main-menu").toggle()
-          })
+            $("#main-menu").toggle();
+          });
+          
           $("#logout-button").click(function() {
             var url = "/logout";
             $.ajax({
@@ -64,9 +68,10 @@
               url: url,
               success: function(data){
                 alert(data.msg);
-                $("#logout-button").attr("disabled","disabled")
-                $("#login").show()
-                $("#main-menu").hide()
+                if (!data.status)
+                {
+                  $("#logout-button").attr("disabled","disabled");
+                }
               }
             });
           });
@@ -97,17 +102,17 @@
                 </button>
               </li>
               <li>
-                <button type="button" id="signin-button" class="btn btn-default btn-sm navbar-btn" disabled>
+                <button type="button" id="signin-button" class="btn btn-default btn-sm navbar-btn">
                   Зарегистрироваться
                 </button>
               </li>
               <li>
-                <button type="button" id="logout-button" class="btn btn-sm btn-default navbar-btn" disabled>
+                <button type="button" id="logout-button" class="btn btn-sm btn-default navbar-btn">
                   <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Выйти
                 </button>
               </li>
               <li>
-                <button type="button" id="login-button" class="btn btn-sm btn-default btn-primary navbar-btn" disabled>
+                <button type="button" id="login-button" class="btn btn-sm btn-default btn-primary navbar-btn">
                   <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Войти
                 </button>
               </li>
