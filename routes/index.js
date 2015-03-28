@@ -31,6 +31,11 @@ router.post('/login', function(req, res, next) {
       var msg = "Вы вошли!"
       if(remember){
         msg+=" Я постараюсь вас запомнить. (Но я ещё не умею)."
+        req.session.cookie.originalMaxAge = 1000*60*60;
+      }
+      else{
+        req.session.cookie.originalMaxAge = null
+        req.session.cookie._expires = false
       }
       req.session.login = true
       req.session.email = email
@@ -52,6 +57,7 @@ router.post('/logout', function(req, res, next) {
     var email = req.session.email
     delete req.session.email
     res.json({ msg: "Вы вышли и теперь вы больше не "+email+"!" })
+    req.session.destroy()
   }
   else
   {
