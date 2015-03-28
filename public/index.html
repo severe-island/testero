@@ -7,10 +7,7 @@
     <link href="css/bootstrap.css" rel="stylesheet" media="screen"/>
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
-    <!--script src="js/transition.js"></script-->
-    <!--script src="js/collapse.js"></script-->
     <script> 
-        //выполнится после загрузки всего html
         $(document).ready(function() { 
           $.ajax({
               type: "POST",
@@ -55,10 +52,10 @@
                           //то без этого return страница будет перезагружаться
           })
           $("#login-button").click(function() {
-            $("#login").show()
+            $("#login").toggle()
           })
           $("#main-menu-button").click(function() {
-            $("#main-menu").show()
+            $("#main-menu").toggle()
           })
           $("#logout-button").click(function() {
             var url = "/logout";
@@ -121,9 +118,10 @@
     </header>
     
     <div id="content" class="row">
-      <!--h1 id="page-name">Главная</h1-->
+
       <div id="login" hidden>
         <div class="col-md-4"></div>
+        
         <form id="login-form" class="col-md-4">
           <h1>Вход с систему</h1>
           <div class="form-group has-feedback">
@@ -147,16 +145,17 @@
           </div>
           <button class="btn btn-large btn-primary" type="submit">Войти</button>
         </form>
+        
+        <div class="col-md-4"></div>
       </div>
       
       <div id="main-menu" class="row">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-1"></div>
-        <div class="col-lg-1"></div>
-        <div class="col-lg-1"></div>
+        <div class="col-sm-3">1</div>
+        <div class="col-sm-3">2</div>
+        <div class="col-sm-3">3</div>
+        <div class="col-sm-3">4</div>
       </div>
       
-      <div class="col-md-4"></div>
     </div>
     
     <footer>
