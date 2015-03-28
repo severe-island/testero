@@ -32,7 +32,7 @@
             $.ajax({
               type: "POST",
               url: "/login",
-              data: $("#login").serialize(), //сериализация всех полей формы.
+              data: $("#login-form").serialize(), //сериализация всех полей формы.
                                                   //при этом, каждый input
                                                   //должен иметь поле name!
                                                   //и желательно в name использовать
@@ -148,7 +148,7 @@
               Запомнить меня
             </label>
           </div>
-          <button class="btn btn-large btn-primary" type="submit">Войти</button>
+          <input class="btn btn-large btn-primary" type="submit" value="Войти"/>
         </form>
         
         <div class="col-md-4"></div>
