@@ -17,11 +17,13 @@
                   if(data.status)
                   {
                       $("#login-button").attr("disabled", "disabled");
+                      $("#signup-button").attr("disabled", "disabled");
                       $("#logout-button").removeAttr("disabled");
                   }
                   else
                   {
                       $("#login-button").removeAttr("disabled");
+                      $("#signup-button").removeAttr("disabled");
                       $("#logout-button").attr("disabled", "disabled");
                   }
                   $("#main-menu").show();
@@ -72,6 +74,7 @@
                   {
                     $("#logout-button").removeAttr("disabled");
                     $("#login-button").attr("disabled", "disabled");
+                    $("#signup-button").attr("disabled", "disabled");
                     $("#signup").hide();
                     $("#main-menu").show();
                   }
@@ -95,6 +98,7 @@
                 {
                   $("#logout-button").removeAttr("disabled");
                   $("#login-button").attr("disabled", "disabled");
+                  $("#signup-button").attr("disabled", "disabled");
                   $("#login").hide();
                   $("#main-menu").show();
                 }
@@ -128,6 +132,7 @@
                 {
                   $("#logout-button").attr("disabled","disabled");
                   $("#login-button").removeAttr("disabled");
+                  $("#signup-button").removeAttr("disabled");
                 }
               }
             });
