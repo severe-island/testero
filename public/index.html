@@ -27,19 +27,58 @@
                   $("#main-menu").show();
               }
           });
+          
+          // Модуль signin:
+          
+          $("#signin-form").submit(function() {
+            if ($("#email").val().empty())
+            {
+              $("#email").addClass("has-error");
+            }
+            else if ($("#password").val().empty())
+            {
+              $("#email").addClass("has-success");
+              $("#password").addClass("has-error");
+            }
+            else if ($("#password-duplicate").val().empty()
+                    || $("#password").val() !== $("#password-duplicate").val())
+            {
+              $("#email").addClass("has-success");
+              $("#password").addClass("has-success");
+              $("#password-duplicate").addClass("has-error");
+            }
+            else
+            {
+              $.ajax({
+                type: "POST",
+                url: "/signin",
+                data: $("#signin-form").serialize(),
+                success: function(data)
+                {
+                  alert(data.msg);
+                  if (data.status)
+                  {
+                    $("#logout-button").removeAttr("disabled");
+                    $("#login-button").attr("disabled", "disabled");
+                    $("#signin").hide();
+                    $("#main-menu").show();
+                  }
+                }
+              });
+            }
+            return false;
+          });
+
+          // Модуль login:
 
           $("#login-form").submit(function() {
             $.ajax({
               type: "POST",
               url: "/login",
-              data: $("#login-form").serialize(), //сериализация всех полей формы.
-                                                  //при этом, каждый input
-                                                  //должен иметь поле name!
-                                                  //и желательно в name использовать
-                                                  //только буквы, цифры и _.
+              data: $("#login-form").serialize(),
               success: function(data)
               {
-                alert(data.msg); //приём ответа
+                alert(data.msg);
                 if (data.status)
                 {
                   $("#logout-button").removeAttr("disabled");
@@ -49,9 +88,13 @@
                 }
               }
             });
-            return false; //избегание стандартного поведения формы - перехода по url
-                          //а так как в <form> теге не указан конкретный адрес,
-                          //то без этого return страница будет перезагружаться
+            return false;
+          });
+          
+          // Верхнее меню:
+          
+          $("#signin-button").click(function() {
+            $("#signin").toggle();
           });
           
           $("#login-button").click(function() {
@@ -125,7 +168,35 @@
     </header>
     
     <div id="content" class="row">
-
+      <div id="signin" hidden>
+        <div class="col-md-4"></div>
+        
+        <form id="signin-form" class="col-md-4">
+          <h1>Регистрация в системе</h1>
+          <div class="form-group has-feedback">
+            <label>Email-адрес:</label>
+            <input type="email" class="form-control" placeholder="Введите email"
+              aria-describedly="helpBlockEmail" name="email"/>
+            <span id="helpBlockEmail" class="help-block">
+              Используйте для входа в систему email-адрес, который Вы вводили при регистрации.
+            </span>
+          </div>
+          <div class="form-group has-feedback">
+            <label>Пароль:</label>
+            <input type="password" class="form-control" placeholder="Введите пароль"
+                   name="password" id="password"/>
+          </div>
+          <div class="form-group has-feedback">
+            <label>Пароль ещё раз:</label>
+            <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
+              name="password-duplicate" id="password-duplicate"/>
+          </div>
+          <input class="btn btn-large btn-primary" type="submit" value="Зарегистрироваться"/>
+        </form>
+        
+        <div class="col-md-4"></div>
+      </div>
+      
       <div id="login" hidden>
         <div class="col-md-4"></div>
         
