@@ -63,7 +63,7 @@ router.post('/logout', function(req, res, next) {
   }
 });
 
-router.post('/registration', function(req, res, next) {
+router.post('/signup', function(req, res, next) {
   if(req.session.login)
   {
     res.json({ 
