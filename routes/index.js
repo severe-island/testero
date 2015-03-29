@@ -101,8 +101,10 @@ router.post('/registration', function(req, res, next) {
       }
       res.json({
         msg: "Пользователь успешно зарегестрирован!",
-        status: true
+        status: true 
       })
+      req.session.login = true;
+      req.session.email = email;
     })
   })
 });
