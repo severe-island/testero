@@ -71,6 +71,7 @@ router.post('/signup', function(req, res, next) {
       msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
       status: false
     })
+    return;
   }
   var email = req.body.email
   var password = req.body.password
@@ -101,7 +102,7 @@ router.post('/signup', function(req, res, next) {
         return;
       }
       res.json({
-        msg: "Пользователь успешно зарегестрирован!",
+        msg: "Пользователь успешно зарегистрирован!",
         status: true 
       })
       req.session.login = true;
