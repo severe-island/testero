@@ -64,6 +64,7 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
+  console.log(req.body);
   if(req.session.login)
   {
     res.json({ 
@@ -73,7 +74,7 @@ router.post('/signup', function(req, res, next) {
   }
   var email = req.body.email
   var password = req.body.password
-  bd.getUserByEmail(email, function(err, data) {
+  db.findUserByEmail(email, function(err, data) {
     if(err)
     {
       res.json({
@@ -90,7 +91,7 @@ router.post('/signup', function(req, res, next) {
       })
       return;
     }
-    bd.addNewUser(email, password, function(err) {
+    db.addNewUser(email, password, function(err) {
       if(err)
       {
         res.json({
