@@ -28,31 +28,43 @@
               }
           });
           
-          // Модуль signin:
+          // Модуль signup:
           
-          $("#signin-form").submit(function() {
-            if ($("#email").val().empty())
+          $("#signup-form").submit(function() {
+            if ($(this).find("#email").val().length == 0)
             {
-              $("#email").addClass("has-error");
+              $(this).find("#form-group-email").addClass("has-error");
+              return false;
             }
-            else if ($("#password").val().empty())
+            else
             {
-              $("#email").addClass("has-success");
-              $("#password").addClass("has-error");
+              $(this).find("#form-group-email").removeClass("has-error");
+              $(this).find("#form-group-email").addClass("has-success");
             }
-            else if ($("#password-duplicate").val().empty()
-                    || $("#password").val() !== $("#password-duplicate").val())
+            
+            if ($(this).find("#password").val().length == 0)
             {
-              $("#email").addClass("has-success");
-              $("#password").addClass("has-success");
-              $("#password-duplicate").addClass("has-error");
+              $(this).find("#form-group-password").addClass("has-error");
+              return false;
+            }
+            else
+            {
+              $(this).find("#form-group-password").removeClass("has-error");
+              $(this).find("#form-group-password").addClass("has-success");
+            }
+            
+            if ($(this).find("#password-duplicate").val().length == 0
+                    || $(this).find("#password").val() != $(this).find("#password-duplicate").val())
+            {
+              alert("Пароли не совпали!");
+              return false;
             }
             else
             {
               $.ajax({
                 type: "POST",
-                url: "/signin",
-                data: $("#signin-form").serialize(),
+                url: "/signup",
+                data: $("#signup-form").serialize(),
                 success: function(data)
                 {
                   alert(data.msg);
@@ -60,7 +72,7 @@
                   {
                     $("#logout-button").removeAttr("disabled");
                     $("#login-button").attr("disabled", "disabled");
-                    $("#signin").hide();
+                    $("#signup").hide();
                     $("#main-menu").show();
                   }
                 }
@@ -93,8 +105,8 @@
           
           // Верхнее меню:
           
-          $("#signin-button").click(function() {
-            $("#signin").toggle();
+          $("#signup-button").click(function() {
+            $("#signup").toggle();
           });
           
           $("#login-button").click(function() {
@@ -147,7 +159,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" id="signin-button" class="btn btn-default btn-sm navbar-btn">
+                <button type="button" id="signup-button" class="btn btn-default btn-sm navbar-btn">
                   Зарегистрироваться
                 </button>
               </li>
@@ -168,28 +180,31 @@
     </header>
     
     <div id="content" class="row">
-      <div id="signin" hidden>
+      <div id="signup" hidden>
         <div class="col-md-4"></div>
         
-        <form id="signin-form" class="col-md-4">
+        <form id="signup-form" class="col-md-4">
           <h1>Регистрация в системе</h1>
-          <div class="form-group has-feedback">
-            <label>Email-адрес:</label>
-            <input type="email" class="form-control" placeholder="Введите email"
-              aria-describedly="helpBlockEmail" name="email"/>
+          <div class="form-group has-feedback" id="form-group-email">
+            <label class="control-label">Email-адрес:</label>
+            <div class="input-group">
+              <span class="input-group-addon">@</span>
+              <input type="email" class="form-control" placeholder="Введите email"
+                aria-describedly="helpBlockEmail" name="email" id="email"/>
+            </div>
             <span id="helpBlockEmail" class="help-block">
               Используйте для входа в систему email-адрес, который Вы вводили при регистрации.
             </span>
           </div>
-          <div class="form-group has-feedback">
-            <label>Пароль:</label>
+          <div class="form-group has-feedback" id="form-group-password">
+            <label class="control-label">Пароль:</label>
             <input type="password" class="form-control" placeholder="Введите пароль"
                    name="password" id="password"/>
           </div>
-          <div class="form-group has-feedback">
-            <label>Пароль ещё раз:</label>
+          <div class="form-group has-feedback" id="form-group-password-duplicate">
+            <label class="control-label">Пароль ещё раз:</label>
             <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
-              name="password-duplicate" id="password-duplicate"/>
+              id="password-duplicate"/>
           </div>
           <input class="btn btn-large btn-primary" type="submit" value="Зарегистрироваться"/>
         </form>
