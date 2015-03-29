@@ -34,7 +34,7 @@ router.post('/login', function(req, res, next) {
       }
       req.session.login = true
       req.session.email = email
-      res.json({ msg: msg })
+      res.json({ msg: msg, status: true })
     }
     else
     {

@@ -43,6 +43,7 @@
                 if (data.status)
                 {
                   $("#logout-button").removeAttr("disabled");
+                  $("#login-button").attr("disabled", "disabled");
                   $("#login").hide();
                   $("#main-menu").show();
                 }
@@ -71,6 +72,7 @@
                 if (!data.status)
                 {
                   $("#logout-button").attr("disabled","disabled");
+                  $("#login-button").removeAttr("disabled");
                 }
               }
             });
