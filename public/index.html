@@ -7,90 +7,67 @@
     <link href="css/bootstrap.css" rel="stylesheet" media="screen"/>
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
-    <script> 
-        $(document).ready(function() {
-          $.ajax({
-              type: "POST",
-              url: "/login",
-              success: function(data)
-              {
-                  if(data.status)
-                  {
-                      $("#login-button").attr("disabled", "disabled");
-                      $("#signup-button").attr("disabled", "disabled");
-                      $("#logout-button").removeAttr("disabled");
-                  }
-                  else
-                  {
-                      $("#login-button").removeAttr("disabled");
-                      $("#signup-button").removeAttr("disabled");
-                      $("#logout-button").attr("disabled", "disabled");
-                  }
-                  $("#main-menu").show();
-              }
-          });
-          
-          // Модуль signup:
-          
-          $("#signup-form").submit(function() {
-            if ($(this).find("#email").val().length == 0)
+    <script>
+      var latestBlock = null;
+      $(document).ready(function() {
+        $.ajax({
+          type: "POST",
+          url: "/login",
+          success: function(data)
+          {
+            if(data.status)
             {
-              $(this).find("#form-group-email").addClass("has-error");
-              return false;
+              $("#login-button").attr("disabled", "disabled");
+              $("#signup-button").attr("disabled", "disabled");
+              $("#logout-button").removeAttr("disabled");
             }
             else
             {
-              $(this).find("#form-group-email").removeClass("has-error");
-              $(this).find("#form-group-email").addClass("has-success");
+              $("#login-button").removeAttr("disabled");
+              $("#signup-button").removeAttr("disabled");
+              $("#logout-button").attr("disabled", "disabled");
             }
-            
-            if ($(this).find("#password").val().length == 0)
-            {
-              $(this).find("#form-group-password").addClass("has-error");
-              return false;
-            }
-            else
-            {
-              $(this).find("#form-group-password").removeClass("has-error");
-              $(this).find("#form-group-password").addClass("has-success");
-            }
-            
-            if ($(this).find("#password-duplicate").val().length == 0
-                    || $(this).find("#password").val() != $(this).find("#password-duplicate").val())
-            {
-              alert("Пароли не совпали!");
-              return false;
-            }
-            else
-            {
-              $.ajax({
-                type: "POST",
-                url: "/signup",
-                data: $("#signup-form").serialize(),
-                success: function(data)
-                {
-                  alert(data.msg);
-                  if (data.status)
-                  {
-                    $("#logout-button").removeAttr("disabled");
-                    $("#login-button").attr("disabled", "disabled");
-                    $("#signup-button").attr("disabled", "disabled");
-                    $("#signup").hide();
-                    $("#main-menu").show();
-                  }
-                }
-              });
-            }
+            $("#main-menu").show();
+          }
+        });
+
+        // Модуль signup:
+
+        $("#signup-form").submit(function() {
+          if ($(this).find("#email").val().length == 0)
+          {
+            $(this).find("#form-group-email").addClass("has-error");
             return false;
-          });
+          }
+          else
+          {
+            $(this).find("#form-group-email").removeClass("has-error");
+            $(this).find("#form-group-email").addClass("has-success");
+          }
 
-          // Модуль login:
+          if ($(this).find("#password").val().length == 0)
+          {
+            $(this).find("#form-group-password").addClass("has-error");
+            return false;
+          }
+          else
+          {
+            $(this).find("#form-group-password").removeClass("has-error");
+            $(this).find("#form-group-password").addClass("has-success");
+          }
 
-          $("#login-form").submit(function() {
+          if ($(this).find("#password-duplicate").val().length == 0
+                  || $(this).find("#password").val() != $(this).find("#password-duplicate").val())
+          {
+            alert("Пароли не совпали!");
+            return false;
+          }
+          else
+          {
             $.ajax({
               type: "POST",
-              url: "/login",
-              data: $("#login-form").serialize(),
+              url: "/signup",
+              data: $("#signup-form").serialize(),
               success: function(data)
               {
                 alert(data.msg);
@@ -99,45 +76,95 @@
                   $("#logout-button").removeAttr("disabled");
                   $("#login-button").attr("disabled", "disabled");
                   $("#signup-button").attr("disabled", "disabled");
-                  $("#login").hide();
+                  $("#signup").hide();
                   $("#main-menu").show();
                 }
               }
             });
-            return false;
-          });
-          
-          // Верхнее меню:
-          
-          $("#signup-button").click(function() {
-            $("#signup").toggle();
-          });
-          
-          $("#login-button").click(function() {
-            $("#login").toggle();
-          });
-          
-          $("#main-menu-button").click(function() {
-            $("#main-menu").toggle();
-          });
-          
-          $("#logout-button").click(function() {
-            var url = "/logout";
-            $.ajax({
-              type: "POST",
-              url: url,
-              success: function(data){
-                alert(data.msg);
-                if (!data.status)
-                {
-                  $("#logout-button").attr("disabled","disabled");
-                  $("#login-button").removeAttr("disabled");
-                  $("#signup-button").removeAttr("disabled");
-                }
+          }
+          return false;
+        });
+
+        // Модуль login:
+
+        $("#login-form").submit(function() {
+          $.ajax({
+            type: "POST",
+            url: "/login",
+            data: $("#login-form").serialize(),
+            success: function(data)
+            {
+              alert(data.msg);
+              if (data.status)
+              {
+                $("#logout-button").removeAttr("disabled");
+                $("#login-button").attr("disabled", "disabled");
+                $("#signup-button").attr("disabled", "disabled");
+                $("#login").hide();
+                $("#main-menu").show();
               }
-            });
+            }
           });
-        }); 
+          return false;
+        });
+
+        // Верхнее меню:
+
+        $("#signup-button").click(function() {
+          if ($("#signup").is(":hidden"))
+          {
+            $("#signup").show("slow");
+            if (latestBlock)
+            {
+              latestBlock.hide();
+            }
+            latestBlock = $("#signup");
+          }
+          else
+          {
+            $("#signup").hide("slow");
+            latestBlock = null;
+          }
+        });
+
+        $("#login-button").click(function() {
+          if ($("#login").is(":hidden"))
+          {
+            $("#login").show("slow");
+            if (latestBlock)
+            {
+              latestBlock.hide();
+            }
+            latestBlock = $("#login");
+          }
+          else
+          {
+            $("#login").hide("slow");
+            latestBlock = null;
+          }
+        });
+
+        $("#main-menu-button").click(function() {
+          $("#main-menu").toggle();
+        });
+
+        $("#logout-button").click(function() {
+          var url = "/logout";
+          $.ajax({
+            type: "POST",
+            url: url,
+            success: function(data){
+              alert(data.msg);
+              if (!data.status)
+              {
+                $("#logout-button").attr("disabled","disabled");
+                $("#login-button").removeAttr("disabled");
+                $("#signup-button").removeAttr("disabled");
+              }
+            }
+          });
+        });
+      }); 
     </script>
     <style>
       body { padding-top: 60px; }
@@ -185,7 +212,7 @@
     </header>
     
     <div id="content" class="row">
-      <div id="signup" hidden>
+      <div id="signup" hidden="hidden">
         <div class="col-md-4"></div>
         
         <form id="signup-form" class="col-md-4">
