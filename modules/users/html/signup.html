@@ -1,0 +1,31 @@
+<div id="signup">
+  <div class="col-md-4"></div>
+  
+  <form id="signup-form" class="col-md-4">
+    <h1>Регистрация в системе</h1>
+    <div class="form-group has-feedback" id="form-group-email">
+      <label class="control-label">Email-адрес:</label>
+      <div class="input-group">
+        <span class="input-group-addon">@</span>
+        <input type="email" class="form-control" placeholder="Введите Ваш email"
+          aria-describedly="helpBlockEmail" name="email" id="email"/>
+        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+      </div>
+    </div>
+    <div class="form-group has-feedback" id="form-group-password">
+      <label class="control-label">Пароль:</label>
+      <input type="password" class="form-control" placeholder="Введите пароль"
+             name="password" id="password"/>
+      <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+    </div>
+    <div class="form-group has-feedback" id="form-group-password-duplicate">
+      <label class="control-label">Пароль ещё раз:</label>
+      <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
+        id="password-duplicate"/>
+      <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+    </div>
+    <input class="btn btn-large btn-primary" type="submit" value="Зарегистрироваться"/>
+  </form>
+  
+  <div class="col-md-4"></div>
+</div>

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../lib/dbtestero');
 var conf = require('../config');
+var fs = require('fs')
 
 router.post('/login', function(req, res, next) {
   console.log(req.session)
@@ -101,14 +102,43 @@ router.post('/signup', function(req, res, next) {
         })
         return;
       }
+      req.session.login = true;
+      req.session.email = email;
       res.json({
         msg: "Пользователь успешно зарегистрирован!",
         status: true 
-      })
-      req.session.login = true;
-      req.session.email = email;
+      }) 
     })
   })
 });
+
+router.post("/modules", function(req, res, next) {
+  
+  var data = { };
+  var moduleName = req.body.moduleName;
+  var modulePath = '../modules/' + moduleName
+  if(!fs.existsSync(modulePath))
+  {
+    data.status = false;
+    data.msg = 'Модуль '+moduleName+' не найден'
+    res.json(data)
+    return;
+  }
+  var htmlFiles = fs.readdirSync(modulePath + '/html')
+  data.html = { }
+  htmlFiles.forEach(function(file){
+    data.html[file.replace(/\.[^/.]+$/,"")] = fs.readFileSync(modulePath+'/html/'+file, encoding='utf8')
+  })
+  
+  var jsFiles = fs.readdirSync(modulePath + '/js')
+  data.js = { }
+  jsFiles.forEach(function(file){
+    data.js[file.replace(/\.[^/.]+$/,"")] = fs.readFileSync(modulePath+'/js/'+file, encoding='utf8')
+  })
+  
+  data.status = true;
+  data.msg = "Модуль был импортирован!"
+  res.json(data)
+})
 
 module.exports = router;
