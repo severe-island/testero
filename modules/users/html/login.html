@@ -1,23 +1,26 @@
+<link href="../../../public/css/bootstrap.css" rel="stylesheet" media="screen"/>
 <div id="login">
   <div class="col-md-4"></div>
   
   <form id="login-form" class="col-md-4">
     <h1>Вход с систему</h1>
-    <div class="form-group has-feedback">
+    <div class="form-group has-feedback" id="form-group-email">
       <label>Email-адрес:</label>
       <div class="input-group">
         <span class="input-group-addon">@</span>
         <input type="email" class="form-control" placeholder="Введите email"
-          aria-describedly="helpBlockEmail" name="email"/>
+          aria-describedly="helpBlockEmail" name="email" id="email"/>
+        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
       </div>
       <span id="helpBlockEmail" class="help-block">
         Используйте для входа в систему email-адрес, который Вы вводили при регистрации.
       </span>
     </div>
-    <div class="form-group has-feedback">
+    <div class="form-group has-feedback" id="form-group-password">
       <label>Пароль:</label>
       <input type="password" class="form-control" placeholder="Введите пароль"
-        name="password"/>
+        name="password" id="password"/>
+      <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
     </div>
     <div class="checkbox">
       <label>
