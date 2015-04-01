@@ -5,6 +5,8 @@
 * git clone https://bitbucket.org/severeisland/testero.git
 
 ##Запуск
+###При первом запуске:
+
 Для запуска проекта нужно по-порядку запустить:
 
 1. run-mongodb

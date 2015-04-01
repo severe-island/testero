@@ -1,0 +1,2 @@
+mkdir ../db/mongodb
+mongod --dbpath ../db/mongodb --nojournal --noauth

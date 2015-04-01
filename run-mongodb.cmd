@@ -1,1 +1,1 @@
-mongod --dbpath db/mongodb --nojournal
+mongod --dbpath db/mongodb --nojournal --auth

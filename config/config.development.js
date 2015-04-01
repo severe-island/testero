@@ -1,6 +1,9 @@
-var config = {}
+var config = { }
 
 config.env = 'development'
-config.bdname = 'testerodb_development' //Дима, поменяешь это на нужное
+config.db = { }
+config.db.name = 'testerodb_development' //Дима, поменяешь это на нужное
+config.db.adminPassword = "super";
+config.db.adminName = "realAdmin";
 
 module.exports = config
