@@ -42,6 +42,7 @@ $("#signup-form").submit(function() {
                $("#login-button").attr("disabled", "disabled");
                $("#signup-button").attr("disabled", "disabled");
                $("#signup").hide();
+               $("#signup-submit").attr("disabled", "disabled");
                $("#main-menu").show();
              }
            }
@@ -114,4 +115,9 @@ $("#signup-form #password-duplicate").focus(function() {
   $("#signup-form #form-group-password-duplicate").removeClass("has-success");
   $(this).next("span").removeClass("glyphicon-remove");
   $(this).next("span").removeClass("glyphicon-ok");
+});
+
+$("#agreement-dialog #accept-button").click(function() {
+  $("#signup-form #signup-submit").removeAttr("disabled");
+  $("#agreement-dialog").modal("hide");
 });
