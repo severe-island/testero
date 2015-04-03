@@ -27,11 +27,40 @@
         id="password-duplicate"/>
       <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
     </div>
-    <!--div class="btn-group"-->
+    <input type="hidden" name="agreementOk" id="agreement-ok"/>
     <input class="btn btn-primary" type="submit" value="Зарегистрироваться" disabled="disabled"/>
-      <button class="btn btn-default" id="agreement-button">Соглашение...</button>
-    <!--/div-->
+    <button class="btn btn-default" type="button" data-toggle="modal"
+       data-target="#agreement-dialog" id="agreement-button">Соглашение...</button>
   </form>
   
   <div class="col-md-4"></div>
+</div>
+
+<div class="modal fade" id="agreement-dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h1 class="modal-title">Пользовательское соглашение</h1>
+      </div>
+      <div class="modal-body">
+        <p>Принимая это пользовательское соглашение Вы соглашаетесь с тем, что:</p>
+        <ul>
+          <li>будете соблюдать этические и моральные нормы;</li>
+          <li>будете представлять самого себя;</li>
+          <li>не будете пытаться нарушить работу системы.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          Закрыть
+        </button>
+        <button type="button" class="btn btn-primary" id="accept-button">
+          Принять
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
