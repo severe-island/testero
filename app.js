@@ -10,6 +10,46 @@ var db = require('./lib/dbtestero');
 
 var routes = require('./routes/index');
 
+var spawn = require('child_process').spawn;
+var mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--auth']);
+mongodProcess.stdout.on('data', function (data) {
+  console.log('stdout: ' + data);
+})
+var firstRun = true;
+var stage = 0;
+db.connect(true, function(status){
+  if(stage>0)
+  {
+    console.log(stage)
+    return
+  }
+  firstRun = status;
+  if(!status) {
+    stage++;
+    console.log("Первый запуск!")
+    db.disconnect(function () {
+      console.log("Отключился")
+      mongodProcess.kill("SIGHUP");
+      mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--noauth']);
+      db.connect(false, function (status) {
+        if (!status) {
+          console.log("Второй раз не получилось подключиться!")
+        }
+        else {
+          console.log("Подключились второй раз без авторизации");
+        }
+      })
+      routes.setFirstRun(true);
+    })
+  }
+  else
+  {
+    console.log("Не первый")
+    routes.setFirstRun(false);
+  }
+  routes.setDB(db);
+})
+
 var app = express();
 
 // view engine setup
@@ -60,6 +100,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

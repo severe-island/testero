@@ -1,16 +1,43 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../lib/dbtestero');
+var db;
 var conf = require('../config');
 var fs = require('fs')
 
+var firstRun;
+
+router.setDB = function(newDB)
+{
+  db = newDB;
+}
+
+router.setFirstRun = function(newfirstRun){
+  firstRun = newfirstRun;
+}
+
+router.post('/db', function(req, res, next) { 
+  if(firstRun) {
+    res.json({
+      msg: "Первый запуск!",
+      status: 0
+    })
+  }
+  else
+  {
+    res.json({
+      msg: "Не первый запуск",
+      status: 1
+    })
+  }
+})
+
 router.post('/login', function(req, res, next) {
-  console.log(req.session)
   if(req.session.login)
   {
     res.json({
       msg: "Вы уже зашли с почтой "+req.session.email+"!",
-      status: true })
+      status: true
+    })
     return;
   }
   console.log("Попытка входа!");

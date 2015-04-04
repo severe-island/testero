@@ -1,4 +1,3 @@
-var mongoose = require('mongoose');
 var mongoClient = require('mongodb').MongoClient;
 var connectionToDB;
 var prodConf = require('../config/config.production')
