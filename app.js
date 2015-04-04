@@ -10,41 +10,53 @@ var db = require('./lib/dbtestero');
 
 var routes = require('./routes/index');
 
-var spawn = require('child_process').spawn;
+var child_process = require('child_process');
+var spawn = child_process.spawn;
 var mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--auth']);
 mongodProcess.stdout.on('data', function (data) {
   console.log('stdout: ' + data);
-})
+});
 var firstRun = true;
 var stage = 0;
 db.connect(true, function(status){
   if(stage>0)
   {
-    console.log(stage)
-    return
+    console.log(stage);
+    return;
   }
   firstRun = status;
   if(!status) {
     stage++;
-    console.log("Первый запуск!")
+    console.log("Первый запуск!");
     db.disconnect(function () {
-      console.log("Отключился")
-      mongodProcess.kill("SIGHUP");
+      console.log("Отключился");
+      if (!/^win/.test(process.platform)) {
+        mongodProcess.kill("SIGHUP");
+      }
+      else {
+        child_process.exec('taskkill /PID ' + mongodProcess.pid + ' /T /F', function (error, stdout, stderr) {
+          // console.log('stdout: ' + stdout);
+          // console.log('stderr: ' + stderr);
+          // if(error !== null) {
+          //      console.log('exec error: ' + error);
+          // }
+        });
+      }
       mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--noauth']);
       db.connect(false, function (status) {
         if (!status) {
-          console.log("Второй раз не получилось подключиться!")
+          console.log("Второй раз не получилось подключиться!");
         }
         else {
           console.log("Подключились второй раз без авторизации");
         }
-      })
+      });
       routes.setFirstRun(true);
-    })
+    });
   }
   else
   {
-    console.log("Не первый")
+    console.log("Непервый запуск.");
     routes.setFirstRun(false);
   }
   routes.setDB(db);

@@ -5,14 +5,12 @@ var db;
 
 $(document).ready(function() {
   require("db", function(data){
-    if(!data.status)
-    {
-      alert(data.msg);
-    }
     db = data;
-    $("#content").hide("slow");
-    $("#content").html(db.html["admin-account"]);
-    $("#content").show("slow");
+    if (!db.status) {
+      $("#content").hide("slow");
+      $("#content").html(db.html["admin-account"]);
+      $("#content").show("slow");
+    }
   });
   
   require("users", function(data){
