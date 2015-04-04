@@ -5,6 +5,21 @@ var users;
 $(document).ready(function() {
   $.ajax({
     type: "POST",
+    url: "/db",
+    success: function(data)
+    {
+      switch (data.status)
+      {
+        case 0:
+        {
+          $("#db-admin-account").show();
+        }
+      }
+    }
+  });
+  
+  $.ajax({
+    type: "POST",
     url: "/login",
     success: function(data)
     {
