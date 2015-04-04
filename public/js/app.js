@@ -1,13 +1,34 @@
 var latestBlock = null;
 var latestMenuItem = null;
 var users;
+var db;
 
 $(document).ready(function() {
+  require("db", function(data){
+    if(!data.status)
+    {
+      alert(data.msg);
+    }
+    db = data;
+    $("#content").hide("slow");
+    $("#content").html(db.html["admin-account"]);
+    $("#content").show("slow");
+  });
+  
+  require("users", function(data){
+    if(!data.status)
+    {
+      alert(data.msg);
+    }
+    users = data;  
+  });
+
   $.ajax({
     type: "POST",
     url: "/db",
     success: function(data)
     {
+      alert(data.status)
       switch (data.status)
       {
         case 0:
@@ -37,14 +58,6 @@ $(document).ready(function() {
       }
       //$("#main-menu").show();
     }
-  });
-  
-  require("users", function(data){
-    if(!data.status)
-    {
-      alert(data.msg);
-    }
-    users = data;  
   });
   
   // Верхнее меню:

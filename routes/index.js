@@ -167,21 +167,31 @@ router.post("/modules", function(req, res, next) {
     res.json(data)
     return;
   }
-  var htmlFiles = fs.readdirSync(modulePath + '/html')
-  data.html = { }
-  htmlFiles.forEach(function(file){
-    data.html[file.replace(/\.[^/.]+$/,"")] = fs.readFileSync(modulePath+'/html/'+file, encoding='utf8')
-  })
-  
-  var jsFiles = fs.readdirSync(modulePath + '/js')
-  data.js = { }
-  jsFiles.forEach(function(file){
-    data.js[file.replace(/\.[^/.]+$/,"")] = fs.readFileSync(modulePath+'/js/'+file, encoding='utf8')
-  })
-  
+
+  if (fs.existsSync(modulePath + '/html')) {
+    var htmlFiles = fs.readdirSync(modulePath + '/html')
+    data.html = {}
+    if (htmlFiles) {
+      htmlFiles.forEach(function (file) {
+        data.html[file.replace(/\.[^/.]+$/, "")] = fs.readFileSync(modulePath + '/html/' + file, encoding = 'utf8')
+      })
+    }
+  }
+
+  if (fs.existsSync(modulePath + '/js')) {
+    var jsFiles = fs.readdirSync(modulePath + '/js')
+    data.js = {}
+    if (jsFiles) {
+      jsFiles.forEach(function (file) {
+        data.js[file.replace(/\.[^/.]+$/, "")] = fs.readFileSync(modulePath + '/js/' + file, encoding = 'utf8')
+      })
+    }
+  }
+ 
   data.status = true;
   data.msg = "Модуль был импортирован!"
   res.json(data)
+
 })
 
 module.exports = router;
