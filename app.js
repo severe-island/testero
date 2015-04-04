@@ -34,12 +34,12 @@ db.connect(true, function(status){
         mongodProcess.kill("SIGHUP");
       }
       else {
-        child_process.exec('taskkill /PID ' + mongodProcess.pid + ' /T /F', function (error, stdout, stderr) {
-          // console.log('stdout: ' + stdout);
-          // console.log('stderr: ' + stderr);
-          // if(error !== null) {
-          //      console.log('exec error: ' + error);
-          // }
+        child_process.execSync('taskkill /PID ' + mongodProcess.pid + ' /T /F', function (error, stdout, stderr) {
+           console.log('stdout: ' + stdout);
+           console.log('stderr: ' + stderr);
+           if(error !== null) {
+                console.log('exec error: ' + error);
+           }
         });
       }
       mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--noauth']);
