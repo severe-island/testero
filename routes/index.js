@@ -76,6 +76,7 @@ router.post('/signup', function(req, res, next) {
   }
   var email = req.body.email
   var password = req.body.password
+  var passwordDuplicate = req.body.passwordDuplicate;
   db.findUserByEmail(email, function(err, data) {
     if(err)
     {
@@ -92,6 +93,21 @@ router.post('/signup', function(req, res, next) {
         status: false
       })
       return;
+    }
+    if(password!=passwordDuplicate)
+    {
+      res.json({
+        msg: "Пароли не совпадают!",
+        status: 0
+      })
+      return;
+    }
+    if(email.indexOf('@')<0)
+    {
+      res.json({
+        msg: "Некорректный email!",
+        status: 0
+      })
     }
     db.addNewUser(email, password, function(err) {
       if(err)

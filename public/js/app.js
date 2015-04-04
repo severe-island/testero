@@ -1,5 +1,7 @@
 var latestBlock = null;
 var latestMenuItem = null;
+var users;
+
 $(document).ready(function() {
   $.ajax({
     type: "POST",
@@ -22,7 +24,6 @@ $(document).ready(function() {
     }
   });
   
-  var users;
   require("users", function(data){
     if(!data.status)
     {
@@ -56,7 +57,6 @@ $(document).ready(function() {
     }
     latestMenuItem = $("#login-button");
     $("#login-button").attr("disabled", "disabled");
-    eval(users.js.login)
   });
   
   $("#main-menu-button").click(function() {
