@@ -4,63 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
+var NedbStore = require('connect-nedb-session')(session);
 var bodyParser = require('body-parser');
 var db = require('./lib/dbtestero'); 
-
-var routes = require('./routes/index');
-
-var child_process = require('child_process');
-var spawn = child_process.spawn;
-var mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--auth']);
-mongodProcess.stdout.on('data', function (data) {
-  console.log('stdout: ' + data);
-});
-var firstRun = true;
-var stage = 0;
-db.connect(true, function(status){
-  if(stage>0)
-  {
-    console.log(stage);
-    return;
-  }
-  firstRun = status;
-  if(!status) {
-    stage++;
-    console.log("Первый запуск!");
-    db.disconnect(function () {
-      console.log("Отключился");
-      if (!/^win/.test(process.platform)) {
-        mongodProcess.kill("SIGHUP");
-      }
-      else {
-        child_process.execSync('taskkill /PID ' + mongodProcess.pid + ' /T /F', function (error, stdout, stderr) {
-           console.log('stdout: ' + stdout);
-           console.log('stderr: ' + stderr);
-           if(error !== null) {
-                console.log('exec error: ' + error);
-           }
-        });
-      }
-      mongodProcess = spawn('mongod', ['--dbpath=../db/mongodb', '--nojournal', '--noauth']);
-      db.connect(false, function (status) {
-        if (!status) {
-          console.log("Второй раз не получилось подключиться!");
-        }
-        else {
-          console.log("Подключились второй раз без авторизации");
-        }
-      });
-      routes.setFirstRun(true);
-    });
-  }
-  else
-  {
-    console.log("Непервый запуск.");
-    routes.setFirstRun(false);
-  }
-  routes.setDB(db);
-})
 
 var app = express();
 
@@ -76,11 +22,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
   secret: 'sksskjfsdfkn2131',
-  store: new MongoStore({ mongooseConnection: db.connection })
+  store: new NedbStore({ filename: '../db/sessions', autoload: true, inMemoryOnly: false})
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+var routes = require('./routes/index');
+var usersRoute = require('./modules/users/route');
+
 app.use('/', routes);
+app.use('/users', usersRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
