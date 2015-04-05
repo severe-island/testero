@@ -1,19 +1,12 @@
 ##Установка
 ###linux debian/ubuntu:
-* sudo apt-get install mongodb
 * sudo apt-get install nodejs
 * git clone https://bitbucket.org/severeisland/testero.git
 
 ##Запуск
-###Перед первым запуском:
-1. Перейти в папку dbSetup
-2. Запустить в отдельной консоли first-run-mongodb
-3. Выполнить: node first-init.js
-4. Завершить процесс mongod
+1. Из папки bin запустить development
 
-###Запуск:
-Для запуска проекта нужно по-порядку запустить:
-
-1. run-mongodb
-2. init-db (Не обязательно. Для очистки базы и заполнения тестовыми данными.)
-3. Из папки bin запустить development
+##Работа с БД
+Пока не сделана очистка БД. Если нужно очистить, удалите:  
+1. db/sessions  
+2. db/testerodb_development
