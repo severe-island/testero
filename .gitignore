@@ -1,4 +1,7 @@
 /nbproject/private/
 .metadata
 /db/mongodb/
+/db/testerodb_development/
+/db/testerodb_production/
+/db/testerodb_testing/
 .kateproject*
