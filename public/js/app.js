@@ -6,11 +6,6 @@ var db;
 $(document).ready(function() {
   require("db", function(data){
     db = data;
-    if (!db.status) {
-      $("#content").hide("slow");
-      $("#content").html(db.html["admin-account"]);
-      $("#content").show("slow");
-    }
   });
   
   require("users", function(data){
@@ -26,12 +21,15 @@ $(document).ready(function() {
     url: "/db",
     success: function(data)
     {
-      alert(data.status)
+      alert(data.msg)
       switch (data.status)
       {
         case 0:
         {
-          $("#db-admin-account").show();
+          $("#content").hide("slow");
+          $("#content").html(db.html["admin-account"]);
+          $("#content").show("slow");
+          //$("#db-admin-account").show();
         }
       }
     }
@@ -39,7 +37,7 @@ $(document).ready(function() {
   
   $.ajax({
     type: "POST",
-    url: "/login",
+    url: "/users/login",
     success: function(data)
     {
       if(data.status)
@@ -70,7 +68,6 @@ $(document).ready(function() {
     }
     latestMenuItem = $("#signup-button");
     $("#signup-button").attr("disabled", "disabled");
-    eval(users.js.signup)
   });
   
   $("#login-button").click(function() {
@@ -90,7 +87,7 @@ $(document).ready(function() {
   });
   
   $("#logout-button").click(function() {
-    var url = "/logout";
+    var url = "/users/logout";
     $.ajax({
       type: "POST",
       url: url,

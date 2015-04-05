@@ -31,7 +31,7 @@ $("#signup-form").submit(function() {
   {
     $.ajax({
       type: "POST",
-      url: "/signup",
+      url: "/users/signup",
       data: $("#signup-form").serialize(),
            success: function(data)
            {

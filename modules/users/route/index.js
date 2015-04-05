@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var db = require('../../../lib/nedbtestero');
 var conf = require('../../../config');
-var fs = require('fs')
 
 router.post('/login', function(req, res, next) {
   if(req.session.login)
@@ -55,7 +54,7 @@ router.post('/logout', function(req, res, next) {
     delete req.session.login
     var email = req.session.email
     delete req.session.email
-    req.session.destroy()
+    //req.session.destroy()
     res.json({ msg: "Вы вышли и теперь вы больше не "+email+"!" })
   }
   else
@@ -109,7 +108,7 @@ router.post('/signup', function(req, res, next) {
         status: 0
       })
     }
-    db.addNewUser(email, password, function(err) {
+    db.addNewUser(email, password, 'student', function(err) {
       if(err)
       {
         res.json({

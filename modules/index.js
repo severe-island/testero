@@ -1,35 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../lib/nedbtestero');
 var conf = require('../config');
 var fs = require('fs')
 
-
-
-router.post('/db', function(req, res, next) { 
-  console.log('сессия:')
-  console.log(req.session);
-  req.session.lolka = true;
-  req.session.cookie.originalMaxAge = 666;
-  var firstRun = true;
-  if(firstRun) {
-    res.json({
-      msg: "Первый запуск!",
-      status: 0
-    })
-  }
-  else
-  {
-    res.json({
-      msg: "Не первый запуск",
-      status: 1
-    })
-  }
-})
-
-
-
-router.post("/modules", function(req, res, next) {
+router.post("/", function(req, res, next) {
   
   var data = { };
   var moduleName = req.body.moduleName;
