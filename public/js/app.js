@@ -1,11 +1,20 @@
 var latestBlock = null;
 var latestMenuItem = null;
-var users;
 var db;
+var courses;
+var users;
 
 $(document).ready(function() {
   require("db", function(data){
     db = data;
+  });
+  
+  require("courses", function(data){
+    if (!data.status)
+    {
+      alert(data.msg);
+    }
+    courses = data;
   });
   
   require("users", function(data){
@@ -21,7 +30,7 @@ $(document).ready(function() {
     url: "/db",
     success: function(data)
     {
-      alert(data.msg)
+      //alert(data.msg)
       switch (data.status)
       {
         case 0:
@@ -66,7 +75,7 @@ $(document).ready(function() {
   
   $("#courses-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(courses.html.list);
+    $("#content").html(courses.html.menu);
     $("#content").show("slow");
     if(latestMenuItem)
     {
