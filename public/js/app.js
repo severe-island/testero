@@ -45,18 +45,36 @@ $(document).ready(function() {
         $("#login-button").attr("disabled", "disabled");
         $("#signup-button").attr("disabled", "disabled");
         $("#logout-button").removeAttr("disabled");
+        $("#courses-button").removeAttr("disabled");
       }
       else
       {
         $("#login-button").removeAttr("disabled");
         $("#signup-button").removeAttr("disabled");
         $("#logout-button").attr("disabled", "disabled");
+        $("#courses-button").attr("disabled", "disabled");
       }
       //$("#main-menu").show();
     }
   });
   
   // Верхнее меню:
+  
+  $("#main-menu-button").click(function() {
+    $("#main-menu").toggle();
+  });
+  
+  $("#courses-button").click(function() {
+    $("#content").hide("slow");
+    $("#content").html(courses.html.list);
+    $("#content").show("slow");
+    if(latestMenuItem)
+    {
+      latestMenuItem.removeAttr("disabled");
+    }
+    latestMenuItem = $("#courses-button");
+    $("#courses-button").attr("disabled", "disabled");
+  });
   
   $("#signup-button").click(function() {
     $("#content").hide("slow");
@@ -80,10 +98,6 @@ $(document).ready(function() {
     }
     latestMenuItem = $("#login-button");
     $("#login-button").attr("disabled", "disabled");
-  });
-  
-  $("#main-menu-button").click(function() {
-    $("#main-menu").toggle();
   });
   
   $("#logout-button").click(function() {
