@@ -24,6 +24,8 @@ $(document).ready(function() {
     }
     users = data;  
   });
+  
+  $("#main-menu").show("slow");
 
   $.ajax({
     type: "POST",
@@ -63,14 +65,15 @@ $(document).ready(function() {
         $("#logout-button").attr("disabled", "disabled");
         $("#courses-button").attr("disabled", "disabled");
       }
-      //$("#main-menu").show();
     }
   });
   
   // Верхнее меню:
   
   $("#main-menu-button").click(function() {
-    $("#main-menu").toggle();
+    $("#content").hide("slow");
+    $("#content").html($("#main-menu"));
+    $("#content").show("slow");
   });
   
   $("#courses-button").click(function() {
@@ -124,5 +127,14 @@ $(document).ready(function() {
         }
       }
     });
+  });
+  
+  // Главное меню:
+  
+  $("#main-menu #courses-item").click(function() {
+    $("#main-menu").hide("slow");
+    $("#content").html(courses.html["#courses-menu"]);
+    $("#courses-menu").show("slow");
+    return false;
   });
 }); 

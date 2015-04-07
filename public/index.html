@@ -15,7 +15,7 @@
   </head>
   <body class="container-fluid">
     <header class="row">
-      <nav class="navbar navbar-default navbar-fixed-top">
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container-fluid">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
@@ -30,7 +30,7 @@
             <ul class="nav navbar-nav">
               <li>
                 <button type="button" id="main-menu-button"
-                  class="btn btn-default btn-sm navbar-btn" aria-label="" disabled="disabled">
+                  class="btn btn-default btn-sm navbar-btn" aria-label="">
                   <span class="glyphicon glyphicon-th" aria-hidden="true"></span> Меню
                 </button>
               </li>
@@ -64,16 +64,29 @@
       </nav>
     </header>
     
-    <!--div id="content" class="row"-->
     <main id="content" class="row">
-      <!--div id="main-menu" class="row">
-        <div class="col-sm-3" style="background-color: lightgray">1</div>
-        <div class="col-sm-3" style="background-color: lightgray">2</div>
-        <div class="col-sm-3" style="background-color: lightgray">3</div>
-        <div class="col-sm-3" style="background-color: lightgray">4</div>
-      </div-->
+      <!-- modules inserts own content hire -->
     </main>
-    <!--/div-->
+    
+    <div id="main-menu" class="row" hidden="hidden">
+      <div class="col-md-4"></div>
+
+      <div class="col-md-4">
+        <ol class="breadcrumb">
+          <li class="active">Главное меню</li>
+        </ol>
+
+        <ul class="nav nav-pills nav-stacked">
+          <li>
+            <a href="#" id="courses-item">
+              <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Курсы
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="col-md-4"></div>
+    </div>
     
     <footer class="row">
       <nav class="navbar navbar-default navbar-fixed-bottom" style="background: #7e7e7e;">
