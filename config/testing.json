@@ -1,0 +1,10 @@
+{
+  "db":
+    {
+      "name": "testing"
+    },
+  "modules":
+    [
+      "db", "users", "courses"
+    ]
+}

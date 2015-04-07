@@ -7,8 +7,6 @@
 var app = require('../app');
 var debug = require('debug')('testero:server');
 var http = require('http');
-var config = require('../config');
-console.log(config.env+" mode!");
 
 /**
  * Get port from environment and store in Express.

@@ -7,6 +7,8 @@ var session = require('express-session');
 var NedbStore = require('connect-nedb-session')(session);
 var bodyParser = require('body-parser');
 var db = require('./lib/dbtestero'); 
+var config = require('./config')
+var fs = require('fs')
 
 var app = express();
 
@@ -26,13 +28,28 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-var modulesRoute = require('./modules');
-var usersRoute = require('./modules/users/route');
-var dbRoute = require('./modules/db/route');
+config.modules.forEach(function(moduleName){
+  var modulePath = './modules/'+moduleName+'/route';
+  if (fs.existsSync('.'+modulePath))
+  {
+    var files = fs.readdirSync('.'+modulePath)
+    if (files) {
+      files.forEach(function (file) {
+        if(file!=="index.js")
+        {
+          var nextModule = require(modulePath+'/'+file);
+          app.use('/'+moduleName, nextModule);
+        }
+      })
+      var nextModule = require(modulePath);
+      app.use('/'+moduleName, nextModule);
+      console.log('Модуль '+moduleName+' подключен.')
+    } 
+  }
+})
 
+var modulesRoute = require('./modules');
 app.use('/modules', modulesRoute);
-app.use('/users', usersRoute);
-app.use('/db', dbRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
