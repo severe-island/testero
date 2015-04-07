@@ -35,14 +35,9 @@ config.modules.forEach(function(moduleName){
     var files = fs.readdirSync('.'+modulePath)
     if (files) {
       files.forEach(function (file) {
-        if(file!=="index.js")
-        {
-          var nextModule = require(modulePath+'/'+file);
-          app.use('/'+moduleName, nextModule);
-        }
+        var nextModule = require(modulePath+'/'+file);
+        app.use('/'+moduleName, nextModule);
       })
-      var nextModule = require(modulePath);
-      app.use('/'+moduleName, nextModule);
       console.log('Модуль '+moduleName+' подключен.')
     } 
   }
