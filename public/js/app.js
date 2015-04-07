@@ -3,6 +3,7 @@ var latestMenuItem = null;
 var db;
 var courses;
 var users;
+var app;
 
 $(document).ready(function() {
   require("db", function(data){
@@ -25,7 +26,15 @@ $(document).ready(function() {
     users = data;  
   });
   
-  $("#content").html($("#main-menu").clone().show()).show("slow");
+  require("app", function(data){
+    if(!data.status)
+    {
+      alert(data.msg);
+    }
+    users = data;  
+  });
+  
+  $("#content").html(app.html["main-menu"]).show("slow");
 
   $.ajax({
     type: "POST",
@@ -117,10 +126,9 @@ $(document).ready(function() {
     $.ajax({
       type: "POST",
       url: url,
-      success: function(data){
+      success: function(data) {
         alert(data.msg);
-        if (!data.status)
-        {
+        if (!data.status) {
           $("#logout-button").attr("disabled","disabled");
           $("#login-button").removeAttr("disabled");
           $("#signup-button").removeAttr("disabled");
@@ -128,13 +136,4 @@ $(document).ready(function() {
       }
     });
   });
-  
-  // Главное меню:
-  
-  $("#content #main-menu #courses-item").click(function() {
-    $("#content").hide("slow");
-    $("#content").html(courses.html["menu"]);
-    $("#content").show("slow");
-    return false;
-  });
-}); 
+});
