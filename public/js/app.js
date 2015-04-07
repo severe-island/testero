@@ -131,7 +131,7 @@ $(document).ready(function() {
   
   // Главное меню:
   
-  $("#main-menu #courses-item").click(function() {
+  $("#content #main-menu #courses-item").click(function() {
     $("#content").hide("slow");
     $("#content").html(courses.html["menu"]);
     $("#content").show("slow");
