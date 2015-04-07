@@ -10,20 +10,20 @@ $(document).ready(function() {
     db = data;
   });
   
-  require("courses", function(data){
-    if (!data.status)
-    {
-      alert(data.msg);
-    }
-    courses = data;
-  });
-  
   require("users", function(data){
     if(!data.status)
     {
       alert(data.msg);
     }
     users = data;  
+  });
+  
+  require("courses", function(data){
+    if (!data.status)
+    {
+      alert(data.msg);
+    }
+    courses = data;
   });
   
   require("app", function(data){
@@ -33,6 +33,11 @@ $(document).ready(function() {
     }
     users = data;  
   });
+  
+  if (!app) {
+    alert("Модуль app не был загружен! Работа приложения приостановлена.");
+    return;
+  }
   
   $("#content").html(app.html["main-menu"]).show("slow");
 
