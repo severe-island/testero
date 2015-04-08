@@ -6,8 +6,11 @@ var users;
 var app;
 
 $(document).ready(function() {
+  var modules_counter = 0;
+  
   require("db", function(data){
     db = data;
+    modules_counter++;
   });
   
   require("users", function(data){
@@ -15,7 +18,8 @@ $(document).ready(function() {
     {
       alert(data.msg);
     }
-    users = data;  
+    users = data;
+    modules_counter++;
   });
   
   require("courses", function(data){
@@ -24,6 +28,7 @@ $(document).ready(function() {
       alert(data.msg);
     }
     courses = data;
+    modules_counter++;
   });
   
   require("app", function(data){
@@ -31,13 +36,17 @@ $(document).ready(function() {
     {
       alert(data.msg);
     }
-    users = data;  
+    app = data;
+    modules_counter++;
   });
   
-  if (!app) {
+  /*if (!users) {
     alert("Модуль app не был загружен! Работа приложения приостановлена.");
     return;
-  }
+  }*/
+  
+  /*while (modules_counter != 4) {
+  }*/
   
   $("#content").html(app.html["main-menu"]).show("slow");
 
@@ -46,7 +55,6 @@ $(document).ready(function() {
     url: "/db",
     success: function(data)
     {
-      //alert(data.msg)
       switch (data.status)
       {
         case 0:
@@ -54,7 +62,6 @@ $(document).ready(function() {
           $("#content").hide("slow");
           $("#content").html(db.html["admin-account"]);
           $("#content").show("slow");
-          //$("#db-admin-account").show();
         }
       }
     }
@@ -94,12 +101,6 @@ $(document).ready(function() {
     $("#content").hide("slow");
     $("#content").html(courses.html.menu);
     $("#content").show("slow");
-    /*if(latestMenuItem)
-    {
-      latestMenuItem.removeAttr("disabled");
-    }
-    latestMenuItem = $("#courses-button");
-    $("#courses-button").attr("disabled", "disabled");*/
   });
   
   $("#signup-button").click(function() {
