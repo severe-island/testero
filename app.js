@@ -38,9 +38,9 @@ config.modules.forEach(function(moduleName){
         var nextModule = require(modulePath+'/'+file);
         app.use('/'+moduleName, nextModule);
       })
-      console.log('Модуль '+moduleName+' подключен.')
     } 
   }
+  console.log('Модуль '+moduleName+' подключен.')
 })
 
 var modulesRoute = require('./modules');
