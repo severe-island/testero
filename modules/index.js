@@ -16,6 +16,19 @@ router.post("/", function(req, res, next) {
     return;
   }
 
+  var inConfiguration = false;
+  for(var i = 0; i<conf.modules.length; i++)
+  {
+    if(conf.modules[i]===moduleName) inConfiguration = true;
+  }
+  if(!inConfiguration)
+  {
+    data.status = false;
+    data.msg = 'Модуль '+moduleName+' не прописан в конфигурации.'
+    res.json(data)
+    return;
+  }
+  
   if (fs.existsSync(modulePath + '/html')) {
     var htmlFiles = fs.readdirSync(modulePath + '/html')
     data.html = {}
