@@ -1,7 +1,14 @@
 var app = {
   modules: {}
 };
-var modules = ["db", "users", "courses", "app"];
+var modules = ["app", "db", "users", "courses"];
+
+function bootstrapAlert(msg, type, delay) {
+  $("#content")
+    .hide("slow")
+    .html(app.modules.app.html["alert"])
+    .show("slow");
+}
 
 function loadModules(app, modules, callback) {
   if (!modules.length) {
@@ -23,7 +30,7 @@ function loadModules(app, modules, callback) {
 function onLoadAllModules() {
   $.ajax({
     type: "POST",
-    url: "/db",
+    url: "/users/isAdminExists",
     success: function(data)
     {
       
@@ -69,30 +76,38 @@ function onLoadAllModules() {
   
   $("#main-menu-button").click(function() {
     $("#content")
-      .hide("slow")
-      .html(app.modules.app.html["main-menu"])
-      .show("slow");
+      .hide("slow", function() {
+        $(this)
+          .html(app.modules.app.html["main-menu"])
+          .show("slow");
+    });
   });
   
   $("#courses-button").click(function() {
     $("#content")
-      .hide("slow")
-      .html(app.modules.courses.html["menu"])
-      .show("slow");
+      .hide("slow", function() {
+        $(this)
+          .html(app.modules.courses.html["menu"])
+          .show("slow");
+    });
   });
   
   $("#signup-button").click(function() {
     $("#content")
-      .hide("slow")
-      .html(app.modules.users.html["signup"])
-      .show("slow");
+      .hide("slow", function() {
+        $(this)
+          .html(app.modules.users.html["signup"])
+          .show("slow");
+      });
   });
   
   $("#login-button").click(function() {
     $("#content")
-      .hide("slow")
-      .html(app.modules.users.html["login"])
-      .show("slow");
+      .hide("slow", function() {
+        $(this)
+          .html(app.modules.users.html["login"])
+          .show("slow");
+      });
   });
   
   $("#logout-button").click(function() {
