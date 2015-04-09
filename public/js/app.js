@@ -6,8 +6,14 @@ var modules = ["app", "db", "users", "courses"];
 function bootstrapAlert(msg, type, delay) {
   $("#content")
     .hide("slow")
-    .html(app.modules.app.html["alert"])
-    .show("slow");
+    .html(app.modules.app.html["alert"]);
+  $("#content .alert")
+    .addClass("alert-" + type)
+    .html(msg);
+  $("#content")
+    .show("slow")
+    .delay(delay)
+    .hide("slow");
 }
 
 function loadModules(app, modules, callback) {
@@ -120,11 +126,14 @@ function onLoadAllModules() {
       type: "POST",
       url: url,
       success: function(data) {
-        alert(data.msg);
+        bootstrapAlert(data.msg, "info", 2000);
         if (!data.status) {
           $("#logout-button").attr("disabled","disabled");
           $("#login-button").removeAttr("disabled");
           $("#signup-button").removeAttr("disabled");
+          $("#content")
+            .html(app.modules.app.html["main-menu"])
+            .show("slow");
         }
       }
     });
