@@ -1,7 +1,7 @@
 var app = {
   modules: {}
 };
-var modules = ["app", "db", "users", "courses"];
+var modules = ["app", "users", "courses"];
 
 function bootstrapAlert(msg, type, delay) {
   $("#content")
@@ -44,7 +44,7 @@ function onLoadAllModules() {
         $("#content")
           .hide("slow", function() {
             $(this)
-              .html(app.modules.db.html["admin-account"])
+              .html(app.modules.users.html["admin-account"])
               .show("slow");
           });
       }
