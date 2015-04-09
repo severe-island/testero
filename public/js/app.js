@@ -1,67 +1,53 @@
 var latestBlock = null;
 var latestMenuItem = null;
-var db;
-var courses;
-var users;
-var app;
+
+var app = {
+  modules: {}
+};
+var modules = ["db", "users", "courses", "app"];
 
 $(document).ready(function() {
-  var modules_counter = 0;
-  
-  require("db", function(data){
-    db = data;
-    modules_counter++;
-  });
-  
-  require("users", function(data){
-    if(!data.status)
-    {
-      alert(data.msg);
-    }
-    users = data;
-    modules_counter++;
-  });
-  
-  require("courses", function(data){
-    if (!data.status)
-    {
-      alert(data.msg);
-    }
-    courses = data;
-    modules_counter++;
-  });
-  
-  require("app", function(data){
-    if(!data.status)
-    {
-      alert(data.msg);
-    }
-    app = data;
-    modules_counter++;
-  });
-  
-  /*if (!users) {
-    alert("Модуль app не был загружен! Работа приложения приостановлена.");
-    return;
-  }*/
-  
-  /*while (modules_counter != 4) {
-  }*/
-  
-  $("#content").html(app.html["main-menu"]).show("slow");
+  for (var i = 0; i < modules.length; i++) {
+    app.modules[modules[i]] = {};
+    require(modules[i], function (data) {
+      if (!data.status) {
+        alert(data.msg);
+        return;
+      }
+      app.modules[data.moduleName] = data;
+      alert(app.modules[data.moduleName].msg);
+      if(data.moduleName=="app") {
+        $.ajax({
+          type: "POST",
+          url: "/db",
+          success: function(data)
+          {
+            if(data.status==1)
+            {
+              $("#content").html(app.modules.app.html["main-menu"]).show("slow");
+            }
+          }
+        }); 
+      }
+    });
+  }
 
+  
   $.ajax({
     type: "POST",
     url: "/db",
     success: function(data)
     {
+      alert(data.msg);
+      alert("status="+data.status);
       switch (data.status)
       {
         case 0:
         {
           $("#content").hide("slow");
-          $("#content").html(db.html["admin-account"]);
+          $("#content").html(app.modules.db.html["admin-account"]);
           $("#content").show("slow");
+          break;
         }
       }
     }
@@ -91,21 +77,33 @@ $(document).ready(function() {
   
   // Верхнее меню:
   
+  $("#main-menu-button").removeAttr("disabled");
   $("#main-menu-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html($("#main-menu").clone().show());
-    $("#content").show("slow");
+    $("#content").html(app.modules.app.html["main-menu"]).show("slow");
+    if(latestMenuItem)
+    {
+      latestMenuItem.removeAttr("disabled");
+    }
+    latestMenuItem = $("#main-menu-button");
+    $("#main-menu-button").attr("disabled", "disabled");
   });
   
   $("#courses-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(courses.html.menu);
+    $("#content").html(app.modules.courses.html.menu);
     $("#content").show("slow");
+    if(latestMenuItem)
+    {
+      latestMenuItem.removeAttr("disabled");
+    }
+    latestMenuItem = $("#сourses-button");
+    $("#сourses-button").attr("disabled", "disabled");
   });
   
   $("#signup-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(users.html.signup);
+    $("#content").html(app.modules.users.html.signup);
     $("#content").show("slow");
     if(latestMenuItem)
     {
@@ -117,7 +115,7 @@ $(document).ready(function() {
   
   $("#login-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(users.html.login);
+    $("#content").html(app.modules.users.html.login);
     $("#content").show("slow");
     if(latestMenuItem)
     {

@@ -8,9 +8,10 @@ $("#login-form").submit(function() {
            alert(data.msg);
            if (data.status)
            {
-             $("#logout-button").removeAttr("disabled");
              $("#login-button").attr("disabled", "disabled");
              $("#signup-button").attr("disabled", "disabled");
+             $("#logout-button").removeAttr("disabled");
+             $("#courses-button").removeAttr("disabled");
              $("#login").hide();
              $("#main-menu").show();
            }

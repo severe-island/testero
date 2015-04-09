@@ -7,6 +7,7 @@ router.post("/", function(req, res, next) {
   
   var data = { };
   var moduleName = req.body.moduleName;
+  data.moduleName = moduleName;
   var modulePath = '../modules/' + moduleName
   if(!fs.existsSync(modulePath))
   {
@@ -50,7 +51,7 @@ router.post("/", function(req, res, next) {
   }
  
   data.status = true;
-  data.msg = "Модуль был импортирован!"
+  data.msg = "Модуль " + moduleName + " был импортирован!"
   res.json(data)
 
 })
