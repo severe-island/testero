@@ -1,4 +1,3 @@
-var latestBlock = null;
 var latestMenuItem = null;
 
 var app = {
@@ -77,52 +76,27 @@ $(document).ready(function() {
   
   // Верхнее меню:
   
+   // TODO: разобраться с необходимостью отключения/включения кнопки меню
   $("#main-menu-button").removeAttr("disabled");
+  
   $("#main-menu-button").click(function() {
     $("#content").hide("slow");
     $("#content").html(app.modules.app.html["main-menu"]).show("slow");
-    if(latestMenuItem)
-    {
-      latestMenuItem.removeAttr("disabled");
-    }
-    latestMenuItem = $("#main-menu-button");
-    $("#main-menu-button").attr("disabled", "disabled");
   });
   
   $("#courses-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(app.modules.courses.html.menu);
-    $("#content").show("slow");
-    if(latestMenuItem)
-    {
-      latestMenuItem.removeAttr("disabled");
-    }
-    latestMenuItem = $("#сourses-button");
-    $("#сourses-button").attr("disabled", "disabled");
+    $("#content").html(app.modules.courses.html["menu"]).show("slow");
   });
   
   $("#signup-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(app.modules.users.html.signup);
-    $("#content").show("slow");
-    if(latestMenuItem)
-    {
-      latestMenuItem.removeAttr("disabled");
-    }
-    latestMenuItem = $("#signup-button");
-    $("#signup-button").attr("disabled", "disabled");
+    $("#content").html(app.modules.users.html["signup"]).show("slow");
   });
   
   $("#login-button").click(function() {
     $("#content").hide("slow");
-    $("#content").html(app.modules.users.html.login);
-    $("#content").show("slow");
-    if(latestMenuItem)
-    {
-      latestMenuItem.removeAttr("disabled");
-    }
-    latestMenuItem = $("#login-button");
-    $("#login-button").attr("disabled", "disabled");
+    $("#content").html(app.modules.users.html["login"]).show("slow");
   });
   
   $("#logout-button").click(function() {
