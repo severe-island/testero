@@ -1,14 +1,14 @@
 var app = {
   modules: {}
 };
-var modules = ["app", "courses", "users", "db"];
+var modules = ["db", "users", "courses", "app"];
 
-function load_modules(app, modules) {
+function loadModules(app, modules, callback) {
   if (!modules.length) {
+    callback();
     return;
   }
   var moduleName = modules[0];
-  app.modules[moduleName] = {};
   modules.shift();
   require(moduleName, function (data) {
     if (!data.status) {
@@ -16,19 +16,17 @@ function load_modules(app, modules) {
       return;
     }
     app.modules[data.moduleName] = data;
-    load_modules(app, modules);
+    loadModules(app, modules, callback);
   });
 }
 
-$(document).ready(function() {
-
-  load_modules(app, modules);
-  
+function onLoadAllModules() {
   $.ajax({
     type: "POST",
     url: "/db",
     success: function(data)
     {
+      
       if (!data.status) {
         $("#content").hide("slow");
         $("#content").html(app.modules.db.html["admin-account"]);
@@ -104,4 +102,8 @@ $(document).ready(function() {
       }
     });
   });
+}
+
+$(document).ready(function() {
+  loadModules(app, modules, onLoadAllModules);
 });
