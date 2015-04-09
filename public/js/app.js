@@ -30,7 +30,7 @@ function loadModules(app, modules, callback) {
 function onLoadAllModules() {
   $.ajax({
     type: "POST",
-    url: "/db",
+    url: "/users/isAdminExists",
     success: function(data)
     {
       
