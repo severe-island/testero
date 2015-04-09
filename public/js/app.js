@@ -28,14 +28,16 @@ function onLoadAllModules() {
     {
       
       if (!data.status) {
-        $("#content").hide("slow");
-        $("#content").html(app.modules.db.html["admin-account"]);
-        $("#content").show("slow");
+        $("#content")
+          .hide("slow")
+          .html(app.modules.db.html["admin-account"])
+          .show("slow");
       }
       else {
-        $("#content").hide("slow");
-        $("#content").html(app.modules.app.html["main-menu"]);
-        $("#content").show("slow");
+        $("#content")
+          .hide("slow")
+          .html(app.modules.app.html["main-menu"])
+          .show("slow");
       }
     }
   });
@@ -45,15 +47,13 @@ function onLoadAllModules() {
     url: "/users/login",
     success: function(data)
     {
-      if(data.status)
-      {
+      if(data.status) {
         $("#login-button").attr("disabled", "disabled");
         $("#signup-button").attr("disabled", "disabled");
         $("#logout-button").removeAttr("disabled");
         $("#courses-button").removeAttr("disabled");
       }
-      else
-      {
+      else {
         $("#login-button").removeAttr("disabled");
         $("#signup-button").removeAttr("disabled");
         $("#logout-button").attr("disabled", "disabled");
@@ -68,23 +68,31 @@ function onLoadAllModules() {
   $("#main-menu-button").removeAttr("disabled");
   
   $("#main-menu-button").click(function() {
-    $("#content").hide("slow");
-    $("#content").html(app.modules.app.html["main-menu"]).show("slow");
+    $("#content")
+      .hide("slow")
+      .html(app.modules.app.html["main-menu"])
+      .show("slow");
   });
   
   $("#courses-button").click(function() {
-    $("#content").hide("slow");
-    $("#content").html(app.modules.courses.html["menu"]).show("slow");
+    $("#content")
+      .hide("slow")
+      .html(app.modules.courses.html["menu"])
+      .show("slow");
   });
   
   $("#signup-button").click(function() {
-    $("#content").hide("slow");
-    $("#content").html(app.modules.users.html["signup"]).show("slow");
+    $("#content")
+      .hide("slow")
+      .html(app.modules.users.html["signup"])
+      .show("slow");
   });
   
   $("#login-button").click(function() {
-    $("#content").hide("slow");
-    $("#content").html(app.modules.users.html["login"]).show("slow");
+    $("#content")
+      .hide("slow")
+      .html(app.modules.users.html["login"])
+      .show("slow");
   });
   
   $("#logout-button").click(function() {
