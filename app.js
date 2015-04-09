@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var NedbStore = require('connect-nedb-session')(session);
 var bodyParser = require('body-parser');
-var db = require('./lib/dbtestero'); 
 var config = require('./config')
 var fs = require('fs')
 

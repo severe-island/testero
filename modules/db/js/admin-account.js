@@ -31,7 +31,7 @@ $("#admin-account-form").submit(function() {
   {
     $.ajax({
       type: "POST",
-      url: "/db/addAdmin",
+      url: "/users/addAdmin",
       data: $("#admin-account-form").serialize(),
       success: function(data)
       {

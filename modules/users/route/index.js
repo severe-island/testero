@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../../../lib/nedbtestero');
+var db = require('../db');
 var conf = require('../../../config');
 
 router.post('/login', function(req, res, next) {
