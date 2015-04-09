@@ -36,15 +36,19 @@ function onLoadAllModules() {
       
       if (!data.status) {
         $("#content")
-          .hide("slow")
-          .html(app.modules.db.html["admin-account"])
-          .show("slow");
+          .hide("slow", function() {
+            $(this)
+              .html(app.modules.db.html["admin-account"])
+              .show("slow");
+          });
       }
       else {
         $("#content")
-          .hide("slow")
-          .html(app.modules.app.html["main-menu"])
-          .show("slow");
+          .hide("slow", function() {
+            $(this)
+              .html(app.modules.app.html["main-menu"])
+              .show("slow");
+          });
       }
     }
   });
