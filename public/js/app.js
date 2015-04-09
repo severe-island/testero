@@ -1,7 +1,7 @@
 var app = {
   modules: {}
 };
-var modules = ["db", "users", "courses", "app"];
+var modules = ["app", "courses", "users", "db"];
 
 function load_modules(app, modules) {
   if (!modules.length) {
@@ -21,30 +21,6 @@ function load_modules(app, modules) {
 }
 
 $(document).ready(function() {
-  /*for (var i = 0; i < modules.length; i++) {
-    app.modules[modules[i]] = {};
-    require(modules[i], function (data) {
-      if (!data.status) {
-        alert(data.msg);
-        return;
-      }
-      app.modules[data.moduleName] = data;
-      alert(app.modules[data.moduleName].msg);
-      if(data.moduleName=="app") {
-        $.ajax({
-          type: "POST",
-          url: "/db",
-          success: function(data)
-          {
-            if(data.status==1)
-            {
-              $("#content").html(app.modules.app.html["main-menu"]).show("slow");
-            }
-          }
-        }); 
-      }
-    });
-  }*/
 
   load_modules(app, modules);
   
