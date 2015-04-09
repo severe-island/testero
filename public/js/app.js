@@ -1,12 +1,27 @@
-var latestMenuItem = null;
-
 var app = {
   modules: {}
 };
 var modules = ["db", "users", "courses", "app"];
 
+function load_modules(app, modules) {
+  if (!modules.length) {
+    return;
+  }
+  var moduleName = modules[0];
+  app.modules[moduleName] = {};
+  modules.shift();
+  require(moduleName, function (data) {
+    if (!data.status) {
+      alert(data.msg);
+      return;
+    }
+    app.modules[data.moduleName] = data;
+    load_modules(app, modules);
+  });
+}
+
 $(document).ready(function() {
-  for (var i = 0; i < modules.length; i++) {
+  /*for (var i = 0; i < modules.length; i++) {
     app.modules[modules[i]] = {};
     require(modules[i], function (data) {
       if (!data.status) {
@@ -29,25 +44,24 @@ $(document).ready(function() {
         }); 
       }
     });
-  }
+  }*/
 
+  load_modules(app, modules);
   
   $.ajax({
     type: "POST",
     url: "/db",
     success: function(data)
     {
-      alert(data.msg);
-      alert("status="+data.status);
-      switch (data.status)
-      {
-        case 0:
-        {
-          $("#content").hide("slow");
-          $("#content").html(app.modules.db.html["admin-account"]);
-          $("#content").show("slow");
-          break;
-        }
+      if (!data.status) {
+        $("#content").hide("slow");
+        $("#content").html(app.modules.db.html["admin-account"]);
+        $("#content").show("slow");
+      }
+      else {
+        $("#content").hide("slow");
+        $("#content").html(app.modules.app.html["main-menu"]);
+        $("#content").show("slow");
       }
     }
   });
