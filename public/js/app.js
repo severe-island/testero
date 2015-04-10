@@ -10,17 +10,16 @@ function showMainMenu() {
       $(this)
         .html(app.modules.app.html["main-menu"])
         .slideDown("slow");
+      if (app.isLoggedIn) {
+        $("#content #main-menu #my-profile-item").removeClass("disabled");
+      }
+      else {
+        $("#content #main-menu #my-profile-item").addClass("disabled");
+      }
     });
-  alert(app.isLoggedIn);
-  if (app.isLoggedIn) {
-    $("#content #main-menu #my-profile-item").removeClass("disabled");
-  }
-  else {
-    $("#content #main-menu #my-profile-item").addClass("disabled");
-  }
 }
 
-function bootstrapAlert(msg, type, delay) {
+function bootstrapAlert(msg, type, delay, callback) {
   $("#content")
     .hide("slow", function() {
       $(this).html(app.modules.app.html["alert"]);
@@ -31,6 +30,7 @@ function bootstrapAlert(msg, type, delay) {
         .slideDown("slow", function () {
           $(this).delay(delay)
             .hide("slow");
+          callback();
         });
     });
 }
@@ -57,8 +57,7 @@ function onLoadAllModules() {
     type: "POST",
     url: "/users/isAdminExists",
     success: function(data)
-    {
-      
+    {      
       if (!data.status) {
         $("#content")
           .hide("slow", function() {
@@ -66,9 +65,6 @@ function onLoadAllModules() {
               .html(app.modules.users.html["admin-account"])
               .slideDown("slow");
           });
-      }
-      else {
-        showMainMenu();
       }
     }
   });
@@ -92,6 +88,7 @@ function onLoadAllModules() {
         $("#courses-button").attr("disabled", "disabled");
         app.isLoggedIn = false;
       }
+      showMainMenu();
     }
   });
   
@@ -137,14 +134,15 @@ function onLoadAllModules() {
       type: "POST",
       url: url,
       success: function(data) {
-        //bootstrapAlert(data.msg, "info", 3000);
-        if (data.status) {
-          $("#logout-button").attr("disabled","disabled");
-          $("#login-button").removeAttr("disabled");
-          $("#signup-button").removeAttr("disabled");
-          app.isLoggedIn = false;
-          showMainMenu();
-        }
+        bootstrapAlert(data.msg, "info", 2000, function() {
+          if (data.status) {
+            $("#logout-button").attr("disabled", "disabled");
+            $("#login-button").removeAttr("disabled");
+            $("#signup-button").removeAttr("disabled");
+            app.isLoggedIn = false;
+            showMainMenu();
+          }
+        });
       }
     });
   });

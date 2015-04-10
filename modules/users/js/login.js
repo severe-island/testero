@@ -3,20 +3,19 @@ $("#login-form").submit(function() {
     type: "POST",
     url: "/users/login",
     data: $("#login-form").serialize(),
-         success: function(data)
-         {
-           alert(data.msg);
-           if (data.status)
-           {
-             $("#login-button").attr("disabled", "disabled");
-             $("#signup-button").attr("disabled", "disabled");
-             $("#logout-button").removeAttr("disabled");
-             $("#courses-button").removeAttr("disabled");
-             $("#login").hide("slow");
-             app.isLoggedIn = true;
-             showMainMenu();
-           }
-         }
+      success: function(data) {
+       bootstrapAlert(data.msg, "info", 2000, function() {
+         if (data.status) {
+          $("#login-button").attr("disabled", "disabled");
+          $("#signup-button").attr("disabled", "disabled");
+          $("#logout-button").removeAttr("disabled");
+          $("#courses-button").removeAttr("disabled");
+          $("#login").hide("slow");
+          app.isLoggedIn = true;
+          showMainMenu();
+          }
+        });
+      }
   });
   return false;
 }); 

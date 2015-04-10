@@ -12,24 +12,24 @@
       <div class="input-group">
         <span class="input-group-addon">@</span>
         <input type="email" class="form-control" placeholder="Введите Ваш email"
-          aria-describedly="helpBlockEmail" name="email" id="email"/>
+          disabled="disabled" name="email" id="email"/>
         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
       </div>
     </div>
     <div class="form-group has-feedback" id="form-group-password">
       <label class="control-label">Пароль:</label>
       <input type="password" class="form-control" placeholder="Введите пароль"
-             name="password" id="password"/>
+          disabled="disabled" name="password" id="password"/>
       <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
     </div>
     <div class="form-group has-feedback" id="form-group-password-duplicate">
       <label class="control-label">Пароль ещё раз:</label>
       <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
-        id="password-duplicate" name="passwordDuplicate"/>
+        disabled="disabled" id="password-duplicate" name="passwordDuplicate"/>
       <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
     </div>
     <input type="hidden" name="agreementAccepted" id="agreement-accepted"/>
-    <input class="btn btn-primary" type="submit" value="Зарегистрироваться"
+    <input class="btn btn-primary active" type="submit" value="Зарегистрироваться"
        disabled="disabled" id="signup-submit"/>
     <button class="btn btn-default" type="button" data-toggle="modal"
        data-target="#agreement-dialog" id="agreement-button">Соглашение...</button>
@@ -56,7 +56,7 @@
         </ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">
+        <button type="button" class="btn btn-default active" data-dismiss="modal">
           Закрыть
         </button>
         <button type="button" class="btn btn-primary" id="accept-button">

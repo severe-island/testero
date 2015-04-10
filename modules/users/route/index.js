@@ -4,12 +4,11 @@ var db = require('../db');
 var conf = require('../../../config');
 
 router.post('/login', function(req, res, next) {
-  if(req.session.login)
-  {
+  if(req.session.login) {
     res.json({
-      msg: "Вы уже зашли с почтой "+req.session.email+"!",
+      msg: "Вы уже зашли с почтой " + req.session.email + "!",
       status: true
-    })
+    });
     return;
   }
   console.log("Попытка входа!");
@@ -38,12 +37,14 @@ router.post('/login', function(req, res, next) {
       req.session.email = email
       res.json({
         msg: msg,
-        status: true })
+        status: true
+      });
     }
     else {
       res.json({
         msg: "Неверный пароль!",
-        status: false })
+        status: false
+      });
     }
   });
 });
@@ -51,9 +52,9 @@ router.post('/login', function(req, res, next) {
 router.post('/logout', function(req, res, next) {
   if(req.session.login)
   { 
-    delete req.session.login
-    var email = req.session.email
-    delete req.session.email
+    delete req.session.login;
+    var email = req.session.email;
+    delete req.session.email;
     //req.session.destroy()
     res.json({
       msg: "Вы вышли и теперь вы больше не "+email+"!",
@@ -76,11 +77,11 @@ router.post('/signup', function(req, res, next) {
     res.json({
       msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
       status: false
-    })
+    });
     return;
   }
-  var email = req.body.email
-  var password = req.body.password
+  var email = req.body.email;
+  var password = req.body.password;
   var passwordDuplicate = req.body.passwordDuplicate;
   db.findUserByEmail(email, function(err, data) {
     if(err)
@@ -88,7 +89,7 @@ router.post('/signup', function(req, res, next) {
       res.json({
         msg: "Ошибка БД: " + err.message,
         status: false
-      })
+      });
       return;
     }
     if(data!=null)
@@ -96,23 +97,23 @@ router.post('/signup', function(req, res, next) {
       res.json({
         msg: "Такой пользователь с этой почтой уже есть!",
         status: false
-      })
+      });
       return;
     }
-    if(password!=passwordDuplicate)
+    if (password != passwordDuplicate)
     {
       res.json({
         msg: "Пароли не совпадают!",
-        status: 0
-      })
+        status: false
+      });
       return;
     }
     if(email.indexOf('@')<0)
     {
       res.json({
         msg: "Некорректный email!",
-        status: 0
-      })
+        status: false
+      });
     }
     db.addNewUser(email, password, 'student', function(err) {
       if(err)
@@ -120,17 +121,17 @@ router.post('/signup', function(req, res, next) {
         res.json({
           msg: "Ошибка БД: " + err.message,
           status: false
-        })
+        });
         return;
       }
       req.session.login = true;
       req.session.email = email;
       res.json({
         msg: "Пользователь успешно зарегистрирован!",
-        status: true 
-      }) 
-    })
-  })
+        status: true
+      });
+    });
+  });
 }); 
 
 module.exports = router;
