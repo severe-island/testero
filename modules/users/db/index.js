@@ -18,13 +18,12 @@ function getIndexOption(field, uniqueOption, sparseOption) {
   return option;
 }
 
-var db = {}
-db.users = new dataStore(getConnectionOptions("users"));
-db.users.ensureIndex(getIndexOption("email", true, false));
+var collection = new dataStore(getConnectionOptions("users"));
+collection.ensureIndex(getIndexOption("email", true, false));
 
 module.exports.findUserByEmail = function (userEmail, callback)
 {
-  db.users.findOne({email: userEmail}, function (err, findedUser) {
+  collection.findOne({email: userEmail}, function (err, findedUser) {
     if (err)
     {
       console.log("Ошибка при поиске пользователя ", userEmail, " :", err.message);
@@ -35,7 +34,7 @@ module.exports.findUserByEmail = function (userEmail, callback)
 
 module.exports.isAdminExists = function (callback)
 {
-  db.users.findOne({permission: "admin"}, function (err, adminUser)
+  collection.findOne({permission: "admin"}, function (err, adminUser)
   {
     if (!err && adminUser)
     {
@@ -51,7 +50,7 @@ module.exports.isAdminExists = function (callback)
 
 module.exports.addNewUser = function (userEmail, userPass, userPermission, callback)
 {
-  db.users.insert({
+  collection.insert({
     email: userEmail,
     password: userPass,
     permission: userPermission
