@@ -1,56 +1,33 @@
-﻿var dbtestero = require('../lib/dbtestero');
+﻿var dataStore = require('nedb');
 var config = require('../config');
+var dbName = config.db.name;
 
-var dbVersion = -1;
-try
-{
-   var configCollection = dbtestero.connection.collections['config'];
-   if (configCollection)
-   {
-      configCollection.findOne("version", function(err, result)
-         {
-            if (!err && result)
-            {
-               dbVersion = result['version'];
-            }
-         });
-   }
-   else{
-      console.log("Невозможно определить версию БД");
-      console.log("Миграции не будут произведены");
-   }
-}
-catch(err)
-{
-   if(err)
-   {
-      console.log(err.message);
-   }
-}
-
-config.dbVersion = dbVersion;
-
-
-if (dbVersion != -1)
-{
-    var i = dbVersion + 1;
-    var migratingStatus = true
-    while (migratingStatus)
-    {
-        try
-        {
-            var migration = require("migration" + i);
-            migration.up();
-            config.dbVersion = i;
-        }
-        catch (err)
-        {
-            if (err)
-            {
-                console.log("Миграция окончена на версии ", config.dbVersion);
-                migratingStatus = false;
-            }
-        }
-        i++;
-    }
-}
+// connectionOption - временами повторяется в nedbtestero, быть может необходимо
+// вынести в отдельный модуль.
+var connectionOption = 
+  {
+    filename: '../db/' +config.db.name + '/system'
+    ,autoload: true
+    ,inMemoryOnly: false
+    //,afterSerialization: 'secret'
+    //,beforeDeserialization: 'secret'
+    //,
+  };
+  
+var systemCollection = new dataStore(connectionOption);
+systemCollection.findOne({version : {$exists: true}}, function(err, versionDoc) {
+  var dbVersion;
+  if (err || !versionDoc)
+  {
+    console.log("Не возможно определить версию БД для миграции.",
+    "Миграции будут произведены с начала.");
+    dbVersion = 0;
+  }
+  else
+  {
+    dbVersion = versionDoc.version;
+  }
+  var migration = require('./migration1.js');
+  migration.up(dbVersion, systemCollection);
+  
+  });
