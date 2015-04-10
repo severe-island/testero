@@ -5,5 +5,5 @@
 /db/testerodb_production/
 /db/testerodb_testing/
 /db/sessions
-/db/development/
+/db/development/*
 .kateproject*
