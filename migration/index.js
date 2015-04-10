@@ -1,12 +1,11 @@
 ﻿var dataStore = require('nedb');
 var config = require('../config');
-var dbName = config.db.name;
 
 // connectionOption - временами повторяется в nedbtestero, быть может необходимо
 // вынести в отдельный модуль.
 var connectionOption = 
   {
-    filename: '../db/' +config.db.name + '/system'
+    filename: './db/' +config.db.name + '/system'
     ,autoload: true
     ,inMemoryOnly: false
     //,afterSerialization: 'secret'
