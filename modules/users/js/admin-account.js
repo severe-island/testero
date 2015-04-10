@@ -36,14 +36,12 @@ $("#admin-account-form").submit(function() {
       success: function(data)
       {
         alert(data.msg);
-        if (data.status)
-        {
+        if (data.status) {
           $("#logout-button").removeAttr("disabled");
           $("#login-button").attr("disabled", "disabled");
           $("#signup-button").attr("disabled", "disabled");
-          $("#signup").hide();
           $("#signup-submit").attr("disabled", "disabled");
-          $("#main-menu").show();
+          showMainMenu();
         }
       }
     });

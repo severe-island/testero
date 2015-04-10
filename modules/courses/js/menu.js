@@ -1,7 +1,9 @@
 $("#courses-menu #all-courses-item").click(function() {
-  $("#courses-menu").hide("slow");
-  $("#content").html(app.modules.courses.html["all-courses-list"]);
-  $("#all-courses-list").show("slow");
+  $("#content").hide("slow", function() {
+    $(this)
+      .html(app.modules.courses.html["all-courses-list"])
+      .slideDown("slow");
+  });
   return false;
 });
 
