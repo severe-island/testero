@@ -5,14 +5,44 @@ var conf = require('../../../config');
 
 router.post('/addAdmin', function(req, res, next) {
   console.log(req.body);
-  if(req.session.login)
-  {
-    res.json({
-      msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
-      status: false
-    })
-    return;
-  }
+  db.isAdminExists(function(adminExists){
+    if(!adminExists)
+    {
+      addAdmin(req, res);
+    }
+    else
+    {
+      if(!req.session.login)
+      {
+        res.json({
+          msg: "Это не первый запуск. Только администратор может регистрировать админов!",
+          status: false
+        });
+        return;
+      }
+      db.findUserByEmail(email, function(err, data) {
+        if(err) {
+          res.json({
+            msg: err.msg,
+            status: false
+          });
+          return;
+        }
+        if(data.permission != 'admin')
+        {
+          res.json({
+            msg: "Это не первый запуск. Только администратор может регистрировать админов!",
+            status: false
+          });
+          return;
+        }
+        addAdmin(req, res);
+      }); 
+    }
+  }); 
+}); 
+
+function addAdmin(req, res) {
   var email = req.body.email
   var password = req.body.password
   var passwordDuplicate = req.body.passwordDuplicate;
@@ -47,6 +77,7 @@ router.post('/addAdmin', function(req, res, next) {
         msg: "Некорректный email!",
         status: 0
       })
+      return;
     }
     db.addNewUser(email, password, 'admin', function(err) {
       if(err)
@@ -64,8 +95,8 @@ router.post('/addAdmin', function(req, res, next) {
         status: true 
       }) 
     })
-  })
-}); 
+  }) 
+}
 
 router.post('/isAdminExists', function(req, res, next) { 
   db.isAdminExists(function(adminExists){
