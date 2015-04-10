@@ -15,15 +15,16 @@ router.post('/addAdmin', function(req, res, next) {
       if(!req.session.login)
       {
         res.json({
-          msg: "Это не первый запуск. Только администратор может регистрировать админов!",
+          msg: "Это не первый запуск. Сначала войдите под именем администратора!",
           status: false
         });
         return;
       }
-      db.findUserByEmail(email, function(err, data) {
-        if(err) {
+      db.findUserByEmail(req.body.email, function(err, data) {
+        if(err || data==null) {
           res.json({
-            msg: err.msg,
+            msg: "Не могу убедиться в том, что вы админ. О вас нет информации в БД!"+
+              "Возможно, ошибка в сессии. Попробуйти выйти и снова зайти под своим логином.",
             status: false
           });
           return;
