@@ -12,8 +12,9 @@ $("#login-form").submit(function() {
              $("#signup-button").attr("disabled", "disabled");
              $("#logout-button").removeAttr("disabled");
              $("#courses-button").removeAttr("disabled");
-             $("#login").hide();
-             $("#main-menu").show();
+             $("#login").hide("slow");
+             app.isLoggedIn = true;
+             showMainMenu();
            }
          }
   });

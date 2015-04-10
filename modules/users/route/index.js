@@ -55,11 +55,17 @@ router.post('/logout', function(req, res, next) {
     var email = req.session.email
     delete req.session.email
     //req.session.destroy()
-    res.json({ msg: "Вы вышли и теперь вы больше не "+email+"!" })
+    res.json({
+      msg: "Вы вышли и теперь вы больше не "+email+"!",
+      status: true
+    });
   }
   else
   {
-    res.json({ msg: "Так ведь вы и не входили!" })
+    res.json({
+      msg: "Так ведь вы и не входили!",
+      status: true
+    });
   }
 });
 

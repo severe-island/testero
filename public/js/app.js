@@ -1,7 +1,24 @@
 var app = {
-  modules: {}
+  modules: {},
+  isLoggedIn: false
 };
 var modules = ["app", "users", "courses"];
+
+function showMainMenu() {
+  $("#content")
+    .hide("slow", function () {
+      $(this)
+        .html(app.modules.app.html["main-menu"])
+        .slideDown("slow");
+    });
+  alert(app.isLoggedIn);
+  if (app.isLoggedIn) {
+    $("#content #main-menu #my-profile-item").removeClass("disabled");
+  }
+  else {
+    $("#content #main-menu #my-profile-item").addClass("disabled");
+  }
+}
 
 function bootstrapAlert(msg, type, delay) {
   $("#content")
@@ -51,12 +68,7 @@ function onLoadAllModules() {
           });
       }
       else {
-        $("#content")
-          .hide("slow", function() {
-            $(this)
-              .html(app.modules.app.html["main-menu"])
-              .slideDown("slow");
-          });
+        showMainMenu();
       }
     }
   });
@@ -71,12 +83,14 @@ function onLoadAllModules() {
         $("#signup-button").attr("disabled", "disabled");
         $("#logout-button").removeAttr("disabled");
         $("#courses-button").removeAttr("disabled");
+        app.isLoggedIn = true;
       }
       else {
         $("#login-button").removeAttr("disabled");
         $("#signup-button").removeAttr("disabled");
         $("#logout-button").attr("disabled", "disabled");
         $("#courses-button").attr("disabled", "disabled");
+        app.isLoggedIn = false;
       }
     }
   });
@@ -87,12 +101,7 @@ function onLoadAllModules() {
   $("#main-menu-button").removeAttr("disabled");
   
   $("#main-menu-button").click(function() {
-    $("#content")
-      .hide("slow", function() {
-        $(this)
-          .html(app.modules.app.html["main-menu"])
-          .slideDown("slow");
-    });
+    showMainMenu();
   });
   
   $("#courses-button").click(function() {
@@ -129,13 +138,12 @@ function onLoadAllModules() {
       url: url,
       success: function(data) {
         //bootstrapAlert(data.msg, "info", 3000);
-        if (!data.status) {
+        if (data.status) {
           $("#logout-button").attr("disabled","disabled");
           $("#login-button").removeAttr("disabled");
           $("#signup-button").removeAttr("disabled");
-          $("#content")
-            .html(app.modules.app.html["main-menu"])
-            .slideDown("slow");
+          app.isLoggedIn = false;
+          showMainMenu();
         }
       }
     });
