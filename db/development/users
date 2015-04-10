@@ -1,1 +1,9 @@
+{"email":"t@t","password":"1234","permission":"admin","_id":"FbsbELsB5QGMbU5X"}
+{"email":"test@www","password":"12345","permission":"student","_id":"Li1apf2hMcFudtJH"}
+{"email":"test@t","password":"1234","permission":"student","_id":"fzG9fY2Ugf0xAa35"}
+{"email":"123@mail","password":"1234","permission":"student","_id":"wBFeXzLh3LJfFISy"}
+{"email":"test@test","password":"1234","permission":"student","_id":"wx3pHqvFzZ5I2w5N"}
 {"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
+{"email":"t@mail","password":"1234","permission":"student","_id":"prYfA8jrcCs8OMz5"}
+{"email":"tt@test","password":"1234","permission":"student","_id":"F4EjnjQe3pKj6PiX"}
+{"email":"linux@org.ru","password":"1234","permission":"student","_id":"WmQn1oZi11YGdXs6"}
