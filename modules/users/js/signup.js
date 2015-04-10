@@ -33,19 +33,19 @@ $("#signup-form").submit(function() {
       type: "POST",
       url: "/users/signup",
       data: $("#signup-form").serialize(),
-           success: function(data)
-           {
-             alert(data.msg);
-             if (data.status)
-             {
-               $("#logout-button").removeAttr("disabled");
-               $("#login-button").attr("disabled", "disabled");
-               $("#signup-button").attr("disabled", "disabled");
-               $("#signup").hide();
-               $("#signup-submit").attr("disabled", "disabled");
-               $("#main-menu").show();
-             }
-           }
+      success: function (data) {
+        bootstrapAlert(data.msg, "info", 2000, function() {
+          if (data.status) {
+            $("#logout-button").removeAttr("disabled");
+            $("#login-button").attr("disabled", "disabled");
+            $("#signup-button").attr("disabled", "disabled");
+            $("#signup").hide();
+            $("#signup-submit").attr("disabled", "disabled");
+            app.isLoggedIn = true;
+            showMainMenu();
+          }
+        });
+      }
     });
   }
   return false;
@@ -118,6 +118,9 @@ $("#signup-form #password-duplicate").focus(function() {
 });
 
 $("#agreement-dialog #accept-button").click(function() {
+  $("#signup-form #email").removeAttr("disabled");
+  $("#signup-form #password").removeAttr("disabled");
+  $("#signup-form #password-duplicate").removeAttr("disabled");
   $("#signup-form #signup-submit").removeAttr("disabled");
   $("#agreement-dialog").modal("hide");
 });

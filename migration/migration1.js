@@ -5,7 +5,7 @@ var config = require('../config');
 var description = "Добавление системной коллекции system.";
 var currentVersion = 1;
 
-var isNextMigrationExist = fs.existsSync("migration" + (currentVersion + 1) + ".js");
+var isNextMigrationExist = fs.existsSync("./migration/migration" + (currentVersion + 1) + ".js");
 
 module.exports.up = function up(dbVersion, systemCollection)
 {

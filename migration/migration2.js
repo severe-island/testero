@@ -6,7 +6,7 @@ var description = "Добавление поля под дату регистр�
 var currentVersion = 2;
 var connectionOption =
   {
-    filename: '../db/' + config.db.name + '/users'
+    filename: './db/' + config.db.name + '/users'
     , autoload: true
     , inMemoryOnly: false
       //,afterSerialization: 'secret'
@@ -14,7 +14,7 @@ var connectionOption =
       //,
   };
 
-var isNextMigrationExist = fs.existsSync("./migration" + (currentVersion + 1) + ".js");
+var isNextMigrationExist = fs.existsSync("./migration/migration" + (currentVersion + 1) + ".js");
 
 module.exports.up = function up(dbVersion, systemCollection)
 {
