@@ -85,3 +85,7 @@ module.exports.addNewUser = function (userEmail, userPass, isAdministrator, call
 module.exports.removeUser = function(email, callback) {
  collection.update({ email: email }, { $set: {removed: true} }, { }, callback) 
 }
+
+module.exports.setAsAdministrator = function(email, callback) {
+  collection.update({ email: email }, { $set: {isAdministrator: true} }, { }, callback) 
+}
