@@ -7,7 +7,8 @@ router.post('/login', function(req, res, next) {
   if(req.session.login) {
     res.json({
       msg: "Вы уже зашли с почтой " + req.session.email + "!",
-      status: true
+      status: true,
+      level: "info"
     });
     return;
   }
@@ -21,7 +22,9 @@ router.post('/login', function(req, res, next) {
     if(err || data==null) {
       res.json({
         msg: "Пользователь не найден!",
-        status: false })
+        status: false, 
+        level: "info"
+      })
     }
     else if(data.password==password) {
       var msg = "Вы вошли!"
@@ -37,13 +40,15 @@ router.post('/login', function(req, res, next) {
       req.session.email = email
       res.json({
         msg: msg,
-        status: true
+        status: true,
+        level: "success"
       });
     }
     else {
       res.json({
         msg: "Неверный пароль!",
-        status: false
+        status: false,
+        level: "info"
       });
     }
   });
@@ -58,14 +63,16 @@ router.post('/logout', function(req, res, next) {
     //req.session.destroy()
     res.json({
       msg: "Вы вышли и теперь вы больше не "+email+"!",
-      status: true
+      status: true,
+      level: "info"
     });
   }
   else
   {
     res.json({
       msg: "Так ведь вы и не входили!",
-      status: true
+      status: true,
+      level: "info"
     });
   }
 });
@@ -76,7 +83,8 @@ router.post('/signup', function(req, res, next) {
   {
     res.json({
       msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
-      status: false
+      status: false,
+      level: "warning"
     });
     return;
   }
@@ -88,7 +96,8 @@ router.post('/signup', function(req, res, next) {
     {
       res.json({
         msg: "Ошибка БД: " + err.message,
-        status: false
+        status: false,
+        level: "danger"
       });
       return;
     }
@@ -96,7 +105,8 @@ router.post('/signup', function(req, res, next) {
     {
       res.json({
         msg: "Такой пользователь с этой почтой уже есть!",
-        status: false
+        status: false,
+        level: "danger"
       });
       return;
     }
@@ -104,7 +114,8 @@ router.post('/signup', function(req, res, next) {
     {
       res.json({
         msg: "Пароли не совпадают!",
-        status: false
+        status: false,
+        level: "danger"
       });
       return;
     }
@@ -112,7 +123,8 @@ router.post('/signup', function(req, res, next) {
     {
       res.json({
         msg: "Некорректный email!",
-        status: false
+        status: false,
+        level: "danger"
       });
     }
     db.addNewUser(email, password, false, function(err) {
@@ -120,7 +132,8 @@ router.post('/signup', function(req, res, next) {
       {
         res.json({
           msg: "Ошибка БД: " + err.message,
-          status: false
+          status: false,
+          level: "danger"
         });
         return;
       }
@@ -128,7 +141,8 @@ router.post('/signup', function(req, res, next) {
       req.session.email = email;
       res.json({
         msg: "Пользователь успешно зарегистрирован!",
-        status: true
+        status: true,
+        level: "success"
       });
     });
   });

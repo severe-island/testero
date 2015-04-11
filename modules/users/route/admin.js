@@ -16,7 +16,8 @@ router.post('/addAdmin', function(req, res, next) {
       {
         res.json({
           msg: "Это не первый запуск. Сначала войдите под именем администратора!",
-          status: false
+          status: false,
+          level: "danger"
         });
         return;
       }
@@ -25,7 +26,8 @@ router.post('/addAdmin', function(req, res, next) {
           res.json({
             msg: "Не могу убедиться в том, что вы админ. О вас нет информации в БД!"+
               "Возможно, ошибка в сессии. Попробуйти выйти и снова зайти под своим логином.",
-            status: false
+            status: false,
+            level: "danger"
           });
           return;
         }
@@ -33,7 +35,8 @@ router.post('/addAdmin', function(req, res, next) {
         {
           res.json({
             msg: "Это не первый запуск. Только администратор может регистрировать админов!",
-            status: false
+            status: false,
+            level: "danger"
           });
           return;
         }
@@ -52,7 +55,8 @@ function addAdmin(req, res) {
     {
       res.json({
         msg: "Ошибка БД: " + err.message,
-        status: false
+        status: false,
+        level: "danger"
       })
       return;
     }
@@ -60,7 +64,8 @@ function addAdmin(req, res) {
     {
       res.json({
         msg: "Такой пользователь с этой почтой уже есть!",
-        status: false
+        status: false,
+        level: "danger"
       })
       return;
     }
@@ -68,7 +73,8 @@ function addAdmin(req, res) {
     {
       res.json({
         msg: "Пароли не совпадают!",
-        status: 0
+        status: false,
+        level: "danger"
       })
       return;
     }
@@ -76,7 +82,8 @@ function addAdmin(req, res) {
     {
       res.json({
         msg: "Некорректный email!",
-        status: 0
+        status: false,
+        level: "danger"
       })
       return;
     }
@@ -85,7 +92,8 @@ function addAdmin(req, res) {
       {
         res.json({
           msg: "Ошибка БД: " + err.message,
-          status: false
+          status: false,
+          level: "danger"
         })
         return;
       }
@@ -93,7 +101,8 @@ function addAdmin(req, res) {
       req.session.email = email;
       res.json({
         msg: "Пользователь успешно зарегистрирован!",
-        status: true 
+        status: true,
+        level: "success"
       }) 
     })
   }) 
@@ -104,14 +113,16 @@ router.post('/isAdminExists', function(req, res, next) {
     if(!adminExists) {
       res.json({
         msg: "Админа ещё нет!",
-        status: 0
+        status: false,
+        level: "info"
       })
     }
     else
     {
       res.json({
         msg: "Админ уже есть!",
-        status: 1
+        status: true,
+        level: "info"
       })
     }
   })

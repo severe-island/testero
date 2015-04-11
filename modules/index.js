@@ -13,6 +13,7 @@ router.post("/", function(req, res, next) {
   {
     data.status = false;
     data.msg = 'Модуль '+moduleName+' не найден'
+    data.level = "danger"
     res.json(data)
     return;
   }
@@ -26,6 +27,7 @@ router.post("/", function(req, res, next) {
   {
     data.status = false;
     data.msg = 'Модуль '+moduleName+' не прописан в конфигурации.'
+    data.level = "danger"
     res.json(data)
     return;
   }
@@ -52,6 +54,7 @@ router.post("/", function(req, res, next) {
  
   data.status = true;
   data.msg = "Модуль " + moduleName + " был импортирован!"
+  data.level = "success"
   res.json(data)
 
 })

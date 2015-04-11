@@ -11,7 +11,8 @@ router.post('/assignRole', function(req, res, next) {
     if(err || !user) {
       res.json({
         status: false,
-        msg: "Пользователь "+email+" не найден!"
+        msg: "Пользователь "+email+" не найден!",
+        level: "danger"
       })
       return;
     }
@@ -19,13 +20,15 @@ router.post('/assignRole', function(req, res, next) {
       if(err) {
         res.json({
           status: false,
-          msg: "Ошибка добавления роли: "+err
+          msg: "Ошибка добавления роли: "+err,
+          level: "danger"
         })
         return;
       }
       res.json({
         status: true,
-        msg: "Роль успешно добавлена!"
+        msg: "Роль успешно добавлена!",
+        level: "success"
       })
     })
   });

@@ -17,6 +17,7 @@ router.post('/findAllCourses', function(req, res, next) {
       res.json({ 
         status: true,
         msg: "Пока не зарегистрировано ни одного курса.",
+        level: "info",
         courses: courses
       })
       return;
@@ -24,6 +25,7 @@ router.post('/findAllCourses', function(req, res, next) {
     res.json({ 
       status: true,
       msg: "Успешно получен массив курсов!",
+      level: "info",
       courses: courses
     })
   });
@@ -34,13 +36,15 @@ router.post('/findCourseById', function(req, res, next) {
     if(err || !course) {
       res.json({
         status: true,
-        msg: "Курс не был найден."
+        msg: "Курс не был найден.",
+        level: "info"
       })
     }
     else {
       res.json({
         status: true,
         msg: "Курс был успешно найден!",
+        level: "info",
         course: course
       })
     }
@@ -52,13 +56,15 @@ router.post('/findCourseByTitle', function(req, res, next) {
     if(err || !course) {
       res.json({
         status: false,
-        msg: "Курс не был найден."
+        msg: "Курс не был найден.",
+        level: "info"
       })
     }
     else {
       res.json({
         status: true,
         msg: "Курс был успешно найден!",
+        level: "info",
         course: course
       })
     }
@@ -70,7 +76,8 @@ router.post('/addCourse', function(req, res, next) {
   {
     res.json({
       status: false,
-      msg: "Вы должны зайти в систему!"
+      msg: "Вы должны зайти в систему!",
+      level: "danger"
     })
     return;
   }
@@ -78,7 +85,8 @@ router.post('/addCourse', function(req, res, next) {
   {
     res.json({
       status: false,
-      msg: "Необходимо указать имя курса! (title)"
+      msg: "Необходимо указать имя курса! (title)",
+      level: "danger"
     })
     return;
   }
@@ -88,7 +96,8 @@ router.post('/addCourse', function(req, res, next) {
       if(err || !user) {
         res.json({
           status: false,
-          msg: "Вы должны зайти в систему!"
+          msg: "Вы должны зайти в систему!",
+          level: "danger"
         })
         return;
       }
@@ -96,14 +105,16 @@ router.post('/addCourse', function(req, res, next) {
         if(err) {
           res.json({
             status: false,
-            msg: err.msg
+            msg: err.msg,
+            level: "danger"
           })
           return;
         }
         else {
           res.json({
             status: true,
-            msg: "Курс был успешно добавлен!"
+            msg: "Курс был успешно добавлен!",
+            level: "success"
           })
         }
       });
@@ -115,13 +126,15 @@ router.post('/addCourse', function(req, res, next) {
       if(err) {
         res.json({
           status: false,
-          msg: err.msg
+          msg: err.msg,
+          level: "danger"
         })
       }
       else {
         res.json({
           status: true,
-          msg: "Курс был успешно добавлен!"
+          msg: "Курс был успешно добавлен!",
+          level: "success"
         })
       }
     });
@@ -133,13 +146,15 @@ router.post('/updateCourse', function(req, res, next) {
     if(err) {
       res.json({
         status: false,
-        msg: err.msg
+        msg: err.msg,
+        level: "danger"
       })
     }
     else {
       res.json({
         status: true,
-        msg: "Курс был успешно обновлён!"
+        msg: "Курс был успешно обновлён!",
+        level: "success"
       })
     }
   });
