@@ -1,6 +1,6 @@
 <link href="../../../public/css/bootstrap.css" rel="stylesheet" media="screen"/>
 
-<div id="add-course">
+<div id="add-course" class="row">
   <div class="col-lg-4 col-md-3 col-sm-2"></div>
 
   <div class="col-lg-4 col-md-6 col-sm-8">
@@ -8,29 +8,36 @@
       <li><a href="#" id="courses-menu">Курсы</a></li>
       <li class="active">Добавление курса</li>
     </ol>
-    
-    <div id="alert" class="alert" role="alert" hidden="hidden">
-      
-    </div>
-    
-    <form id="add-course-form">
-      <div class="form-group has-feedback" id="form-group-title">
-        <label>Название курса:</label>
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Введите название курса"
-            name="title" id="title"/>
-          <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-        </div>
-      </div>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" value="i-am-author" name="i-am-author"/>
-          Автором курса буду я
-        </label>
-      </div>
-      <input class="btn btn-large btn-primary" type="submit" value="Добавить"/>
-    </form>
   </div>
+  
+  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+</div>
+    
+<div class="row">
+  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+    <div id="alert" class="alert col-lg-4 col-md-6 col-sm-8" role="alert" hidden="hidden">
+    </div>
+  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+</div>
+  
+<div class="row">
+  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+  
+  <form id="add-course-form" class="col-lg-4 col-md-6 col-sm-8">
+    <div class="form-group has-feedback" id="form-group-title">
+      <label>Название курса:</label>
+        <input type="text" class="form-control" placeholder="Введите название курса"
+               name="title" id="title"/>
+        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="i-am-author" name="i-am-author"/>
+        Автором курса буду я
+      </label>
+    </div>
+    <input class="btn btn-large btn-primary" type="submit" value="Добавить"/>
+  </form>
 
   <div class="col-lg-4 col-md-3 col-sm-2"></div>
 </div>
