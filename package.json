@@ -13,7 +13,6 @@
     "debug": "~2.1.1",
     "express": "~4.12.2",
     "express-session": "latest",
-    "jade": "latest",
     "jquery": "latest",
     "morgan": "~1.5.1",
     "nedb": "^1.1.2",
