@@ -36,13 +36,15 @@ exports.findCourse = function (filter, callback) {
   collection.findOne (filter, callback);
 }
 
-exports.addCourse = function(course, callback) {
+exports.addCourse = function(title, autor, callback) {
+  var course = { title: title }
+  if(autor) course.autors = [autor]
   collection.insert(course, function (err, newUser) {
     if (err && !newUser) {
-      console.log("Не получилось добавить пользователя", userEmail, " : " ,err.message);
+      console.log("Не получилось добавить курс", title, " : " ,err.message);
     }
     else {
-      console.log("Запись произведена успешно! ", newUser)
+      console.log("Запись произведена успешно! ", title)
     }
     callback(err);
   });

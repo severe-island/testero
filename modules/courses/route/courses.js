@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
+var usersDB = require('../../users/db');
 
 router.post('/findAllCourses', function(req, res, next) {
   db.findAllCourses(function(err, courses) {
@@ -57,20 +58,56 @@ router.post('/findCourseByTitle', function(req, res, next) {
 });
 
 router.post('/addCourse', function(req, res, next) {
-  db.addCourse(req.body.course, function(err) {
-    if(err) {
-      res.json({
-        status: 0,
-        msg: err.msg
-      })
-    }
-    else {
-      res.json({
-        status: 1,
-        msg: "Курс был успешно добавлен!"
-      })
-    }
-  });
+  if(!req.body.title)
+  {
+    res.json({
+      status: 0,
+      msg: "Необходимо указать имя курса! (title)"
+    })
+    return;
+  }
+  if(req.body["i-am-author"])
+  {
+    usersDB.findUserByEmail(req.session.email, function(err, user){
+      if(err) {
+        res.json({
+          status: 0,
+          msg: "Вы должны зайти в систему!"
+        })
+      }
+      db.addCourse(req.body.title, user.email, function(err) {
+        if(err) {
+          res.json({
+            status: 0,
+            msg: err.msg
+          })
+        }
+        else {
+          res.json({
+            status: 1,
+            msg: "Курс был успешно добавлен!"
+          })
+        }
+      });
+    })
+  }
+  else
+  {
+    db.addCourse(req.body.title, undefined, function(err) {
+      if(err) {
+        res.json({
+          status: 0,
+          msg: err.msg
+        })
+      }
+      else {
+        res.json({
+          status: 1,
+          msg: "Курс был успешно добавлен!"
+        })
+      }
+    });
+  } 
 });
 
 router.post('/updateCourse', function(req, res, next) {
