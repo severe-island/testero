@@ -55,29 +55,23 @@ router.post('/assignRole', function(req, res, next) {
 
 function checkRoles(userEmail, targetEmail, targetRole, callback) {
   usersDB.findUserByEmail(userEmail, function(err, user) {
-    console.log(1)
     if(err || !user) {
       callback(false);
       return;
     }
-    console.log(3)
     if(user.isAdministrator) {
       callback(true);
       return;
     }
     roles.getRolesByEmail(userEmail, function(err, userRoles) {
-      console.log(5)
       if(err) {
         callback(false);
         return;
       }
-      console.log(user)
-      console.log(7)
       if(!userRoles) {
         callback(targetRole=="student" && userEmail == targetEmail); 
         return;
       }
-      console.log(9)
       if(userRoles.roles.indexOf("teacher")>-1) {
         callback(targetRole=="teacher");
         return;
@@ -86,7 +80,6 @@ function checkRoles(userEmail, targetEmail, targetRole, callback) {
         callback(targetRole=="student" && userEmail == targetEmail); 
         return;
       }
-      console.log(11)
     })
   });
 }
