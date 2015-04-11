@@ -36,3 +36,9 @@ exports.assignRole = function(email, role, callback) {
                         callback(err);
                     });
 };
+
+exports.getRolesByEmail = function(email, callback) {
+  collection.findOne({ email: email }, function (err, userRoles) {
+    callback(err, userRoles);
+  })
+}
