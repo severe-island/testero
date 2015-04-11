@@ -36,9 +36,9 @@ exports.findCourse = function (filter, callback) {
   collection.findOne (filter, callback);
 }
 
-exports.addCourse = function(title, autor, callback) {
+exports.addCourse = function(title, author, callback) {
   var course = { title: title }
-  if(autor) course.autors = [autor]
+  if(author) course.authors = [author]
   collection.insert(course, function (err, newUser) {
     if (err && !newUser) {
       console.log("Не получилось добавить курс", title, " : " ,err.message);
