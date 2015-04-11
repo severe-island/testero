@@ -1,0 +1,35 @@
+<link href="../../../public/css/bootstrap.css" rel="stylesheet" media="screen"/>
+
+<div id="users-list">
+  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+
+  <div class="col-lg-4 col-md-6 col-sm-8">
+    <ol class="breadcrumb">
+      <li><a href="#" id="courses-menu">Пользователи</a></li>
+      <li class="active">Все пользователи</li>
+    </ol>
+    
+    <div id="alert" class="alert" role="alert" hidden="hidden">
+    </div>
+    
+    <div id="list" hidden="hidden">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>E-Mail</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+</div>
+
+<script>
+  eval(app.modules.courses.js["users-list"]);
+</script>
