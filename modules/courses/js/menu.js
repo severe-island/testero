@@ -1,8 +1,15 @@
 $("#courses-menu #all-courses-item").click(function() {
   $("#content").hide("slow", function() {
     $(this)
-      .html(app.modules.courses.html["all-courses-list"])
-      //.slideDown("slow");
+      .html(app.modules.courses.html["all-courses-list"]);
+  });
+  return false;
+});
+
+$("#courses-menu #add-course-item").click(function() {
+  $("#content").hide("slow", function() {
+    $(this)
+      .html(app.modules.courses.html["add-course"]);
   });
   return false;
 });

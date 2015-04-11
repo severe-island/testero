@@ -3,9 +3,9 @@ $("#login-form").submit(function() {
     type: "POST",
     url: "/users/login",
     data: $("#login-form").serialize(),
-      success: function(data) {
-       bootstrapAlert(data.msg, "info", 2000, function() {
-         if (data.status) {
+    success: function (data) {
+      bootstrapAlert(data.msg, "info", 2000, function () {
+        if (data.status) {
           $("#login-button").attr("disabled", "disabled");
           $("#signup-button").attr("disabled", "disabled");
           $("#logout-button").removeAttr("disabled");
@@ -13,8 +13,8 @@ $("#login-form").submit(function() {
           $("#login").hide("slow");
           app.isLoggedIn = true;
           showMainMenu();
-          }
-        });
+        }
+      });
       }
   });
   return false;
