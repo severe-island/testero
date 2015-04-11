@@ -10,7 +10,7 @@ router.post('/assignRole', function(req, res, next) {
   usersDB.findUserByEmail(email, function(err, user){
     if(err || !user) {
       res.json({
-        status: 0,
+        status: false,
         msg: "Пользователь "+email+" не найден!"
       })
       return;
@@ -18,13 +18,13 @@ router.post('/assignRole', function(req, res, next) {
     roles.assignRole(email, role, function(err) {
       if(err) {
         res.json({
-          status: 0,
+          status: false,
           msg: "Ошибка добавления роли: "+err
         })
         return;
       }
       res.json({
-        status: 1,
+        status: true,
         msg: "Роль успешно добавлена!"
       })
     })

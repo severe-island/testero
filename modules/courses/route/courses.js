@@ -8,13 +8,19 @@ router.post('/findAllCourses', function(req, res, next) {
   db.findAllCourses(function(err, courses) {
     if(err) {
       res.json({ 
-        status: 0,
+        status: false,
         msg: err.msg
       })
       return;
     }
+    if(data.courses.length === 0) {
+      status: true,
+      msg: "Ещё не добавлено ни одного курса.",
+      courses: courses
+      return;
+    }
     res.json({ 
-      status: 1,
+      status: true,
       msg: "Успешно получен массив курсов!",
       courses: courses
     })
@@ -25,13 +31,13 @@ router.post('/findCourseById', function(req, res, next) {
   db.findCourse({ _id: req.body.id }, function(err, course) {
     if(err || !course) {
       res.json({
-        status: 0,
+        status: true,
         msg: "Курс не был найден."
       })
     }
     else {
       res.json({
-        status: 1,
+        status: true,
         msg: "Курс был успешно найден!",
         course: course
       })
@@ -43,13 +49,13 @@ router.post('/findCourseByTitle', function(req, res, next) {
   db.findCourse({ title: req.body.title }, function(err, course) {
     if(err || !course) {
       res.json({
-        status: 0,
+        status: false,
         msg: "Курс не был найден."
       })
     }
     else {
       res.json({
-        status: 1,
+        status: true,
         msg: "Курс был успешно найден!",
         course: course
       })
@@ -61,7 +67,7 @@ router.post('/addCourse', function(req, res, next) {
   if(!req.session.login)
   {
     res.json({
-      status: 0,
+      status: false,
       msg: "Вы должны зайти в систему!"
     })
     return;
@@ -69,7 +75,7 @@ router.post('/addCourse', function(req, res, next) {
   if(!req.body.title)
   {
     res.json({
-      status: 0,
+      status: false,
       msg: "Необходимо указать имя курса! (title)"
     })
     return;
@@ -79,7 +85,7 @@ router.post('/addCourse', function(req, res, next) {
     usersDB.findUserByEmail(req.session.email, function(err, user){
       if(err || !user) {
         res.json({
-          status: 0,
+          status: false,
           msg: "Вы должны зайти в систему!"
         })
         return;
@@ -87,14 +93,14 @@ router.post('/addCourse', function(req, res, next) {
       db.addCourse(req.body.title, user.email, function(err) {
         if(err) {
           res.json({
-            status: 0,
+            status: false,
             msg: err.msg
           })
           return;
         }
         else {
           res.json({
-            status: 1,
+            status: true,
             msg: "Курс был успешно добавлен!"
           })
         }
@@ -106,13 +112,13 @@ router.post('/addCourse', function(req, res, next) {
     db.addCourse(req.body.title, undefined, function(err) {
       if(err) {
         res.json({
-          status: 0,
+          status: false,
           msg: err.msg
         })
       }
       else {
         res.json({
-          status: 1,
+          status: true,
           msg: "Курс был успешно добавлен!"
         })
       }
@@ -124,13 +130,13 @@ router.post('/updateCourse', function(req, res, next) {
   db.updateCourse(req.body.course, function(err) {
     if(err) {
       res.json({
-        status: 0,
+        status: false,
         msg: err.msg
       })
     }
     else {
       res.json({
-        status: 1,
+        status: true,
         msg: "Курс был успешно обновлён!"
       })
     }
