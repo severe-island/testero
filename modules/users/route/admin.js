@@ -29,7 +29,7 @@ router.post('/addAdmin', function(req, res, next) {
           });
           return;
         }
-        if(data.permission != 'admin')
+        if(!data.isAdministrator)
         {
           res.json({
             msg: "Это не первый запуск. Только администратор может регистрировать админов!",
@@ -80,7 +80,7 @@ function addAdmin(req, res) {
       })
       return;
     }
-    db.addNewUser(email, password, 'admin', function(err) {
+    db.addNewUser(email, password, true, function(err) {
       if(err)
       {
         res.json({

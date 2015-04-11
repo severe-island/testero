@@ -115,7 +115,7 @@ router.post('/signup', function(req, res, next) {
         status: false
       });
     }
-    db.addNewUser(email, password, 'student', function(err) {
+    db.addNewUser(email, password, false, function(err) {
       if(err)
       {
         res.json({

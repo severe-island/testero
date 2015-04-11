@@ -34,7 +34,7 @@ module.exports.findUserByEmail = function (userEmail, callback)
 
 module.exports.isAdminExists = function (callback)
 {
-  collection.findOne({permission: "admin"}, function (err, adminUser)
+  collection.findOne({isAdministrator: true}, function (err, adminUser)
   {
     if (!err && adminUser)
     {
@@ -48,12 +48,12 @@ module.exports.isAdminExists = function (callback)
   });
 }
 
-module.exports.addNewUser = function (userEmail, userPass, userPermission, callback)
+module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback)
 {
   collection.insert({
     email: userEmail,
     password: userPass,
-    permission: userPermission
+    isAdministrator: isAdministrator
   }, function (err, newUser) {
     if (err && !newUser)
     {
