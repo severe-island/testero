@@ -21,9 +21,26 @@ function getIndexOption(field, uniqueOption, sparseOption) {
 var collection = new dataStore(getConnectionOptions("users"));
 collection.ensureIndex(getIndexOption("email", true, false));
 
-module.exports.findUserByEmail = function (userEmail, callback)
-{
-  collection.findOne({email: userEmail}, function (err, findedUser) {
+module.exports.findAllUsersWithoutPassword = function (callback) {
+  collection.find({}, { password: 0 }, function (err, users) {
+    callback(err, users);
+  })
+}
+
+module.exports.findUserByEmailWithoutPassword = function (userEmail, callback) {
+  collection.findOne({ email: userEmail }, { password: 0 }, function (err, findedUser) {
+    callback(err, findedUser);
+  }); 
+};
+
+module.exports.findUserByIdWithoutPassword = function (id, callback) {
+  collection.findOne({ _id: id }, { password: 0 }, function (err, findedUser) {
+    callback(err, findedUser);
+  }); 
+};
+
+module.exports.findUserByEmail = function (userEmail, callback) {
+  collection.findOne({ email: userEmail }, function (err, findedUser) {
     if (err)
     {
       console.log("Ошибка при поиске пользователя ", userEmail, " :", err.message);
@@ -32,8 +49,7 @@ module.exports.findUserByEmail = function (userEmail, callback)
   }); 
 };
 
-module.exports.isAdminExists = function (callback)
-{
+module.exports.isAdminExists = function (callback) {
   collection.findOne({isAdministrator: true}, function (err, adminUser)
   {
     if (!err && adminUser)
@@ -48,8 +64,7 @@ module.exports.isAdminExists = function (callback)
   });
 }
 
-module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback)
-{
+module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback) {
   collection.insert({
     email: userEmail,
     password: userPass,
