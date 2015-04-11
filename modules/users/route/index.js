@@ -148,4 +148,66 @@ router.post('/signup', function(req, res, next) {
   });
 }); 
 
+router.post('/removeUser', function(req, res, next) {
+  if(!req.session.login) {
+    res.json({
+      status: false,
+      level: "danger",
+      msg: "Сначала войдите в систему!"
+    })
+    return
+  }
+  if(!req.body.email) {
+    res.json({
+      status: false,
+      level: "danger",
+      msg: "Укажите email!"
+    });
+    return;
+  }
+  var targetEmail = req.body.email
+  db.findUserByEmail(req.session.email, function(err, user) {
+    if(err) {
+      res.json({
+        msg: "Ошибка БД: " + err.message,
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    if(!user) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Сначала войдите в систему!"
+      })
+      return 
+    }
+    if(!user.isAdministrator && user.email!==targetEmail) {
+      res.json({
+        msg: "Пользователя может удалить только администратор или сам пользователь",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    db.removeUser(targetEmail, function(err) { 
+      if(err) {
+        res.json({
+          msg: "Ошибка БД: " + err.message,
+          status: false,
+          level: "danger"
+        });
+        return;
+      }
+      res.json({
+        msg: "Пользователь был удалён!: ",
+        status: true,
+        level: "success"
+      });
+      return;
+    })
+  })
+})
+
 module.exports = router;

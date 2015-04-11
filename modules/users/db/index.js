@@ -22,7 +22,7 @@ var collection = new dataStore(getConnectionOptions("users"));
 collection.ensureIndex(getIndexOption("email", true, false));
 
 module.exports.findAllUsersWithoutPassword = function (callback) {
-  collection.find({}, { password: 0 }, function (err, users) {
+  collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, { password: 0 }, function (err, users) {
     callback(err, users);
   })
 }
@@ -80,4 +80,8 @@ module.exports.addNewUser = function (userEmail, userPass, isAdministrator, call
     }
     callback(err);
   });
+}
+
+module.exports.removeUser = function(email, callback) {
+ collection.update({ email: email }, { $set: {removed: true} }, { }, callback) 
 }
