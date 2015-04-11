@@ -21,22 +21,42 @@ function getIndexOption(field, uniqueOption, sparseOption) {
 var collection = new dataStore(getConnectionOptions("users"));
 collection.ensureIndex(getIndexOption("email", true, false));
 
-module.exports.findAllUsersWithoutPassword = function (callback) {
-  collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, { password: 0 }, function (err, users) {
-    callback(err, users);
-  })
+module.exports.findAllUsersWithoutPassword = function (admin, callback) {
+  if(admin) {
+    collection.find({ }, { password: 0 }, function (err, users) {
+      callback(err, users);
+    })
+  } else {
+    collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, { password: 0 }, function (err, users) {
+      callback(err, users);
+    })
+  }
 }
 
-module.exports.findUserByEmailWithoutPassword = function (userEmail, callback) {
-  collection.findOne({ email: userEmail }, { password: 0 }, function (err, findedUser) {
-    callback(err, findedUser);
-  }); 
+module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, callback) {
+  if(admin) {
+    collection.findOne({ email: userEmail }, { password: 0 }, function (err, findedUser) {
+      callback(err, findedUser);
+    }); 
+  } else {
+    collection.findOne({$and: [ { email: userEmail } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
+                       { password: 0 }, function (err, findedUser) {
+      callback(err, findedUser);
+    }); 
+  }
 };
 
-module.exports.findUserByIdWithoutPassword = function (id, callback) {
-  collection.findOne({ _id: id }, { password: 0 }, function (err, findedUser) {
-    callback(err, findedUser);
-  }); 
+module.exports.findUserByIdWithoutPassword = function (id, admin, callback) {
+  if(admin) {
+    collection.findOne({ id: id }, { password: 0 }, function (err, findedUser) {
+      callback(err, findedUser);
+    }); 
+  } else {
+    collection.findOne({$and: [ { id: id } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
+                       { password: 0 }, function (err, findedUser) {
+                         callback(err, findedUser);
+                       }); 
+  }
 };
 
 module.exports.findUserByEmail = function (userEmail, callback) {
