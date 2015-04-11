@@ -17,21 +17,24 @@ $.ajax({
     if (!data.status) {
       $("#content #alert")
         .addClass("alert-error")
+        .removeAttr("hidden")
         .html(msg);
     }
     else if (data.courses.length === 0) {
       $("#content #alert")
         .addClass("alert-warning")
+        .removeAttr("hidden")
         .html("Пока не зарегистрировано ни одного курса.");
     }
     else {
-      $("#content #alert")
-        .addClass("alert-info")
-        .html("Здесь будет список курсов...");
-      for (var i = 0; i < data.courses.length; i++) {
-        $("#content #list table td").last().append("<td>" + data.courses[i].title + "</td>");
+      $("#content #list table tbody")
+        .html("<tr><td>1</td><td>" + data.courses[0].title + "</td></tr>");
+      for (var i = 1; i < data.courses.length; i++) {
+        $("#content #list table tr")
+          .last()
+          .after("<tr><td>" + (i + 1) + "</td><td>" + data.courses[i].title + "</td></tr>");
       }
-      
+      $("#content #list").removeAttr("hidden");
     }
     $("#content").slideDown("slow");
   }
