@@ -13,10 +13,12 @@ router.post('/findAllCourses', function(req, res, next) {
       })
       return;
     }
-    if(data.courses.length === 0) {
-      status: true,
-      msg: "Ещё не добавлено ни одного курса.",
-      courses: courses
+    if(courses.length === 0) {
+      res.json({ 
+        status: true,
+        msg: "Пока не зарегистрировано ни одного курса.",
+        courses: courses
+      })
       return;
     }
     res.json({ 
