@@ -15,3 +15,12 @@ $("#content #main-menu #users-item").click(function () {
   });
   return false;
 });
+
+$("#content #main-menu #my-profile-item").click(function () {
+  $("#content").hide("slow", function() {
+    $(this)
+      .html(app.modules.users.html["my-profile"])
+      .slideDown("slow");
+  });
+  return false;
+});

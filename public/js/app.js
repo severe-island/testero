@@ -77,16 +77,22 @@ function onLoadAllModules() {
     {
       bootstrapAlert(data.msg, data.level, 2000, function() {
         if(data.status) {
-          $("#login-button").attr("disabled", "disabled");
-          $("#signup-button").attr("disabled", "disabled");
+          //$("#login-button").attr("disabled", "disabled");
+          //$("#signup-button").attr("disabled", "disabled");
+          $("#top-menu #login-button").hide();
+          $("#top-menu #signin-button").hide();
+          $("#top-menu #my-profile-item").show();
           $("#logout-button").removeAttr("disabled");
           $("#courses-button").removeAttr("disabled");
           app.isLoggedIn = true;
           app.user = data.user;
         }
         else {
-          $("#login-button").removeAttr("disabled");
-          $("#signup-button").removeAttr("disabled");
+          //$("#login-button").removeAttr("disabled");
+          //$("#signup-button").removeAttr("disabled");
+          $("#top-menu #login-button").show();
+          $("#top-menu #signin-button").show();
+          $("#top-menu #my-profile-item").hide();
           $("#logout-button").attr("disabled", "disabled");
           $("#courses-button").attr("disabled", "disabled");
           app.isLoggedIn = false;
@@ -149,6 +155,15 @@ function onLoadAllModules() {
         });
       }
     });
+  });
+  
+  $("#top-menu #my-profile-item").click(function() {
+    $("#content").hide("slow", function() {
+      $(this)
+        .html(app.modules.users.html["my-profile"])
+        .slideDown("slow");
+    });
+    return false;
   });
 }
 

@@ -1,0 +1,35 @@
+<link href="../../../public/css/bootstrap.css" rel="stylesheet" media="screen"/>
+
+<div id="my-profile-menu">
+  <div class="col-md-4"></div>
+  
+  <div class="col-md-4">
+    <ol class="breadcrumb">
+      <li><a href="#" id="users-menu">Пользователи</a></li>
+      <li class="active">Мой профиль</li>
+    </ol>
+    
+    <p>E-mail: <span id="email"></span></p>
+
+    <ul class="nav nav-pills nav-stacked">
+      <li>
+        <a href="#" id="user-edit-item">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+          Редактировать
+        </a>
+      </li>
+      <li>
+        <a href="#" id="user-logout-item">
+          <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+          Выйти
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="col-md-4"></div>
+</div>
+
+<script>
+  eval(app.modules.users.js["my-profile"]);
+</script>
