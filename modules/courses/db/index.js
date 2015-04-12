@@ -39,6 +39,9 @@ exports.findCourse = function (filter, callback) {
 exports.addCourse = function(title, author, callback) {
   var course = { title: title }
   if(author) course.authors = [author]
+  var date = new Date();
+  course.created_at = date;
+  course.updated_at = date;
   collection.insert(course, function (err, newUser) {
     if (err && !newUser) {
       console.log("Не получилось добавить курс", title, " : " ,err.message);
@@ -51,5 +54,6 @@ exports.addCourse = function(title, author, callback) {
 };
 
 exports.updateCourse = function(course, callback) {
+  course.updated_at = new Date();
   collection.update({ _id: course._id }, course, { }, callback);
 };

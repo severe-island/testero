@@ -24,7 +24,7 @@ var collection = new dataStore(getConnectionOptions("courses-roles"));
 
 exports.assignRole = function(email, role, callback) {
   collection.update({ email: email},
-                    { $addToSet: { roles: role } },
+                    { $addToSet: { roles: role }, $set: {updated_at: new Date() } },
                     { upsert: true },
                     function (err) {
                         if (err && !newUser) {
