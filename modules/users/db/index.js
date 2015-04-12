@@ -23,11 +23,11 @@ collection.ensureIndex(getIndexOption("email", true, false));
 
 module.exports.findAllUsersWithoutPassword = function (admin, callback) {
   if(admin) {
-    collection.find({ }, { password: 0, created_at: 0, updated_at: 0 }, function (err, users) {
+    collection.find({ }, { password: 0 }, function (err, users) {
       callback(err, users);
     })
   } else {
-    collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, { password: 0, created_at: 0, updated_at: 0 }, function (err, users) {
+    collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, { password: 0 }, function (err, users) {
       callback(err, users);
     })
   }
@@ -36,13 +36,13 @@ module.exports.findAllUsersWithoutPassword = function (admin, callback) {
 module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, callback) {
   if(admin) {
     collection.findOne({ email: userEmail }, 
-    { password: 0, created_at: 0, updated_at: 0 },
+    { password: 0 },
     function (err, findedUser) {
       callback(err, findedUser);
     }); 
   } else {
     collection.findOne({$and: [ { email: userEmail } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
-                       { password: 0, created_at: 0, updated_at: 0 }, function (err, findedUser) {
+                       { password: 0 }, function (err, findedUser) {
       callback(err, findedUser);
     }); 
   }
@@ -51,7 +51,7 @@ module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, call
 module.exports.findUserByIdWithoutPassword = function (id, admin, callback) {
   if(admin) {
     collection.findOne({ id: id }, 
-    { password: 0, created_at: 0, updated_at: 0 }, function (err, findedUser) {
+    { password: 0 }, function (err, findedUser) {
       callback(err, findedUser);
     }); 
   } else {
