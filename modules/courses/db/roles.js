@@ -22,20 +22,37 @@ function getIndexOption(field, uniqueOption, sparseOption) {
 var collection = new dataStore(getConnectionOptions("courses-roles"));
 //collection.ensureIndex(getIndexOption("email", true, false));
 
-exports.assignRole = function(email, role, callback) {
-  collection.update({ email: email},
-                    { $addToSet: { roles: role }, $set: {updated_at: new Date() } },
-                    { upsert: true },
-                    function (err) {
-                        if (err && !newUser) {
-                          console.log("Не получилось добавить роль: " ,err.message);
-                        }
-                        else {
-                          console.log("Роль добавлена успешно! ")
-                        }
-                        callback(err);
-                    });
-};
+  exports.assignRole = function(email, role, callback) {
+  var date = new Date();
+    collection.findOne({"email" : email, created_at: {$exists: true}}, function (err, findedUser){
+    if (!err && findedUser)
+    {
+      collection.update({ "email": email},
+      { $addToSet: { roles: role }, updated_at: date },
+      { upsert: true },
+      function (err) {
+        if (err && !newUser) {
+          console.log("Не получилось добавить роль: ", err.message);
+       }
+        else {
+          console.log("Роль добавлена успешно! ")
+       }
+        callback(err);
+      });
+      return;
+    }
+    collection.insert({"email": email, roles: [role], created_at: date, update_at: date},
+    function (err, newUser) {
+      if (err && !newUser) {
+        console.log("Не получилось добавить роль (в первый раз): ", err.message);
+     }
+      else {
+        console.log("Роль добавлена успешно (в первый раз)! ")
+     }
+      callback(err);
+    });
+    });
+    };
 
 exports.getRolesByEmail = function(email, callback) {
   collection.findOne({ email: email }, function (err, userRoles) {
