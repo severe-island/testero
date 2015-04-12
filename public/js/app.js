@@ -1,6 +1,7 @@
 var app = {
   modules: {},
-  isLoggedIn: false
+  isLoggedIn: false,
+  user: {}
 };
 var modules = ["app", "users", "courses"];
 
@@ -71,24 +72,27 @@ function onLoadAllModules() {
   
   $.ajax({
     type: "POST",
-    url: "/users/login",
+    url: "/users/getMe",
     success: function(data)
     {
-      if(data.status) {
-        $("#login-button").attr("disabled", "disabled");
-        $("#signup-button").attr("disabled", "disabled");
-        $("#logout-button").removeAttr("disabled");
-        $("#courses-button").removeAttr("disabled");
-        app.isLoggedIn = true;
-      }
-      else {
-        $("#login-button").removeAttr("disabled");
-        $("#signup-button").removeAttr("disabled");
-        $("#logout-button").attr("disabled", "disabled");
-        $("#courses-button").attr("disabled", "disabled");
-        app.isLoggedIn = false;
-      }
-      showMainMenu();
+      bootstrapAlert(data.msg, data.level, 2000, function() {
+        if(data.status) {
+          $("#login-button").attr("disabled", "disabled");
+          $("#signup-button").attr("disabled", "disabled");
+          $("#logout-button").removeAttr("disabled");
+          $("#courses-button").removeAttr("disabled");
+          app.isLoggedIn = true;
+          app.user = data.user;
+        }
+        else {
+          $("#login-button").removeAttr("disabled");
+          $("#signup-button").removeAttr("disabled");
+          $("#logout-button").attr("disabled", "disabled");
+          $("#courses-button").attr("disabled", "disabled");
+          app.isLoggedIn = false;
+        }
+        showMainMenu();
+      });
     }
   });
   
