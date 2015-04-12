@@ -223,7 +223,7 @@ router.post('/getMe', function(req, res, next) {
     if(err) {
       res.json({
         status: false,
-        level: "dangerous",
+        level: "danger",
         msg: "Ошибка БД: " + err.message
       })
       return;
@@ -231,7 +231,7 @@ router.post('/getMe', function(req, res, next) {
     if(!user) {
       res.json({
         status: false,
-        level: "dangerous",
+        level: "danger",
         msg: "Пользователь не найден! Скорее всего, ошибка с сессией."
       })
       return;
