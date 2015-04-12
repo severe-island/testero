@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db = require('../db');
+var rolesDB = require('../db/roles');
 var conf = require('../../../config');
 var usersDB = require('../../users/db');
 
@@ -90,25 +91,54 @@ router.post('/addCourse', function(req, res, next) {
     })
     return;
   }
-  if(req.body["i-am-author"])
-  {
-    usersDB.findUserByEmail(req.session.email, function(err, user){
-      if(err || !user) {
-        res.json({
-          status: false,
-          msg: "Вы должны зайти в систему!",
-          level: "danger"
-        })
-        return;
-      }
-      db.addCourse(req.body.title, user.email, function(err) {
+  rolesDB.getRolesByEmail(req.session.email, function(err, userRoles) {
+    if(!userRoles || userRoles.roles.indexOf("teacher")<0) {
+      res.json({
+        status: false,
+        msg: "Вы должны быть teacher!",
+        level: "danger"
+      })
+      return;
+    }
+    if(req.body["i-am-author"])
+    {
+      usersDB.findUserByEmail(req.session.email, function(err, user){
+        if(err || !user) {
+          res.json({
+            status: false,
+            msg: "Вы должны зайти в систему!",
+            level: "danger"
+          })
+          return;
+        }
+        db.addCourse(req.body.title, user.email, function(err) {
+          if(err) {
+            res.json({
+              status: false,
+              msg: err.msg,
+              level: "danger"
+            })
+            return;
+          }
+          else {
+            res.json({
+              status: true,
+              msg: "Курс был успешно добавлен!",
+              level: "success"
+            })
+          }
+        });
+      })
+    }
+    else
+    {
+      db.addCourse(req.body.title, undefined, function(err) {
         if(err) {
           res.json({
             status: false,
             msg: err.msg,
             level: "danger"
           })
-          return;
         }
         else {
           res.json({
@@ -118,27 +148,8 @@ router.post('/addCourse', function(req, res, next) {
           })
         }
       });
-    })
-  }
-  else
-  {
-    db.addCourse(req.body.title, undefined, function(err) {
-      if(err) {
-        res.json({
-          status: false,
-          msg: err.msg,
-          level: "danger"
-        })
-      }
-      else {
-        res.json({
-          status: true,
-          msg: "Курс был успешно добавлен!",
-          level: "success"
-        })
-      }
-    });
-  } 
+    } 
+  })
 });
 
 router.post('/updateCourse', function(req, res, next) {
