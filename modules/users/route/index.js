@@ -210,4 +210,39 @@ router.post('/removeUser', function(req, res, next) {
   })
 })
 
+router.post('/getMe', function(req, res, next) {
+  if(!req.session.login) {
+    res.json({
+      status: false,
+      level: "info",
+      msg: "Вы ещё не вошли в систему."
+    })
+    return;
+  }
+  db.findUserByEmailWithoutPassword(req.session.email, true, function(err, user) {
+    if(err) {
+      res.json({
+        status: false,
+        level: "dangerous",
+        msg: "Ошибка БД: " + err.message
+      })
+      return;
+    }
+    if(!user) {
+      res.json({
+        status: false,
+        level: "dangerous",
+        msg: "Пользователь не найден! Скорее всего, ошибка с сессией."
+      })
+      return;
+    }
+    res.json({
+      status: true,
+      level: "info",
+      msg: "Пользователь найден!",
+      user: user
+    })
+  })
+})
+
 module.exports = router;
