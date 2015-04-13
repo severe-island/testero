@@ -104,7 +104,7 @@ module.exports.addNewUser = function (userEmail, userPass, isAdministrator, call
     {
       console.log("Запись произведена успешно! ", newUser)
     }
-    callback(err);
+    callback(err, newUser);
   });
 }
 

@@ -88,6 +88,14 @@ router.post('/signup', function(req, res, next) {
     });
     return;
   }
+  if(!req.body.email || !req.body.password || !req.body.passwordDuplicate) {
+    res.json({
+      msg: "Указаны не все данные.",
+      status: false,
+      level: "danger"
+    });
+    return;
+  }
   var email = req.body.email;
   var password = req.body.password;
   var passwordDuplicate = req.body.passwordDuplicate;
@@ -127,7 +135,7 @@ router.post('/signup', function(req, res, next) {
         level: "danger"
       });
     }
-    db.addNewUser(email, password, false, function(err) {
+    db.addNewUser(email, password, false, function(err, newUser) {
       if(err)
       {
         res.json({
@@ -137,12 +145,14 @@ router.post('/signup', function(req, res, next) {
         });
         return;
       }
+      delete newUser.password;
       req.session.login = true;
       req.session.email = email;
       res.json({
         msg: "Пользователь успешно зарегистрирован!",
         status: true,
-        level: "success"
+        level: "success",
+        user: newUser
       });
     });
   });
