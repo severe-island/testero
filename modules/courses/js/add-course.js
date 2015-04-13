@@ -18,8 +18,9 @@ $("#add-course-form").submit(function() {
     {
       if (!data.status) {
         $("#content #alert")
-          .addClass("alert-error")
-          .html(msg);
+          .addClass("alert-" + data.level)
+          .html(data.msg)
+          .slideDown("slow");
       }
     }
   });
