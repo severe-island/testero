@@ -20,9 +20,26 @@ function showMainMenu() {
     });
 }
 
+function tuneTopMenu() {
+  if (app.isLoggedIn) {
+    $("#top-menu #login-item").hide();
+    $("#top-menu #signup-item").hide();
+    $("#top-menu #my-profile-item").show();
+    $("#top-menu #logout-item").show();
+    $("#top-menu #courses-item").show();
+  }
+  else {
+    $("#top-menu #login-button").show();
+    $("#top-menu #signup-button").show();
+    $("#top-menu #my-profile-item").hide();
+    $("#top-menu #logout-item").hide();
+    $("#top-menu #courses-item").hide();
+  }
+}
+
 function bootstrapAlert(msg, type, delay, callback) {
   $("#content")
-    .hide("slow", function() {
+    .hide("slow", function () {
       $(this).html(app.modules.app.html["alert"]);
       $("#content .alert")
         .addClass("alert-" + type)
@@ -57,11 +74,11 @@ function onLoadAllModules() {
   $.ajax({
     type: "POST",
     url: "/users/isAdminExists",
-    success: function(data)
-    {      
+    success: function (data)
+    {
       if (!data.status) {
         $("#content")
-          .hide("slow", function() {
+          .hide("slow", function () {
             $(this)
               .html(app.modules.users.html["admin-account"])
               .slideDown("slow");
@@ -73,28 +90,16 @@ function onLoadAllModules() {
           url: "/users/getMe",
           success: function (data)
           {
-            bootstrapAlert(data.msg, data.level, 2000, function () {
+            bootstrapAlert(data.msg, data.level, 1500, function () {
               if (data.status) {
-                //$("#login-button").attr("disabled", "disabled");
-                //$("#signup-button").attr("disabled", "disabled");
-                $("#top-menu #login-button").hide();
-                $("#top-menu #signin-button").hide();
-                $("#top-menu #my-profile-item").show();
-                $("#logout-button").removeAttr("disabled");
-                $("#courses-button").removeAttr("disabled");
                 app.isLoggedIn = true;
                 app.user = data.user;
               }
               else {
-                //$("#login-button").removeAttr("disabled");
-                //$("#signup-button").removeAttr("disabled");
-                $("#top-menu #login-button").show();
-                $("#top-menu #signin-button").show();
-                $("#top-menu #my-profile-item").hide();
-                $("#logout-button").attr("disabled", "disabled");
-                $("#courses-button").attr("disabled", "disabled");
                 app.isLoggedIn = false;
+                app.user = {};
               }
+              tuneTopMenu();
               showMainMenu();
             });
           }
@@ -102,64 +107,65 @@ function onLoadAllModules() {
       }
     }
   });
-  
+
   // Верхнее меню:
-  
-   // TODO: разобраться с необходимостью отключения/включения кнопки меню
-  $("#main-menu-button").removeAttr("disabled");
-  
-  $("#main-menu-button").click(function() {
+
+  $("#top-menu #main-menu-item").click(function () {
     showMainMenu();
+    return false;
   });
-  
-  $("#courses-button").click(function() {
+
+  $("#top-menu #courses-item").click(function () {
     $("#content")
-      .hide("slow", function() {
+      .hide("slow", function () {
         $(this)
           .html(app.modules.courses.html["menu"])
           .slideDown("slow");
-    });
+      });
+    return false;
   });
-  
-  $("#signup-button").click(function() {
+
+  $("#top-menu #signup-item").click(function () {
     $("#content")
-      .hide("slow", function() {
+      .hide("slow", function () {
         $(this)
           .html(app.modules.users.html["signup"])
           .slideDown("slow");
       });
+    return false;
   });
-  
-  $("#login-button").click(function() {
+
+  $("#top-menu #login-item").click(function () {
     $("#content")
-      .hide("slow", function() {
+      .hide("slow", function () {
         $(this)
           .html(app.modules.users.html["login"])
           .slideDown("slow");
       });
+    return false;
   });
-  
-  $("#logout-button").click(function() {
+
+  $("#top-menu #logout-item").click(function () {
     var url = "/users/logout";
     $.ajax({
       type: "POST",
       url: url,
-      success: function(data) {
-        bootstrapAlert(data.msg, "info", 2000, function() {
+      success: function (data) {
+        bootstrapAlert(data.msg, "info", 2000, function () {
           if (data.status) {
-            $("#logout-button").attr("disabled", "disabled");
-            $("#login-button").removeAttr("disabled");
-            $("#signup-button").removeAttr("disabled");
             app.isLoggedIn = false;
+            app.user = {};
+            tuneTopMenu();
             showMainMenu();
           }
         });
       }
     });
+    return false;
   });
-  
-  $("#top-menu #my-profile-item").click(function() {
-    $("#content").hide("slow", function() {
+
+  $("#top-menu #my-profile-item").click(function () {
+    $("#content").hide("slow", function () {
       $(this)
         .html(app.modules.users.html["my-profile"])
         .slideDown("slow");
@@ -168,6 +174,6 @@ function onLoadAllModules() {
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   loadModules(app, modules, onLoadAllModules);
 });
