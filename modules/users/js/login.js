@@ -7,7 +7,7 @@ $("#login-form").submit(function() {
       bootstrapAlert(data.msg, "info", 2000, function() {
         if (data.status) {
           app.isLoggedIn = true;
-          app.user = {};
+          app.user = data.user;
           tuneTopMenu();
           showMainMenu();
         }
