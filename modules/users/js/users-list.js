@@ -36,11 +36,20 @@ $.ajax({
     }
     else {
       $("#content #list table tbody")
-        .html("<tr><td>1</td><td>" + data.users[0].email + "</td></tr>");
+        .html(
+        "<tr><td>1</td><td>" + data.users[0].email + 
+        "</td><td>" + (data.users[0].isAdministrator ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>' : "") +
+        "</td></tr>"
+        );
       for (var i = 1; i < data.users.length; i++) {
         $("#content #list table tr")
           .last()
-          .after("<tr><td>" + (i + 1) + "</td><td>" + data.users[i].email + "</td></tr>");
+          .after(
+          "<tr><td>" + (i + 1) + 
+          "</td><td>" + data.users[i].email + 
+          "</td><td>" + (data.users[i].isAdministrator ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>' : "") +
+          "</td></tr>"
+          );
       }
       $("#content #list").removeAttr("hidden");
     }
