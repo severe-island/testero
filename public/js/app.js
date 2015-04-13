@@ -29,8 +29,8 @@ function tuneTopMenu() {
     $("#top-menu #courses-item").show();
   }
   else {
-    $("#top-menu #login-button").show();
-    $("#top-menu #signup-button").show();
+    $("#top-menu #login-item").show();
+    $("#top-menu #signup-item").show();
     $("#top-menu #my-profile-item").hide();
     $("#top-menu #logout-item").hide();
     $("#top-menu #courses-item").hide();

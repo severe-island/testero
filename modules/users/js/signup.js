@@ -36,12 +36,9 @@ $("#signup-form").submit(function() {
       success: function (data) {
         bootstrapAlert(data.msg, "info", 2000, function() {
           if (data.status) {
-            $("#logout-button").removeAttr("disabled");
-            $("#login-button").attr("disabled", "disabled");
-            $("#signup-button").attr("disabled", "disabled");
-            $("#signup").hide();
-            $("#signup-submit").attr("disabled", "disabled");
             app.isLoggedIn = true;
+            app.user = data.user;
+            tuneTopMenu();
             showMainMenu();
           }
         });
