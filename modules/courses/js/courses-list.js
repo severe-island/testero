@@ -1,4 +1,4 @@
-$("#all-courses-list #courses-menu").click(function () {
+$("#courses-list #courses-menu").click(function () {
   $("#content")
     .hide("slow", function () {
       $(this)
@@ -27,12 +27,17 @@ $.ajax({
         .html("Пока не зарегистрировано ни одного курса.");
     }
     else {
-      $("#content #list table tbody")
-        .html("<tr><td>1</td><td>" + data.courses[0].title + "</td></tr>");
-      for (var i = 1; i < data.courses.length; i++) {
-        $("#content #list table tr")
-          .last()
-          .after("<tr><td>" + (i + 1) + "</td><td>" + data.courses[i].title + "</td></tr>");
+      for (var i = 0; i < data.courses.length; i++) {
+        $("#content #list table tbody")
+          .loadTemplate($("#courses-list-item"),
+          {
+            number: i + 1,
+            title: data.courses[i].title,
+            authors: ""
+          },
+          {
+            append: true
+          });
       }
       $("#content #list").removeAttr("hidden");
     }

@@ -35,14 +35,7 @@ $.ajax({
         .html(msg);
     }
     else {
-      $("#content #list table tbody")
-        .loadTemplate($("#users-list-item"),
-          {
-            number: 1,
-            email: data.users[0].email,
-            isAdministrator: data.users[0].isAdministrator ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>' : ""
-          });
-      for (var i = 1; i < data.users.length; i++) {
+      for (var i = 0; i < data.users.length; i++) {
         $("#content #list table tbody")
           .loadTemplate($("#users-list-item"),
             {
