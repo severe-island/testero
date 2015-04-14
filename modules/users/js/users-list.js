@@ -22,7 +22,7 @@ $.ajax({
       $("#content #alert")
         .addClass("alert-" + alertType)
         .removeAttr("hidden")
-        .html(msg);
+        .html(data.msg);
     }
     else if (data.users.length === 0) {
       var alertType = data.level;
@@ -32,7 +32,7 @@ $.ajax({
       $("#content #alert")
         .addClass("alert-" + alertType)
         .removeAttr("hidden")
-        .html(msg);
+        .html(data.msg);
     }
     else {
       for (var i = 0; i < data.users.length; i++) {
