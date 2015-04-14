@@ -15,7 +15,7 @@ $("#users-menu #add-user-item").click(function() {
 });
 
 $("#users-menu #my-profile-item").click(function() {
-  $("#coontent").hide("slow", function() {
+  $("#content").hide("slow", function() {
     $(this)
       .html(app.modules.users.html["my-profile"])
       .show("slow");

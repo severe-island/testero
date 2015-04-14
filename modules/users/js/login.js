@@ -7,9 +7,17 @@ $("#login-form").submit(function() {
       bootstrapAlert(data.msg, "info", 2000, function() {
         if (data.status) {
           app.isLoggedIn = true;
-          app.user = data.user;
-          tuneTopMenu();
-          showMainMenu();
+          $.ajax({
+            type: "POST",
+            url: "/users/getMe",
+            success: function(data) {
+              if (data.status) {
+                app.user = data.user;
+                tuneTopMenu();
+                showMainMenu();
+              }
+            }
+          });
         }
       });
     }
