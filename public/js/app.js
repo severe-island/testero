@@ -53,23 +53,6 @@ function bootstrapAlert(msg, type, delay, callback) {
     });
 }
 
-function loadModules(app, modules, callback) {
-  if (!modules.length) {
-    callback();
-    return;
-  }
-  var moduleName = modules[0];
-  modules.shift();
-  require(moduleName, function (data) {
-    if (!data.status) {
-      alert(data.msg);
-      return;
-    }
-    app.modules[data.moduleName] = data;
-    loadModules(app, modules, callback);
-  });
-}
-
 function onLoadAllModules() {
   $.ajax({
     type: "POST",
@@ -85,24 +68,9 @@ function onLoadAllModules() {
           });
       }
       else {
-        $.ajax({
-          type: "POST",
-          url: "/users/getMe",
-          success: function (data)
-          {
-            bootstrapAlert(data.msg, data.level, 1500, function () {
-              if (data.status) {
-                app.isLoggedIn = true;
-                app.user = data.user;
-              }
-              else {
-                app.isLoggedIn = false;
-                app.user = {};
-              }
-              tuneTopMenu();
-              showMainMenu();
-            });
-          }
+        bootstrapAlert(data.msg, data.level, 1500, function () {
+          tuneTopMenu();
+          showMainMenu();
         });
       }
     }
@@ -175,5 +143,13 @@ function onLoadAllModules() {
 }
 
 $(document).ready(function () {
-  loadModules(app, modules, onLoadAllModules);
+  $.ajax({
+    type: "POST",
+    url: "/app",
+    success: function (data)
+    {
+      app = data;
+      onLoadAllModules();
+    }
+  });
 });

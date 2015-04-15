@@ -5,6 +5,7 @@
     },
   "modules":
     [
-      "db", "users", "courses", "app"
-    ]
+      "users", "courses", "app"
+    ],
+  "mode": "production"
 }

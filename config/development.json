@@ -6,5 +6,6 @@
   "modules":
     [
       "users", "courses", "app"
-    ]
+    ],
+  "mode": "development"
 }
