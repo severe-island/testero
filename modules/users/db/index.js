@@ -27,7 +27,8 @@ module.exports.findAllUsersWithoutPassword = function (admin, callback) {
       callback(err, users);
     })
   } else {
-    collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, { password: 0 }, function (err, users) {
+    collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
+    { password: 0, isAdministrator : 0 }, function (err, users) {
       callback(err, users);
     })
   }
