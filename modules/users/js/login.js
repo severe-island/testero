@@ -30,6 +30,16 @@ $("#login-form").submit(function() {
               .slideUp("slow");
         });
       }
+    },
+    error: function(data) {
+      $("#content #alert")
+        .html("Сервер недоступен! Повторите позже.");
+      $("#content #alert")
+        .addClass("alert-danger")
+        .slideDown("slow", function() {
+          $(this).delay(1000)
+            .slideUp("slow");
+      });
     }
   });
   return false;
