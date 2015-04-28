@@ -24,6 +24,7 @@ router.post("/", function(req, res, next) {
         });
         return;
       }
+      app.mode = conf.mode;
       app.status = true;
       app.level = "success";
       app.msg = "app успешно загружен.";
@@ -50,7 +51,6 @@ function loadModule(i, callback) {
       return;
     }
   }
-  console.log(6)
   if (fs.existsSync(modulePath + '/html')) {
     var htmlFiles = fs.readdirSync(modulePath + '/html')
     data.html = {}
@@ -60,7 +60,6 @@ function loadModule(i, callback) {
       })
     }
   }
-  console.log(7)
   if (fs.existsSync(modulePath + '/js')) {
     var jsFiles = fs.readdirSync(modulePath + '/js')
     data.js = {}
@@ -70,11 +69,9 @@ function loadModule(i, callback) {
       })
     }
   }
-  console.log(8)
   data.status = true;
   data.msg = "Модуль " + moduleName + " был импортирован!"
   data.level = "success"
-  console.log(9)
   app.modules[moduleName] = data;
     if(i==conf.modules.length-1) {
     callback();
