@@ -29,6 +29,11 @@ module.exports.findAllUsersWithoutPassword = function (admin, callback) {
   } else {
     collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
     { password: 0, isAdministrator : 0 }, function (err, users) {
+      for(var i=0; i<users.length; i++) {
+        if(!users[i].showEmail) {
+          delete users[i].email;
+        }
+      }
       callback(err, users);
     })
   }
@@ -44,8 +49,11 @@ module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, call
   } else {
     collection.findOne({$and: [ { email: userEmail } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
                        { password: 0 }, function (err, findedUser) {
-      callback(err, findedUser);
-    }); 
+                        if(!findedUser.showEmail) {
+                          delete findedUser.email;
+                        }
+                        callback(err, findedUser);
+                      }); 
   }
 };
 
@@ -58,6 +66,9 @@ module.exports.findUserByIdWithoutPassword = function (id, admin, callback) {
   } else {
     collection.findOne({$and: [ { id: id } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
                        { password: 0, created_at: 0, updated_at: 0 }, function (err, findedUser) {
+                         if(!findedUser.showEmail) {
+                           delete findedUser.email;
+                         }
                          callback(err, findedUser);
                        }); 
   }
@@ -119,6 +130,12 @@ module.exports.setAsAdministrator = function(email, callback) {
   collection.update({ email: email }, { $set: {isAdministrator: true, updated_at: date} }, { }, callback) 
 }
 
-module.exports.updateUser = function(email, updater, callback) {
+module.exports.updateUser = function(email, updater, editor, callback) {
   collection.update({ email: email }, { $set: updater }, { }, callback);
+  var date = new Date();
+  collection.update({ email: email }, { $set: {editor: editor, updated_at: date} }, { }, function(err) {
+    if(err) {
+      console.log(err.message)
+    }
+  }) 
 }

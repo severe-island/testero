@@ -31,7 +31,7 @@ router.post('/updateProfile', function(req, res, next) {
   if(req.body.patronymic) {
     updater.patronymic = req.body.patronymic;
   }
-  if(req.body.showEmail) {
+  if(req.body.showEmail!==undefined) {
     updater.showEmail = req.body.showEmail;
   }
   
@@ -60,7 +60,7 @@ router.post('/updateProfile', function(req, res, next) {
       })
       return;
     }
-    db.updateUser(req.body.email, updater, function(err, numUpdated) {
+    db.updateUser(req.body.email, updater, req.session.email, function(err, numUpdated) {
       if(err) {
         res.json({
           status: false,
