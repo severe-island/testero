@@ -68,7 +68,7 @@ function onLoadAllModules() {
           });
       }
       else {
-        bootstrapAlert(data.msg, data.level, 1500, function () {
+        bootstrapAlert(data.msg, data.level, 1000, function () {
           tuneTopMenu();
           showMainMenu();
         });

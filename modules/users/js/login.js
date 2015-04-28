@@ -4,8 +4,8 @@ $("#login-form").submit(function() {
     url: "/users/login",
     data: $("#login-form").serialize(),
     success: function (data) {
-      bootstrapAlert(data.msg, "info", 2000, function() {
-        if (data.status) {
+      if (data.status) {
+        bootstrapAlert(data.msg, "info", 2000, function() {
           app.isLoggedIn = true;
           $.ajax({
             type: "POST",
@@ -18,8 +18,18 @@ $("#login-form").submit(function() {
               }
             }
           });
-        }
-      });
+        });
+      }
+      else {
+        $("#content #alert")
+          .html(data.msg);
+        $("#content #alert")
+          .addClass("alert-warning")
+          .slideDown("slow", function() {
+            $(this).delay(1000)
+              .slideUp("slow");
+        });
+      }
     }
   });
   return false;

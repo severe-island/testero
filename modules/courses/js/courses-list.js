@@ -16,9 +16,9 @@ $.ajax({
   {
     if (!data.status) {
       $("#content #alert")
-        .addClass("alert-error")
+        .addClass("alert-danger")
         .removeAttr("hidden")
-        .html(msg);
+        .html(data.msg);
     }
     else if (data.courses.length === 0) {
       $("#content #alert")
