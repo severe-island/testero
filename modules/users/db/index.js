@@ -79,7 +79,6 @@ module.exports.isAdminExists = function (callback) {
     if (!err && adminUser)
     {
       callback(true);
-      console.log('!!!!',adminUser,'!!!!')
     }
     else
     {
@@ -94,6 +93,7 @@ module.exports.addNewUser = function (userEmail, userPass, isAdministrator, call
     email: userEmail,
     password: userPass,
     isAdministrator: isAdministrator,
+    showEmail: true,
     created_at: date,
     updated_at: date
   }, function (err, newUser) {

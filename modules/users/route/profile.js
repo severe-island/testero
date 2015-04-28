@@ -31,6 +31,9 @@ router.post('/updateProfile', function(req, res, next) {
   if(req.body.patronymic) {
     updater.patronymic = req.body.patronymic;
   }
+  if(req.body.showEmail) {
+    updater.showEmail = req.body.showEmail;
+  }
   
   db.findUserByEmail(req.session.email, function(err, user) {
     if(err) {
@@ -75,7 +78,7 @@ router.post('/updateProfile', function(req, res, next) {
         return;
       }
       res.json({
-        status: false,
+        status: true,
         level: "success",
         msg: "Профиль успешно обновлён!: "
       });
