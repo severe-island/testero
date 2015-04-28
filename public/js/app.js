@@ -68,10 +68,12 @@ function onLoadAllModules() {
           });
       }
       else {
-        bootstrapAlert(data.msg, data.level, 1000, function () {
-          tuneTopMenu();
-          showMainMenu();
-        });
+        if (app.mode !== "production") {
+          bootstrapAlert(data.msg, data.level, 1000, function () {
+            tuneTopMenu();
+            showMainMenu();
+          });
+        }
       }
     }
   });
