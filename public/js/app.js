@@ -65,7 +65,9 @@ function onLoadAllModules() {
           .hide("slow", function () {
             $(this)
               .html(app.modules.users.html["admin-account"])
-              .slideDown("slow");
+              .slideDown("slow", function() {
+                $("#top-menu").hide();
+            });
           });
       }
       else {

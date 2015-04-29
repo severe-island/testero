@@ -5,7 +5,7 @@ $("#login-form").submit(function() {
     data: $("#login-form").serialize(),
     success: function (data) {
       if (data.status) {
-        bootstrapAlert(data.msg, "info", 2000, function() {
+        bootstrapAlert(data.msg, "info", 1000, function() {
           app.isLoggedIn = true;
           $.ajax({
             type: "POST",
@@ -26,7 +26,8 @@ $("#login-form").submit(function() {
         $("#content #alert")
           .addClass("alert-warning")
           .slideDown("slow", function() {
-            $(this).delay(1000)
+            $(this)
+              .delay(1000)
               .slideUp("slow");
         });
       }

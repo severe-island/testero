@@ -33,16 +33,44 @@ $("#admin-account-form").submit(function() {
       type: "POST",
       url: "/users/addAdmin",
       data: $("#admin-account-form").serialize(),
-      success: function(data)
-      {
-        alert(data.msg);
+      success: function(data) {
         if (data.status) {
-          $("#logout-button").removeAttr("disabled");
-          $("#login-button").attr("disabled", "disabled");
-          $("#signup-button").attr("disabled", "disabled");
-          $("#signup-submit").attr("disabled", "disabled");
-          showMainMenu();
+          bootstrapAlert(data.msg, "info", 1000, function () {
+            $.ajax({
+              type: "POST",
+              url: "/users/getMe",
+              success: function(data) {
+                if (data.status) {
+                  app.user = data.user;
+                  app.isLoggedIn = true;
+                }
+                tuneTopMenu();
+                $("#top-menu").show();
+                showMainMenu();
+              }
+            });
+          });
         }
+        else {
+          $("#content #alert").html(data.msg);
+          $("#content #alert")
+            .addClass("alert-" + data.level)
+            .slideDown("slow", function() {
+            $(this)
+              .delay(1000)
+              .slideUp("slow");
+          });
+        }
+      },
+      error: function(data) {
+        $("#content #alert").html("Сервер недоступен. Попробуйте позже.");
+        $("#content #alert")
+          .addClass("alert-danger")
+          .slideDown("slow", function() {
+          $(this)
+            .delay(1000)
+            .slideUp("slow");
+        });
       }
     });
   }
