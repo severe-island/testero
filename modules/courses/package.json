@@ -1,0 +1,7 @@
+{
+  "name": "users",
+  "dependencies": {
+    "users": "latest"
+  }
+}
+

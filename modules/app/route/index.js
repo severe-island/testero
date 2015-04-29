@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var conf = require('../../../config');
 var fs = require('fs')
-var usersDB = require('../../users/db')
 
 var app;
 
@@ -11,27 +10,14 @@ router.post("/", function(req, res, next) {
     res.json(app);
     return;
   }
-  app = { };
-  app.modules = { };
+  app = {};
+  app.modules = {};
   loadModule(0, function () {
-    app.isLoggedIn = (req.session.login!==undefined);
-    usersDB.findUserByEmail(req.session.email, function (err, user) {
-      if(err) {
-        res.json({
-          status:false,
-          level: "danger",
-          msg: err.message
-        });
-        return;
-      }
-      app.mode = conf.mode;
-      app.status = true;
-      app.level = "success";
-      app.msg = "app успешно загружен.";
-      app.user = user;
-      res.json(app);
-    }) 
-    
+    app.mode = conf.mode;
+    app.status = true;
+    app.level = "success";
+    app.msg = "app успешно загружен.";
+    res.json(app);
   })
 })
 
