@@ -40,8 +40,14 @@ $.ajax({
           .loadTemplate($("#users-list-item"),
             {
               number: i + 1,
+              familyName: data.users[i].familyName,
+              name: data.users[i].name,
+              patronymic: data.users[i].patronymic,
               email: data.users[i].email,
-              isAdministrator: data.users[i].isAdministrator ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>' : ""
+              isAdministrator:
+                data.users[i].isAdministrator
+                ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>'
+                : ""
             },
             {
               append: true

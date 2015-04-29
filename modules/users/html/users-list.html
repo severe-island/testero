@@ -5,7 +5,7 @@
 
   <div class="col-lg-4 col-md-6 col-sm-8">
     <ol class="breadcrumb">
-      <li><a href="#" id="courses-menu">Пользователи</a></li>
+      <li><a href="#" id="users-menu">Пользователи</a></li>
       <li class="active">Все пользователи</li>
     </ol>
     
@@ -17,6 +17,9 @@
         <thead>
           <tr>
             <th>#</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
             <th>E-Mail</th>
             <th>Администратор</th>
           </tr>
@@ -34,6 +37,9 @@
 <script type="text/html" id="users-list-item">
   <tr>
     <td data-content="number"></td>
+    <td data-content="familyName"></td>
+    <td data-content="name"></td>
+    <td data-content="patronymic"></td>
     <td data-content="email"></td>
     <td data-content="isAdministrator"></td>
   </tr>
