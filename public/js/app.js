@@ -48,7 +48,9 @@ function bootstrapAlert(msg, type, delay, callback) {
         .slideDown("slow", function () {
           $(this).delay(delay)
             .hide("slow");
-          callback();
+          if (callback !== undefined) {
+            callback();
+          }
         });
     });
 }
@@ -57,8 +59,7 @@ function onLoadAllModules() {
   $.ajax({
     type: "POST",
     url: "/users/isAdminExists",
-    success: function (data)
-    {
+    success: function (data) {
       if (!data.status) {
         $("#content")
           .hide("slow", function () {
@@ -69,11 +70,22 @@ function onLoadAllModules() {
       }
       else {
         if (app.mode !== "production") {
-          bootstrapAlert(data.msg, data.level, 1000, function () {
-            tuneTopMenu();
-            showMainMenu();
-          });
+          bootstrapAlert(data.msg, data.level, 1000);
         }
+        $.ajax({
+          type: "POST",
+          url: "/users/getMe",
+          success: function (data) {
+            if (data.status) {
+              app.user = data.user;
+              app.isLoggedIn = true;
+            }
+            bootstrapAlert(data.msg, data.level, 1000, function () {
+              tuneTopMenu();
+              showMainMenu();
+            });
+          }
+        });
       }
     }
   });
