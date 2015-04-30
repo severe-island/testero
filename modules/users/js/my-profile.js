@@ -38,10 +38,24 @@ $("#user-password-edit-dialog #save-button").click(function() {
     url: "/users/updateProfile",
     data: $("#user-edit-password-form").serialize(),
     success: function (data) {
-      alert(data.msg);
-        if (data.status) {
-          $("#user-password-edit-dialog").hide();
-        }
+      $("#user-password-edit-dialog #alert")
+        .addClass("alert-" + data.level)
+        .html(data.msg)
+        .slideDown("slow", function() {
+          $(this)
+            .delay(1000)
+            .slideUp("slow");
+        });
+    },
+    error: function (data) {
+      $("#user-password-edit-dialog #alert")
+        .addClass("alert-danger")
+        .html("Сервер недоступен. Попробуйте позже.")
+        .slideDown("slow", function() {
+          $(this)
+            .delay(1000)
+            .slideUp("slow");
+        });
     }
   });
   return false;
