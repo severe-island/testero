@@ -29,3 +29,20 @@ $("#content #my-profile-menu #user-logout-item").click(function() {
   });
   return false;
 });
+
+
+$("#user-password-edit-dialog #save-button").click(function() {
+  $("#user-edit-password-form #email").val(app.user.email);
+  $.ajax({
+    type: "POST",
+    url: "/users/updateProfile",
+    data: $("#user-edit-password-form").serialize(),
+    success: function (data) {
+      alert(data.msg);
+        if (data.status) {
+          $("#user-password-edit-dialog").hide();
+        }
+    }
+  });
+  return false;
+});
