@@ -55,6 +55,11 @@ $.ajax({
       }
       $("#content #list").removeAttr("hidden");
     }
-    $("#content").slideDown("slow");
+  },
+  error: function(data) {
+    $("#content #alert")
+        .addClass("alert-danger")
+        .html("Сервер недоступен. Попробуйте позже.")
+        .slideDown("slow");
   }
 });

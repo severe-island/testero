@@ -1,7 +1,8 @@
 $("#users-menu #users-list-item").click(function() {
   $("#content").hide("slow", function() {
     $(this)
-      .html(app.modules.users.html["users-list"]);
+      .html(app.modules.users.html["users-list"])
+      .slideDown("slow");
   });
   return false;
 });
