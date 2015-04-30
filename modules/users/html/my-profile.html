@@ -13,9 +13,10 @@
 
     <ul class="nav nav-pills nav-stacked">
       <li>
-        <a href="#" id="user-edit-item">
+        <a href="#" id="user-password-edit-item" data-toggle="modal"
+           data-target="#user-password-edit-dialog">
           <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-          Редактировать
+          Cменить пароль...
         </a>
       </li>
       <li>
@@ -29,6 +30,43 @@
   
   <div class="col-md-4"></div>
 </div>
+
+<div class="modal fade" id="user-password-edit-dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h1 class="modal-title">Смена пароля</h1>
+      </div>
+      <div class="modal-body">
+        <form id="user-edit-password-form">
+          <div class="form-group has-feedback" id="form-group-password">
+            <label class="control-label">Пароль:</label>
+            <input type="password" class="form-control" placeholder="Введите пароль"
+                   name="password" id="password"/>
+            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+          </div>
+          <div class="form-group has-feedback" id="form-group-password-duplicate">
+            <label class="control-label">Пароль ещё раз:</label>
+            <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
+                   id="password-duplicate" name="passwordDuplicate"/>
+            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+          </div>
+          <input type="hidden" name="email" id="email"/>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="accept-button">
+          Сохранить
+        </button>
+        <button type="button" class="btn btn-default active" data-dismiss="modal">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
 
 <script>
   eval(app.modules.users.js["my-profile"]);
