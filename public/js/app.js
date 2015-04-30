@@ -72,7 +72,7 @@ function onLoadAllModules() {
       }
       else {
         if (app.mode !== "production") {
-          bootstrapAlert(data.msg, data.level, 1000);
+          bootstrapAlert(data.msg, data.level, 750);
         }
         $.ajax({
           type: "POST",
@@ -82,7 +82,7 @@ function onLoadAllModules() {
               app.user = data.user;
               app.isLoggedIn = true;
             }
-            bootstrapAlert(data.msg, data.level, 1000, function () {
+            bootstrapAlert(data.msg, data.level, 500, function () {
               tuneTopMenu();
               showMainMenu();
             });

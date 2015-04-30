@@ -1,4 +1,8 @@
 $("#content #my-profile-menu #email").append(app.user.email);
+$("#content #my-profile-menu #email-input").val(app.user.email);
+$("#content #familyName").val(app.user.familyName);
+$("#familyName-transfer-status").hide();
+$("#familyName-saved-status").hide();
 
 $("#my-profile-menu #users-menu").click(function () {
   $("#content")
@@ -11,11 +15,63 @@ $("#my-profile-menu #users-menu").click(function () {
   return false;
 });
 
-$("#content #my-profile-menu #user-logout-item").click(function() {
-  var url = "/users/logout";
-    $.ajax({
+$("#familyName-edit-button").click(function() {
+  $("#familyName").removeAttr("disabled").focus();
+  $("#familyName-edit-button").hide();
+  $("#familyName-save-button").show();
+});
+
+$("#familyName-save-button").click(function() {
+  $("#familyName-save-button").hide();
+  $("#familyName-transfer-status").show();
+  $.ajax({
     type: "POST",
-    url: url,
+    url: "/users/updateProfile",
+    data: $("#user-profile-edit-form").serialize(),
+    success: function (data) {
+      if (app.mode !== "production") {
+        $("#content #alert")
+          .html(data.msg)
+          .addClass("alert-" + data.level)
+          .slideDown("slow", function() {
+            $(this).delay(750).slideUp("slow");
+          });
+      }
+      if (data.status) {
+        $("#familyName").attr("disabled", "disabled");
+        $("#familyName-save-button").hide();
+        $("#familyName-edit-button").show();
+      }
+      else {
+        $("#familyName-save-button").show();
+      }
+      $("#familyName-transfer-status").hide();
+    },
+    error: function (data) {
+      $("#content #alert")
+        .html("Сервер недоступен. Попробуйте позже.")
+        .addClass("alert-danger")
+        .slideDown("slow", function() {
+          $(this).delay(750).slideUp("slow");
+        });
+      $("#familyName-transfer-status").hide();
+      $("#familyName-edit-button").hide();
+      $("#familyName-save-button").show();
+    }
+  });
+  return false;
+});
+
+/*$("#familyName").blur(function() {
+  $("#familyName").attr("disabled", "disabled");
+  $("#familyName-save-button").hide();
+  $("#familyName-edit-button").show();
+});*/
+
+$("#content #my-profile-menu #user-logout-item").click(function() {
+  $.ajax({
+    type: "POST",
+    url: "/users/logout",
     success: function (data) {
       bootstrapAlert(data.msg, "info", 2000, function () {
         if (data.status) {
