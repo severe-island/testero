@@ -1,8 +1,7 @@
 $("#content #my-profile-menu #email").append(app.user.email);
 $("#content #my-profile-menu #email-input").val(app.user.email);
 $("#content #familyName").val(app.user.familyName);
-$("#familyName-transfer-status").hide();
-$("#familyName-saved-status").hide();
+$("#familyName-save-button").hide();
 
 $("#my-profile-menu #users-menu").click(function () {
   $("#content")
@@ -23,14 +22,13 @@ $("#familyName-edit-button").click(function() {
 
 $("#familyName-save-button").click(function() {
   $("#familyName-save-button").hide();
-  $("#familyName-transfer-status").show();
   $.ajax({
     type: "POST",
     url: "/users/updateProfile",
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
-        $("#content #alert")
+        $("#content #alert-familyName")
           .html(data.msg)
           .addClass("alert-" + data.level)
           .slideDown("slow", function() {
@@ -45,20 +43,19 @@ $("#familyName-save-button").click(function() {
       else {
         $("#familyName-save-button").show();
       }
-      $("#familyName-transfer-status").hide();
     },
     error: function (data) {
-      $("#content #alert")
+      $("#content #alert-familyName")
         .html("Сервер недоступен. Попробуйте позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
           $(this).delay(750).slideUp("slow");
         });
-      $("#familyName-transfer-status").hide();
       $("#familyName-edit-button").hide();
       $("#familyName-save-button").show();
     }
   });
+  
   return false;
 });
 
@@ -94,7 +91,7 @@ $("#user-password-edit-dialog #save-button").click(function() {
     url: "/users/updateProfile",
     data: $("#user-edit-password-form").serialize(),
     success: function (data) {
-      $("#user-password-edit-dialog #alert")
+      $("#user-password-edit-dialog #alert-password")
         .addClass("alert-" + data.level)
         .html(data.msg)
         .slideDown("slow", function() {
@@ -104,7 +101,7 @@ $("#user-password-edit-dialog #save-button").click(function() {
         });
     },
     error: function (data) {
-      $("#user-password-edit-dialog #alert")
+      $("#user-password-edit-dialog #alert-password")
         .addClass("alert-danger")
         .html("Сервер недоступен. Попробуйте позже.")
         .slideDown("slow", function() {
