@@ -34,7 +34,23 @@ router.post('/updateProfile', function(req, res, next) {
   if(req.body.showEmail!==undefined) {
     updater.showEmail = req.body.showEmail;
   }
-  if(req.body.password && req.body.passwordDuplicate && req.body.oldPassword) {
+  if(req.body.password) {
+    if(!req.body.passwordDuplicate) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Нужно передать также passwordDuplicate!"
+      });
+      return;
+    }
+    if(!req.body.oldPassword) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Для смены пароля нужно подтвердить старый пароль! (oldPassword)"
+      });
+      return;
+    }
     if(req.body.password != req.body.passwordDuplicate)
     {
       res.json({
@@ -60,7 +76,7 @@ router.post('/updateProfile', function(req, res, next) {
       res.json({
         status: false,
         level: "danger",
-        msg: "Пользователь не найден! Скорее всего, ошибка с сессией."
+        msg: "Вы не найдены в базе! Скорее всего, ошибка с сессией."
       })
       return;
     }
@@ -72,17 +88,7 @@ router.post('/updateProfile', function(req, res, next) {
       })
       return;
     }
-    if(req.body.oldPassword != user.password)
-    {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Неверный пароль!"
-      });
-      return;
-    }
-    
-    db.updateUser(req.body.email, updater, req.session.email, function(err, numUpdated) {
+    db.findUserByEmail(req.body.email, function(err, targetUser) {
       if(err) {
         res.json({
           status: false,
@@ -91,19 +97,39 @@ router.post('/updateProfile', function(req, res, next) {
         });
         return;
       }
-      if(numUpdated<1) {
+      if(!user) {
         res.json({
           status: false,
           level: "danger",
-          msg: "Не найден пользователь для обновления его профиля!"
+          msg: "Пользователь " + req.body.email + " не найден!"
+        })
+        return;
+      }
+      if(updater.password && req.body.oldPassword != targetUser.password)
+      {
+        res.json({
+          status: false,
+          level: "danger",
+          msg: "Неверный пароль!"
         });
         return;
       }
-      res.json({
-        status: true,
-        level: "success",
-        msg: "Профиль успешно обновлён!: "
-      });
+      
+      db.updateUser(req.body.email, updater, req.session.email, function(err, numUpdated) {
+        if(err) {
+          res.json({
+            status: false,
+            level: "danger",
+            msg: "Ошибка БД: " + err.message
+          });
+          return;
+        }
+        res.json({
+          status: true,
+          level: "success",
+          msg: "Профиль успешно обновлён!: "
+        });
+      })
     })
   })
 })
