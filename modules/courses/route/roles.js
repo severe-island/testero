@@ -38,7 +38,7 @@ router.post('/assignRole', function(req, res, next) {
         if(err) {
           res.json({
             status: false,
-            msg: "Ошибка добавления роли: "+err,
+            msg: "Ошибка добавления роли: "+err.message,
             level: "danger"
           })
           return;
@@ -72,11 +72,11 @@ function checkRoles(userEmail, targetEmail, targetRole, callback) {
         callback(targetRole=="student" && userEmail == targetEmail); 
         return;
       }
-      if(userRoles.roles.indexOf("teacher")>-1) {
+      if(roles.indexOf("teacher")>-1) {
         callback(targetRole=="teacher");
         return;
       }
-      if(userRoles.roles.indexOf("student")>-1) {
+      if(roles.indexOf("student")>-1) {
         callback(targetRole=="student" && userEmail == targetEmail); 
         return;
       }

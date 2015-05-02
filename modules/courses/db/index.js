@@ -42,8 +42,9 @@ exports.addCourse = function(title, author, callback) {
   var date = new Date();
   course.created_at = date;
   course.updated_at = date;
-  collection.insert(course, function (err, newUser) {
-    if (err && !newUser) {
+  course.subjects = [ ];
+  collection.insert(course, function (err, newCourse) {
+    if (err && !newCourse) {
       console.log("Не получилось добавить курс", title, " : " ,err.message);
     }
     else {
@@ -51,6 +52,14 @@ exports.addCourse = function(title, author, callback) {
     }
     callback(err);
   });
+};
+
+exports.addSubject = function(courseId, subjectTitle, callback) {
+  var subject = { };
+  subject.title = subjectTitle;
+  var updated_at = new Date();
+  collection.update({ _id: courseId }, { $set: {updated_at: updated_at} }, { });
+  collection.update({ _id: courseId }, { $push: { subjects: subject } }, {}, callback);
 };
 
 exports.updateCourse = function(course, callback) {

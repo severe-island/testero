@@ -92,7 +92,7 @@ router.post('/addCourse', function(req, res, next) {
     return;
   }
   rolesDB.getRolesByEmail(req.session.email, function(err, userRoles) {
-    if(!userRoles || userRoles.roles.indexOf("teacher")<0) {
+    if(!userRoles || userRoles.indexOf("teacher")<0) {
       res.json({
         status: false,
         msg: "Вы должны быть teacher!",
@@ -152,6 +152,7 @@ router.post('/addCourse', function(req, res, next) {
   })
 });
 
+/*
 router.post('/updateCourse', function(req, res, next) {
   db.updateCourse(req.body.course, function(err) {
     if(err) {
@@ -168,6 +169,111 @@ router.post('/updateCourse', function(req, res, next) {
         level: "success"
       })
     }
+  });
+});
+*/
+
+router.post('/addSubject', function(req, res, next) {
+  if(!req.session.login) {
+    res.json({
+      status: false,
+      level: "danger",
+      msg: "Только зарегистрированные польователи могут добавлять темы!"
+    });
+    return;
+  }
+  if(!req.body.subjectTitle) {
+    res.json({
+      status: false,
+      level: "danger",
+      msg: "Необходимо указать имя темы! (subjectTitle)"
+    });
+    return;
+  }
+  if(!req.body.courseId) {
+    res.json({
+      status: false,
+      level: "danger",
+      msg: "Необходимо указать id курса! (courseId)"
+    });
+    return;
+  }
+  usersDB.findUserByEmail(req.session.email, function(err, user) {
+    if(err) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Ошибка БД: " + err.message
+      });
+      return;
+    }
+    if(!user) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Вы не найдены в БД! Возможно, ошибка с сессией."
+      });
+      return;
+    }
+    rolesDB.getRolesByEmail(req.session.email, function(err, roles) {
+      if(err) {
+        res.json({
+          status: false,
+          level: "danger",
+          msg: "Ошибка БД: " + err.message
+        });
+        return;
+      }
+      if(!roles || roles.indexOf("teacher") < 0 && !user.isAdministrator) {
+        res.json({
+          status: false,
+          level: "danger",
+          msg: "Вы должны быть преподавателем или администратором для добавления темы!"
+        });
+        return;
+      }
+      db.findCourse({ _id: req.body.courseId }, function(err, course) {
+        if(err) {
+          res.json({
+            status: false,
+            level: "danger",
+            msg: "Ошибка БД: " + err.message
+          });
+          return;
+        }
+        if(!course) {
+          res.json({
+            status: false,
+            level: "danger",
+            msg: "Курс с таким id не найден!"
+          });
+          return;
+        }
+        if(course.authors.indexOf(req.session.email) < 0 && !user.isAdministrator) {
+          res.json({
+            status: false,
+            level: "danger",
+            msg: "Курс могут редактировать только его авторы или администратор!"
+          });
+          return;
+        }
+        db.addSubject(req.body.courseId, req.body.subjectTitle, function(err) {
+          if(err) {
+            res.json({
+              status: false,
+              level: "danger",
+              msg: "Ошибка БД: " + err.message
+            });
+            return;
+          }
+          res.json({
+            status: true,
+            level: "success",
+            msg: "Тема удачно добавлена!"
+          });
+        });
+      });
+    });
   });
 });
 

@@ -56,6 +56,13 @@ var collection = new dataStore(getConnectionOptions("courses-roles"));
 
 exports.getRolesByEmail = function(email, callback) {
   collection.findOne({ email: email }, function (err, userRoles) {
-    callback(err, userRoles);
+    if(userRoles)
+    {
+      callback(err, userRoles.roles);
+    }
+    else
+    {
+      callback(err, null);
+    }
   })
 }
