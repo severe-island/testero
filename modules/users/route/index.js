@@ -34,7 +34,7 @@ router.post('/login', function(req, res, next) {
       }
       else {
         req.session.cookie.originalMaxAge = null
-        req.session.cookie._expires = false
+        req.session.cookie.expires = false
       }
       req.session.login = true
       req.session.email = email
@@ -221,6 +221,7 @@ router.post('/removeUser', function(req, res, next) {
 })
 
 router.post('/getMe', function(req, res, next) {
+  console.log(req.session);
   if(!req.session.login) {
     res.json({
       status: false,
