@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
   secret: 'sksskjfsdfkn2131',
-  store: new NedbStore({ filename: '../db/sessions', autoload: true, inMemoryOnly: false})
+  store: new NedbStore({ filename: '../db/'+config.mode+'/sessions', autoload: true, inMemoryOnly: false})
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
