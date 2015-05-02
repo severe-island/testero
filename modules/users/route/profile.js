@@ -34,6 +34,18 @@ router.post('/updateProfile', function(req, res, next) {
   if(req.body.showEmail!==undefined) {
     updater.showEmail = req.body.showEmail;
   }
+  if(req.body.password && req.body.passwordDuplicate && req.body.oldPassword) {
+    if(req.body.password != req.body.passwordDuplicate)
+    {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Новый пароль и его подтверждение не совпадают!"
+      });
+      return;
+    }
+    updater.password = req.body.password;
+  }
   
   db.findUserByEmail(req.session.email, function(err, user) {
     if(err) {
@@ -60,6 +72,16 @@ router.post('/updateProfile', function(req, res, next) {
       })
       return;
     }
+    if(req.body.oldPassword != user.password)
+    {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Неверный пароль!"
+      });
+      return;
+    }
+    
     db.updateUser(req.body.email, updater, req.session.email, function(err, numUpdated) {
       if(err) {
         res.json({
