@@ -2,6 +2,10 @@ $("#content #my-profile-menu #email").append(app.user.email);
 $("#content #my-profile-menu #email-input").val(app.user.email);
 $("#content #familyName").val(app.user.familyName);
 $("#familyName-save-button").hide();
+$("#content #name").val(app.user.name);
+$("#name-save-button").hide();
+$("#content #patronymic").val(app.user.patronymic);
+$("#patronymic-save-button").hide();
 
 $("#my-profile-menu #users-menu").click(function () {
   $("#content")
@@ -65,6 +69,98 @@ $("#familyName-save-button").click(function() {
   $("#familyName-save-button").hide();
   $("#familyName-edit-button").show();
 });*/
+
+$("#name-edit-button").click(function() {
+  $("#name").removeAttr("disabled").focus();
+  $("#name-edit-button").hide();
+  $("#name-save-button").show();
+});
+
+$("#name-save-button").click(function() {
+  $("#name-save-button").attr("disabled", "disabled");
+  $.ajax({
+    type: "POST",
+    url: "/users/updateProfile",
+    data: $("#user-profile-edit-form").serialize(),
+    success: function (data) {
+      if (app.mode !== "production") {
+        $("#content #alert-name")
+          .html(data.msg)
+          .addClass("alert-" + data.level)
+          .slideDown("slow", function() {
+            $(this).delay(750).slideUp("slow", function() {
+              $("#name-save-button").removeAttr("disabled");
+            });
+          });
+      }
+      if (data.status) {
+        $("#name").attr("disabled", "disabled");
+        $("#name-save-button").hide();
+        $("#name-edit-button").show();
+      }
+    },
+    error: function (data) {
+      $("#content #alert-name")
+        .html("Сервер недоступен. Попробуйте позже.")
+        .addClass("alert-danger")
+        .slideDown("slow", function() {
+          $(this).delay(750).slideUp("slow", function() {
+            $(this).removeClass("alert-danger");
+          });
+        });
+      $("#name-edit-button").hide();
+      $("#name-save-button").show();
+    }
+  });
+  
+  return false;
+});
+
+$("#patronymic-edit-button").click(function() {
+  $("#patronymic").removeAttr("disabled").focus();
+  $("#patronymic-edit-button").hide();
+  $("#patronymic-save-button").show();
+});
+
+$("#patronymic-save-button").click(function() {
+  $("#patronymic-save-button").attr("disabled", "disabled");
+  $.ajax({
+    type: "POST",
+    url: "/users/updateProfile",
+    data: $("#user-profile-edit-form").serialize(),
+    success: function (data) {
+      if (app.mode !== "production") {
+        $("#content #alert-patronymic")
+          .html(data.msg)
+          .addClass("alert-" + data.level)
+          .slideDown("slow", function() {
+            $(this).delay(750).slideUp("slow", function() {
+              $("#patronymic-save-button").removeAttr("disabled");
+            });
+          });
+      }
+      if (data.status) {
+        $("#patronymic").attr("disabled", "disabled");
+        $("#patronymic-save-button").hide();
+        $("#patronymic-edit-button").show();
+      }
+    },
+    error: function (data) {
+      $("#content #alert-patronymic")
+        .html("Сервер недоступен. Попробуйте позже.")
+        .addClass("alert-danger")
+        .slideDown("slow", function() {
+          $(this).delay(750).slideUp("slow", function() {
+            $(this).removeClass("alert-danger");
+          });
+        });
+      $("#patronymic-edit-button").hide();
+      $("#patronymic-save-button").show();
+    }
+  });
+  
+  return false;
+});
 
 $("#content #my-profile-menu #user-logout-item").click(function() {
   $.ajax({
