@@ -21,7 +21,7 @@ $("#familyName-edit-button").click(function() {
 });
 
 $("#familyName-save-button").click(function() {
-  $("#familyName-save-button").hide();
+  $("#familyName-save-button").attr("disabled", "disabled");
   $.ajax({
     type: "POST",
     url: "/users/updateProfile",
@@ -32,7 +32,9 @@ $("#familyName-save-button").click(function() {
           .html(data.msg)
           .addClass("alert-" + data.level)
           .slideDown("slow", function() {
-            $(this).delay(750).slideUp("slow");
+            $(this).delay(750).slideUp("slow", function() {
+              $("#familyName-save-button").removeAttr("disabled");
+            });
           });
       }
       if (data.status) {
@@ -40,16 +42,15 @@ $("#familyName-save-button").click(function() {
         $("#familyName-save-button").hide();
         $("#familyName-edit-button").show();
       }
-      else {
-        $("#familyName-save-button").show();
-      }
     },
     error: function (data) {
       $("#content #alert-familyName")
         .html("Сервер недоступен. Попробуйте позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
-          $(this).delay(750).slideUp("slow");
+          $(this).delay(750).slideUp("slow", function() {
+            $(this).removeClass("alert-danger");
+          });
         });
       $("#familyName-edit-button").hide();
       $("#familyName-save-button").show();
@@ -88,7 +89,7 @@ $("#user-password-edit-dialog #save-button").click(function() {
   $("#user-edit-password-form #email").val(app.user.email);
   $.ajax({
     type: "POST",
-    url: "/users/updateProfile",
+    url: "/users/updatePassword",
     data: $("#user-edit-password-form").serialize(),
     success: function (data) {
       $("#user-password-edit-dialog #alert-password")

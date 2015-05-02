@@ -68,27 +68,36 @@
         <button type="button" class="close" data-dismiss="modal">
           <span aria-hidden="true">&times;</span>
         </button>
-        <h1 class="modal-title">Смена пароля</h1>
+        <h2 class="modal-title">Смена пароля</h2>
       </div>
+      
       <div class="modal-body">
-        <div id="alert" class="alert" role="alert" hidden="hidden">
-        </div>
         <form id="user-edit-password-form">
+          <div class="form-group has-feedback" id="form-group-old-password">
+            <label class="control-label">Старый пароль:</label>
+            <input type="password" class="form-control" placeholder="Введите старый пароль"
+                   name="oldPassword" id="old-password"/>
+            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+          </div>
           <div class="form-group has-feedback" id="form-group-password">
-            <label class="control-label">Пароль:</label>
-            <input type="password" class="form-control" placeholder="Введите пароль"
+            <label class="control-label">Новый пароль:</label>
+            <input type="password" class="form-control" placeholder="Введите новый пароль"
                    name="password" id="password"/>
             <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
           </div>
           <div class="form-group has-feedback" id="form-group-password-duplicate">
             <label class="control-label">Пароль ещё раз:</label>
-            <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
+            <input type="password" class="form-control" placeholder="Введите новый пароль ещё раз"
                    id="password-duplicate" name="passwordDuplicate"/>
             <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
           </div>
           <input type="hidden" name="email" id="email"/>
         </form>
       </div>
+      
+      <div id="alert-password" class="alert" role="alert" hidden="hidden">
+      </div>
+      
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="save-button">
           Сохранить
