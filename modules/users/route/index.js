@@ -25,32 +25,40 @@ router.post('/login', function(req, res, next) {
         status: false, 
         level: "info"
       })
+      return;
     }
-    else if(data.password==password) {
-      var msg = "Вы вошли!"
-      if(remember){
-        msg+=" Я постараюсь вас запомнить."
-        req.session.cookie.originalMaxAge = 1000*60*60;
-      }
-      else {
-        req.session.cookie.originalMaxAge = null
-        req.session.cookie.expires = false
-      }
-      req.session.login = true
-      req.session.email = email
+    if(data.removed) {
       res.json({
-        msg: msg,
-        status: true,
-        level: "success"
+        status: false,
+        level: "info",
+        msg: "Ваш пользователь удалён!"
       });
+      return;
     }
-    else {
+    if(data.password != password) {
       res.json({
         msg: "Неверный пароль!",
         status: false,
         level: "info"
       });
+      return;
     }
+    var msg = "Вы вошли!"
+    if(remember){
+      msg+=" Я постараюсь вас запомнить."
+      req.session.cookie.originalMaxAge = 1000*60*60;
+    }
+    else {
+      req.session.cookie.originalMaxAge = null
+      req.session.cookie.expires = false
+    }
+    req.session.login = true
+    req.session.email = email
+    res.json({
+      msg: msg,
+      status: true,
+      level: "success"
+    });
   });
 });
 
@@ -157,6 +165,34 @@ router.post('/signup', function(req, res, next) {
     });
   });
 }); 
+
+router.post('/requestRemoving', function(req, res, next) {
+  if(!req.session.login) {
+    res.json({
+      status: true,
+      level: "info",
+      msg: "Вы не вошли, поэтому не можете себя удалить."
+    });
+    return;
+  }
+  db.updateUser(req.session.email, { removingRequested: true }, req.session.email, function(err) {
+    if(err) {
+      res.json({
+        status: true,
+        level: "info",
+        msg: "Ошибка БД: " + err.message
+      });
+      return;
+    }
+    delete req.session.login;
+    delete req.session.email;
+    res.json({
+      status: true,
+      level: "info",
+      msg: "Запрос на удаление оставлен."
+    });
+  })
+});
 
 router.post('/removeUser', function(req, res, next) {
   if(!req.session.login) {

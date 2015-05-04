@@ -131,11 +131,7 @@ module.exports.setAsAdministrator = function(email, callback) {
 }
 
 module.exports.updateUser = function(email, updater, editor, callback) {
+  updater.editor = editor;
+  updater.updated_at = new Date();
   collection.update({ email: email }, { $set: updater }, { }, callback);
-  var date = new Date();
-  collection.update({ email: email }, { $set: {editor: editor, updated_at: date} }, { }, function(err) {
-    if(err) {
-      console.log(err.message)
-    }
-  }) 
 }
