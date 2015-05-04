@@ -1,3 +1,3 @@
 set MODE=testing
 set DEBUG=testero
-node www
+node testing.js

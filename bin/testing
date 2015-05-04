@@ -1,2 +1,2 @@
 #!/bin/sh
-MODE=testing DEBUG=testero ./www
+MODE=testing DEBUG=testero node testing.js
