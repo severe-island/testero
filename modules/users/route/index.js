@@ -12,12 +12,9 @@ router.post('/login', function(req, res, next) {
     });
     return;
   }
-  console.log("Попытка входа!");
   var email = req.body.email
   var password = req.body.password
   var remember = (req.body.remember!=undefined)
-  console.log("email: "+email)
-  console.log("remember: "+remember)
   db.findUserByEmail(email, function(err, data){
     if(err || data==null) {
       res.json({
@@ -86,7 +83,6 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-  console.log(req.body);
   if(req.session.login)
   {
     res.json({
@@ -257,7 +253,6 @@ router.post('/removeUser', function(req, res, next) {
 })
 
 router.post('/getMe', function(req, res, next) {
-  console.log(req.session);
   if(!req.session.login) {
     res.json({
       status: false,

@@ -4,7 +4,6 @@ var db = require('../db');
 var conf = require('../../../config');
 
 router.post('/addAdmin', function(req, res, next) {
-  console.log(req.body);
   db.isAdminExists(function(adminExists){
     if(!adminExists)
     {

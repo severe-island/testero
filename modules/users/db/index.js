@@ -76,7 +76,7 @@ module.exports.findUserByIdWithoutPassword = function (id, admin, callback) {
 
 module.exports.findUserByEmail = function (userEmail, callback) {
   collection.findOne({ email: userEmail }, function (err, findedUser) {
-    if (err)
+    if (err && config.mode !== "testing")
     {
       console.log("Ошибка при поиске пользователя ", userEmail, " :", err.message);
     }
@@ -108,14 +108,6 @@ module.exports.addNewUser = function (userEmail, userPass, isAdministrator, call
     created_at: date,
     updated_at: date
   }, function (err, newUser) {
-    if (err && !newUser)
-    {
-      console.log("Не получилось добавить пользователя", userEmail, " : " ,err.message);
-    }
-    else
-    {
-      console.log("Запись произведена успешно! ", newUser)
-    }
     callback(err, newUser);
   });
 }

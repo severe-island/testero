@@ -11,7 +11,9 @@ var fs = require('fs')
 
 var app = express();
 
-app.use(logger('dev'));
+if(config.mode !== "testing") {
+  app.use(logger('dev'));
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -33,7 +35,9 @@ config.modules.forEach(function(moduleName){
       })
     } 
   }
-  console.log('Модуль '+moduleName+' подключен.')
+  if(config.mode !== "testing") {
+    console.log('Модуль '+moduleName+' подключен.')
+  }
 })
 
 var modulesRoute = require('./modules');

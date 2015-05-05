@@ -32,7 +32,9 @@ function loadModule(i, callback) {
     data.msg = 'Модуль '+moduleName+' не найден'
     data.level = "warning"
     app.modules[moduleName] = data;
-    console.log("Модуль", moduleName, "не найден!");
+    if(conf.mode !== "testing") {
+      console.log("Модуль", moduleName, "не найден!");
+    }
     if(conf.mode !== "development") {
       return;
     }
