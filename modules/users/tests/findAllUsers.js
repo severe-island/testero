@@ -1,5 +1,6 @@
 var request = require('supertest');
 var app = require('../../../app');
+var userConst = require('../js/const');
 
 describe('Модуль users:', function () {
   describe('Список всех пользователей:', function() {
@@ -16,6 +17,7 @@ describe('Модуль users:', function () {
           res.body.status.should.equal(true);
           res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
           done();
+          console.log(userConst.Messages.findAllUsers[userConst.ErrorCodes.findAllUsers.SUCCESSFUL]);
         });
     });
     

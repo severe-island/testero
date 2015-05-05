@@ -1,9 +1,14 @@
 var ErrorCodes = {
-  SUCCESSFUL: 0
+  findAllUsers: {
+    SUCCESSFUL: 0
+  }
 };
 
 var Messages = {
-  "findAllUsers": [
+  findAllUsers: [
     /* SUCCESSFULL */ "Список всех пользователей готов."
   ]
 };
+
+module.exports.ErrorCodes = ErrorCodes;
+module.exports.Messages = Messages;
