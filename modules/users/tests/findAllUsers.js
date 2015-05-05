@@ -6,7 +6,8 @@ describe('Модуль users:', function () {
     it('Список пуст:', function (done) {
       request(app)
         .post('/users/findAllUsers')
-        .expect('Content-Type', /json/)
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
         .expect(200)
         .end(function (err, res) {
           if (err) {
@@ -19,9 +20,16 @@ describe('Модуль users:', function () {
     });
     
     it('Добавлен первый пользователь:', function() {
+      var user = {
+        email: "user1@testero",
+        password: "user1",
+        passwordDuplicate: "user1"
+      };
       request(app)
         .post('/users/signup')
-        .expect('Content-Type', /json/)
+        .send(user)
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
         .expect(200)
         .end(function(err, res) {
           if (err) {
@@ -31,7 +39,8 @@ describe('Модуль users:', function () {
           
           request(app)
             .post('/users/findAllUsers')
-            .expect('Content-Type', /json/)
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
             .expect(200)
             .end(function(err, res) {
               if (err) {
@@ -49,7 +58,8 @@ describe('Модуль users:', function () {
     it('Добавлен второй пользователь:', function() {
       request(app)
         .post('/users/signup')
-        .expect('Content-Type', /json/)
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
         .expect(200)
         .end(function(err, res) {
           if (err) {
@@ -59,7 +69,8 @@ describe('Модуль users:', function () {
           
           request(app)
             .post('/users/findAllUsers')
-            .expect('Content-Type', /json/)
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
             .expect(200)
             .end(function(err, res) {
               if (err) {
