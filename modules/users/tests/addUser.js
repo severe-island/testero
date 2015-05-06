@@ -61,9 +61,21 @@ describe('Модуль users', function () {
                 }
                 console.log(res.body.msg);
                 res.body.status.should.equal(true);
+                
+                request(app)
+                  .post('/users/getMe')
+                  .set('X-Requested-With', 'XMLHttpRequest')
+                  .expect('Content-Type', /application\/json/)
+                  .expect(200)
+                  .end(function(err, res) {
+                    if (err) {
+                      throw err;
+                    }
+                    console.log(res.body.msg);
+                    res.body.status.should.equal(true);
+                    done();
+                  });
               });
-            
-            done();
           });
       });
       
