@@ -5,7 +5,7 @@ var usersConst = require('../js/const');
 describe('Модуль users', function () {
   describe('Список всех пользователей (findAllUsers)', function() {
     context('Список пуст', function() {
-      it('', function (done) {
+      it('Возвращается массив длины нуль', function (done) {
       request(app)
         .post('/users/findAllUsers')
         .set('X-Requested-With', 'XMLHttpRequest')
@@ -44,7 +44,7 @@ describe('Модуль users', function () {
         });
       });
     
-      it('', function(done) {
+      it('Возвращается массив длиной единица', function(done) {
         request(app)
           .post('/users/findAllUsers')
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -83,7 +83,7 @@ describe('Модуль users', function () {
         });
       });
 
-      it('', function(done) {
+      it('Возвращается массив длиной два', function(done) {
         request(app)
           .post('/users/findAllUsers')
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -97,6 +97,34 @@ describe('Модуль users', function () {
             res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
             done();
         });
+      });
+    });
+    
+    after(function(done) {
+      request(app)
+        .post('/users/getMe')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+          res.body.status.should.equal(true);
+          done();
+      });
+      request(app)
+        .post('/users/removeUser')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .send({email: "user2"})
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+          res.body.status.should.equal(true);
+          done();
       });
     });
   });

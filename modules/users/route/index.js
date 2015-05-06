@@ -162,6 +162,148 @@ router.post('/signup', function(req, res, next) {
   });
 }); 
 
+
+router.post('/addUser', function(req, res, next) {
+  if (!req.session.login) {
+    res.json({
+      msg: "Вы должны быть авторизованным пользователем",
+      status: false,
+      level: "danger"
+    });
+    return;
+  }
+  
+  db.findUserByEmail(email, function(err, data){
+    if (err || data === null) {
+      res.json({
+        msg: "Вы не являетесь пользователем системы",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    
+    var initiator = data;
+    
+    if (initiator.removed) {
+      res.json({
+        msg: "Ваш аккаунт " + email + " был удалён",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+
+    if (!initiator.isAdministrator) {
+      res.json({
+        msg: "Только администратор может добавлять новых пользователей",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    
+    var email = req.body.email;
+    var password = req.body.password;
+    var passwordDuplicate = req.body.passwordDuplicate;
+
+    if(!email) {
+      res.json({
+        msg: "Не задан email нового пользователя",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+
+    if (email.indexOf('@') < 0) {
+      res.json({
+        msg: "Некорректный email",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+
+    if (!password) {
+      res.json({
+        msg: "Не задан пароль нового пользователя",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+
+    if (!passwordDuplicate) {
+      res.json({
+        msg: "Не задан повтор пароля нового пользователя",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+
+    if (password !== passwordDuplicate) {
+      res.json({
+        msg: "Пароли не совпадают",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    
+    db.findUserByEmail(email, function(err, data) {
+      if (err) {
+        var msg;
+        if (initiator.isAdministrator) {
+          msg = "Ошибка БД: " + err.message;
+        }
+        else {
+          msg = "Внутренняя ошибка сервера";
+        }
+        res.json({
+          msg: msg,
+          status: false,
+          level: "danger"
+        });
+        return;
+      }
+
+      if (data !== null) {
+        res.json({
+          msg: "Пользователь " + email + " уже есть",
+          status: false,
+          level: "warning"
+        });
+        return;
+      }
+
+      db.addNewUser(email, password, false, function(err, newUser) {
+        if (err) {
+          res.json({
+            msg: "Ошибка БД: " + err.message,
+            status: false,
+            level: "danger"
+          });
+          return;
+        }
+        
+        delete newUser.password;
+        req.session.login = true;
+        req.session.email = email;
+        
+        res.json({
+          msg: "Пользователь " + email + " успешно зарегистрирован!",
+          status: true,
+          level: "success",
+          user: newUser
+        });
+      });
+    });
+  });
+});
+
+
 router.post('/requestRemoving', function(req, res, next) {
   if(!req.session.login) {
     res.json({
