@@ -173,7 +173,7 @@ router.post('/addUser', function(req, res, next) {
     return;
   }
   
-  db.findUserByEmail(email, function(err, data){
+  db.findUserByEmail(req.session.email, function(err, data){
     if (err || data === null) {
       res.json({
         msg: "Вы не являетесь пользователем системы",
