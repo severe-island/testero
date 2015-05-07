@@ -289,8 +289,8 @@ router.post('/addUser', function(req, res, next) {
         }
         
         delete newUser.password;
-        req.session.login = true;
-        req.session.email = email;
+        /*req.session.login = true;
+        req.session.email = email;*/
         
         res.json({
           msg: "Пользователь " + email + " успешно зарегистрирован!",

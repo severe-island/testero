@@ -2,7 +2,6 @@ var app = require('../../../app');
 var request = require('supertest')(app);
 var superagent = require('superagent');
 var agent = superagent.agent();
-//var usersConst = require('../js/const');
 
 describe('Модуль users', function () {
   describe('Добавление пользователя (addUser)', function() {
@@ -24,7 +23,9 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
+            
             res.body.status.should.equal(false);
+            
             done();
           });
       });
@@ -48,40 +49,12 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
-            console.log(res.body.msg);
-            res.body.status.should.equal(true);
             
-            request
-              .post('/users/login')
-              .send({email: "admin1@testero", password: "admin1"})
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function (err, res) {
-                if (err) {
-                  throw err;
-                }
-                console.log(res.body.msg);
-                res.body.status.should.equal(true);
+            agent.saveCookies(res);
+            
+            res.body.status.should.equal(true);
                 
-                agent.saveCookies(res);
-                
-                /*var req = request.post('/users/getMe');
-                agent.attachCookies(req);
-                  req
-                    .set('X-Requested-With', 'XMLHttpRequest')
-                  .expect('Content-Type', /application\/json/)
-                  .expect(200)
-                  .end(function(err, res) {
-                    if (err) {
-                      throw err;
-                    }
-                    console.log("/users/getMe " + res.body.msg);
-                    res.body.status.should.equal(true);
-                    done();
-                  });*/
-                done();
-              });
+            done();
           });
       });
       
@@ -92,8 +65,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "user1",
           agreementAccepted: true
         };
-        var req = request
-          .post('/users/addUser');
+        var req = request.post('/users/addUser');
         agent.attachCookies(req);
         req
           .send(data)
@@ -104,9 +76,53 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
-            console.log(res.body.msg);
+            
+            res.body.should.have.property('status');
             res.body.status.should.equal(true);
+            res.body.should.have.property('level');
+            res.body.level.should.equal("success");
+            res.body.should.have.property('user');
+            res.body.user.should.have.property('email');
+            res.body.user.should.have.property('isAdministrator');
+            res.body.user.should.have.property('showEmail');
+            res.body.user.should.have.property('created_at');
+            res.body.user.should.have.property('updated_at');
+            
             done();
+          });
+      });
+      
+      after(function(done) {
+        var req = request.post('/users/removeUser');
+        agent.attachCookies(req);
+        req
+          .send({email: "user1@testero"})
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .end(function (err, res) {
+            if (err) {
+              throw err;
+            }
+            
+            res.body.status.should.equal(true);
+            
+            var req = request.post('/users/removeUser');
+            agent.attachCookies(req);
+            req
+              .send({email: "admin1@testero"})
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .end(function (err, res) {
+                if (err) {
+                  throw err;
+                }
+
+                res.body.status.should.equal(true);
+
+                done();
+              });
           });
       });
     });
