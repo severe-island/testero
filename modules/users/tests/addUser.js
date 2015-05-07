@@ -1,5 +1,5 @@
-var request = require('supertest');
 var app = require('../../../app');
+var request = require('supertest')(app);
 var superagent = require('superagent');
 var agent = superagent.agent();
 //var usersConst = require('../js/const');
@@ -14,7 +14,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "user1",
           agreementAccepted: true
         };
-        request(app)
+        request
           .post('/users/addUser')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -38,7 +38,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "admin1",
           agreementAccepted: true
         };
-        request(app)
+        request
           .post('/users/addAdmin')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -51,7 +51,7 @@ describe('Модуль users', function () {
             console.log(res.body.msg);
             res.body.status.should.equal(true);
             
-            request(app)
+            request
               .post('/users/login')
               .send({email: "admin1@testero", password: "admin1"})
               .set('X-Requested-With', 'XMLHttpRequest')
@@ -66,21 +66,21 @@ describe('Модуль users', function () {
                 
                 agent.saveCookies(res);
                 
-                var req = request(app)
-                  .post('/users/getMe')
-                  .set('X-Requested-With', 'XMLHttpRequest');
+                /*var req = request.post('/users/getMe');
                 agent.attachCookies(req);
-                req
+                  req
+                    .set('X-Requested-With', 'XMLHttpRequest')
                   .expect('Content-Type', /application\/json/)
                   .expect(200)
                   .end(function(err, res) {
                     if (err) {
                       throw err;
                     }
-                    console.log(res.body.msg);
+                    console.log("/users/getMe " + res.body.msg);
                     res.body.status.should.equal(true);
-                    done(agent);
-                  });
+                    done();
+                  });*/
+                done();
               });
           });
       });
@@ -92,8 +92,10 @@ describe('Модуль users', function () {
           passwordDuplicate: "user1",
           agreementAccepted: true
         };
-        request(app)
-          .post('/users/addUser')
+        var req = request
+          .post('/users/addUser');
+        agent.attachCookies(req);
+        req
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
