@@ -1,12 +1,13 @@
-var request = require('supertest');
 var app = require('../../../app');
-var usersConst = require('../js/const');
+var request = require('supertest')(app);
+var superagent = require('superagent');
+var agent = superagent.agent();
 
 describe('Модуль users', function () {
   describe('Список всех пользователей (findAllUsers)', function() {
     context('Список пуст', function() {
       it('Возвращается массив длины нуль', function (done) {
-      request(app)
+      request
         .post('/users/findAllUsers')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -15,8 +16,10 @@ describe('Модуль users', function () {
           if (err) {
             throw err;
           }
+          
           res.body.status.should.equal(true);
           res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
+          
           done();
         });
       });
@@ -24,14 +27,14 @@ describe('Модуль users', function () {
 
     context('Один пользователь', function() {
       before(function(done) {
-        var user = {
-          email: "user1@testero",
-          password: "user1",
-          passwordDuplicate: "user1"
+        var admin1 = {
+          email: "admin1@testero",
+          password: "admin1",
+          passwordDuplicate: "admin1"
         };
-        request(app)
-          .post('/users/signup')
-          .send(user)
+        request
+          .post('/users/addAdmin')
+          .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -39,13 +42,17 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
+            
+            agent.saveCookies(res);
+            console.log(res.body.msg);
             res.body.status.should.equal(true);
+            
             done();
         });
       });
     
       it('Возвращается массив длиной единица', function(done) {
-        request(app)
+        request
           .post('/users/findAllUsers')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -54,8 +61,10 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
+            
             res.body.status.should.equal(true);
             res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(1);
+            
             done();
         });
       });
@@ -63,14 +72,15 @@ describe('Модуль users', function () {
 
     context('Два пользователя', function() {
       before(function(done) {
-        var user = {
-          email: "user2@testero",
-          password: "user2",
-          passwordDuplicate: "user2"
+        var user1 = {
+          email: "user1@testero",
+          password: "user1",
+          passwordDuplicate: "user1"
         };
-        request(app)
-          .post('/users/signup')
-          .send(user)
+        var req = request.post('/users/addUser');
+        agent.attachCookies(req);
+        req
+          .send(user1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -78,13 +88,15 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
+            
             res.body.status.should.equal(true);
+            
             done();
         });
       });
 
       it('Возвращается массив длиной два', function(done) {
-        request(app)
+        request
           .post('/users/findAllUsers')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -93,30 +105,20 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
+            
             res.body.status.should.equal(true);
             res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
+            
             done();
         });
       });
     });
     
     after(function(done) {
-      request(app)
-        .post('/users/getMe')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function(err, res) {
-          if (err) {
-            throw err;
-          }
-          res.body.status.should.equal(true);
-          done();
-      });
-      request(app)
+      request
         .post('/users/removeUser')
         .set('X-Requested-With', 'XMLHttpRequest')
-        .send({email: "user2"})
+        .send({email: "user1"})
         .expect('Content-Type', /application\/json/)
         .expect(200)
         .end(function(err, res) {
