@@ -1,6 +1,8 @@
 var request = require('supertest');
 var app = require('../../../app');
-var usersConst = require('../js/const');
+var superagent = require('superagent');
+var agent = superagent.agent();
+//var usersConst = require('../js/const');
 
 describe('Модуль users', function () {
   describe('Добавление пользователя (addUser)', function() {
