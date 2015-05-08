@@ -194,7 +194,7 @@ router.post('/registerUser', function(req, res, next) {
     var email = req.body.email;
     var password = req.body.password;
     var passwordDuplicate = req.body.passwordDuplicate;
-    var isAdministrator = req.body.isAdminstrator;
+    var isAdministrator = req.body.isAdministrator;
     var registeredBy = initiator.email;
 
     if(!email) {

@@ -33,7 +33,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "admin1"
         };
         request
-          .post('/users/addAdmin')
+          .post('/users/registerAdministrator')
           .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -47,7 +47,7 @@ describe('Модуль users', function () {
             res.body.status.should.equal(true, res.body.msg);
             
             done();
-        });
+          });
       });
     
       it('Возвращается массив длиной единица', function(done) {

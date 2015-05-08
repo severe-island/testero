@@ -3,11 +3,11 @@ var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
 
-router.post('/addAdmin', function(req, res, next) {
+router.post('/registerAdministrator', function(req, res, next) {
   db.isAdminExists(function(adminExists){
     if(!adminExists)
     {
-      addAdmin(req, res);
+      registerAdministrator(req, res);
     }
     else
     {
@@ -39,13 +39,13 @@ router.post('/addAdmin', function(req, res, next) {
           });
           return;
         }
-        addAdmin(req, res);
+        registerAdministrator(req, res);
       }); 
     }
   }); 
 }); 
 
-function addAdmin(req, res) {
+function registerAdministrator(req, res) {
   var email = req.body.email
   var password = req.body.password
   var passwordDuplicate = req.body.passwordDuplicate;
@@ -189,4 +189,3 @@ router.post('/setAsAdministrator', function(req, res, next) {
 })
 
 module.exports = router;
-

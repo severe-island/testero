@@ -138,7 +138,7 @@ describe('Модуль users', function () {
             
             agent.saveCookies(res);
             
-            res.body.status.should.equal(false);
+            res.body.status.should.equal(true);
             
             done();
           });
