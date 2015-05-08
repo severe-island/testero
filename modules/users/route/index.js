@@ -83,15 +83,6 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-  if(req.session.login)
-  {
-    res.json({
-      msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
-      status: false,
-      level: "warning"
-    });
-    return;
-  }
   if(!req.body.email || !req.body.password || !req.body.passwordDuplicate) {
     res.json({
       msg: "Указаны не все данные.",
@@ -401,6 +392,59 @@ router.post('/removeUser', function(req, res, next) {
     })
   })
 })
+
+router.post('/clearUsers', function(req, res, next) {
+  if(!req.session.login) {
+    res.json({
+      status: false,
+      level: "danger",
+      msg: "Сначала войдите в систему!"
+    })
+    return
+  }
+  db.findUserByEmail(req.session.email, function(err, user) {
+    if(err) {
+      res.json({
+        msg: "Ошибка БД: " + err.message,
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    if(!user) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Сначала войдите в систему!"
+      })
+      return 
+    }
+    if(!user.isAdministrator) {
+      res.json({
+        msg: "Очистить базу пользователей может только администратор!",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    db.clearUsers(function(err) { 
+      if(err) {
+        res.json({
+          msg: "Ошибка БД: " + err.message,
+          status: false,
+          level: "danger"
+        });
+        return;
+      }
+      res.json({
+        msg: "Все пользователи были удалены!",
+        status: true,
+        level: "success"
+      });
+    })
+  })
+})
+
 
 router.post('/getMe', function(req, res, next) {
   if(!req.session.login) {

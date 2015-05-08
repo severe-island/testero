@@ -145,3 +145,7 @@ module.exports.updateUser = function(email, updater, editor, callback) {
   updater.updated_at = new Date();
   collection.update({ email: email }, { $set: updater }, { }, callback);
 }
+
+module.exports.clearUsers = function(callback) {
+  collection.remove({ }, {multi: true}, callback);
+}
