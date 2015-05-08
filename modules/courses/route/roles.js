@@ -84,4 +84,23 @@ function checkRoles(userEmail, targetEmail, targetRole, callback) {
   });
 }
 
+router.post('/getRolesByEmail', function(req, res, next) {
+  roles.getRolesByEmail(req.body.email, function(err, userRoles) {
+    if(err) {
+      res.json({
+        status: false,
+        msg: "Ошибка БД: "+err.message,
+        level: "danger"
+      })
+      return;
+    }
+    res.json({
+      status: true,
+      level: 'success',
+      msg: "Роли успешно получены",
+      roles: userRoles
+    });
+  });
+});
+
 module.exports = router;
