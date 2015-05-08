@@ -98,15 +98,33 @@ module.exports.isAdminExists = function (callback) {
   });
 }
 
+
+module.exports.registerUser = function(data, callback) {
+  var date = new Date();
+  collection.insert({
+    email: data.email,
+    password: data.password,
+    isAdministrator: data.isAdministrator,
+    showEmail: false,
+    created_at: date,
+    updated_at: null,
+    registeredBy: data.registeredBy
+  }, function (err, newUser) {
+    callback(err, newUser);
+  });
+};
+
+// DEPRECATED:
+
 module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback) {
   var date = new Date();
   collection.insert({
     email: userEmail,
     password: userPass,
     isAdministrator: isAdministrator,
-    showEmail: true,
+    showEmail: false,
     created_at: date,
-    updated_at: date
+    updated_at: null
   }, function (err, newUser) {
     callback(err, newUser);
   });

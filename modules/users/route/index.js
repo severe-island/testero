@@ -163,7 +163,7 @@ router.post('/signup', function(req, res, next) {
 }); 
 
 
-router.post('/addUser', function(req, res, next) {
+router.post('/registerUser', function(req, res, next) {
   if (!req.session.login) {
     res.json({
       msg: "Вы должны быть авторизованным пользователем",
@@ -206,6 +206,8 @@ router.post('/addUser', function(req, res, next) {
     var email = req.body.email;
     var password = req.body.password;
     var passwordDuplicate = req.body.passwordDuplicate;
+    var isAdministrator = req.body.isAdminstrator;
+    var registeredBy = initiator.email;
 
     if(!email) {
       res.json({
@@ -278,7 +280,13 @@ router.post('/addUser', function(req, res, next) {
         return;
       }
 
-      db.addNewUser(email, password, false, function(err, newUser) {
+      var user = {
+        email: email,
+        password: password,
+        isAdministrator: isAdministrator,
+        registeredBy: registeredBy
+      };
+      db.registerUser(user, function(err, newUser) {
         if (err) {
           res.json({
             msg: "Ошибка БД: " + err.message,
