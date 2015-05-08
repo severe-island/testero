@@ -44,8 +44,7 @@ describe('Модуль users', function () {
             }
             
             agent.saveCookies(res);
-            console.log(res.body.msg);
-            res.body.status.should.equal(true);
+            res.body.status.should.equal(true, res.body.msg);
             
             done();
         });
@@ -126,7 +125,9 @@ describe('Модуль users', function () {
         if (err) {
           throw err;
         }
+        
         res.body.status.should.equal(true);
+        
         done();
     });
   });

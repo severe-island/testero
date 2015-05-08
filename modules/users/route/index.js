@@ -60,20 +60,17 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/logout', function(req, res, next) {
-  if(req.session.login)
-  { 
+  if (req.session.login) { 
     delete req.session.login;
     var email = req.session.email;
     delete req.session.email;
-    //req.session.destroy()
     res.json({
-      msg: "Вы вышли и теперь вы больше не "+email+"!",
+      msg: "Вы вышли и теперь больше не " + email + ".",
       status: true,
-      level: "info"
+      level: "success"
     });
   }
-  else
-  {
+  else {
     res.json({
       msg: "Так ведь вы и не входили!",
       status: true,
