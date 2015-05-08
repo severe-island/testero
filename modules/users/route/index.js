@@ -4,17 +4,27 @@ var db = require('../db');
 var conf = require('../../../config');
 
 router.post('/login', function(req, res, next) {
-  if(req.session.login) {
+  if (req.session.login) {
+    var status, level;
+    if (req.session.email === req.body.email) {
+      status = true;
+      level = "info";
+    }
+    else {
+      status = false;
+      level = "warning";
+    }
     res.json({
-      msg: "Вы уже зашли с почтой " + req.session.email + "!",
-      status: true,
-      level: "info"
+      msg: "Вы уже зашли с почтой " + req.session.email + ".",
+      status: status,
+      level: level
     });
     return;
   }
-  var email = req.body.email
-  var password = req.body.password
-  var remember = (req.body.remember!=undefined)
+  
+  var email = req.body.email;
+  var password = req.body.password;
+  var remember = (req.body.remember !== undefined);
   db.findUserByEmail(email, function(err, data){
     if(err || data==null) {
       res.json({

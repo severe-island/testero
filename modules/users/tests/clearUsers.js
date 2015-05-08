@@ -72,10 +72,9 @@ describe('Модуль users', function() {
                 
                 res.body.status.should.equal(true);
                 
-                var req = request.post('/users/login');
+                var req = request.post('/users/logout');
                 agent.attachCookies(req);
                 req
-                  .send({email: "user1@testero", password: "user1"})
                   .set('X-Requested-With', 'XMLHttpRequest')
                   .expect('Content-Type', /application\/json/)
                   .expect(200)
@@ -85,10 +84,27 @@ describe('Модуль users', function() {
                     }
 
                     agent.saveCookies(res);
-
+                    
                     res.body.status.should.equal(true, res.body.msg);
+                    
+                    var req = request.post('/users/login');
+                    agent.attachCookies(req);
+                    req
+                      .send({email: "user1@testero", password: "user1"})
+                      .set('X-Requested-With', 'XMLHttpRequest')
+                      .expect('Content-Type', /application\/json/)
+                      .expect(200)
+                      .end(function (err, res) {
+                        if (err) {
+                          throw err;
+                        }
 
-                    done();
+                        agent.saveCookies(res);
+
+                        res.body.status.should.equal(true, res.body.msg);
+
+                        done();
+                      });
                   });
             });
         });
@@ -122,6 +138,79 @@ describe('Модуль users', function() {
 
                 res.body.status.should.equal(true);
                 res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
+
+                done();
+            });
+          });
+      });
+    });
+    
+    context('Очистка администратором', function() {
+      before(function(done) {
+        var req = request.post('/users/logout');
+        agent.attachCookies(req);
+        req
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .end(function (err, res) {
+            if (err) {
+              throw err;
+            }
+
+            agent.saveCookies(res);
+
+            res.body.status.should.equal(true, res.body.msg);
+            
+            var req = request.post('/users/login');
+            agent.attachCookies(req);
+            req
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .send({email: "admin1@testero", password: "admin1"})
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .end(function (err, res) {
+                if (err) {
+                  throw err;
+                }
+
+                agent.saveCookies(res);
+
+                res.body.status.should.equal(true, res.body.msg);
+                
+                done();
+              });
+            });
+      });
+      
+      it('Возвращается успех. В коллекции пользователей нуль', function(done) {
+        var req = request.post('/users/clearUsers');
+        agent.attachCookies(req);
+        req
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .end(function (err, res) {
+            if (err) {
+              throw err;
+            }
+
+            agent.saveCookies(res);
+            
+            res.body.status.should.equal(true, res.body.msg);
+            
+            request
+              .post('/users/findAllUsers')
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .end(function(err, res) {
+                if (err) {
+                  throw err;
+                }
+
+                res.body.status.should.equal(true);
+                res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
 
                 done();
             });

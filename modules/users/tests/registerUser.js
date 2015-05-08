@@ -40,7 +40,7 @@ describe('Модуль users', function () {
           agreementAccepted: true
         };
         request
-          .post('/users/addAdmin')
+          .post('/users/registerAdministrator')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -52,7 +52,7 @@ describe('Модуль users', function () {
             
             agent.saveCookies(res);
             
-            res.body.status.should.equal(true);
+            res.body.status.should.equal(true, res.body.msg);
                 
             done();
           });
@@ -96,11 +96,9 @@ describe('Модуль users', function () {
     
     context('Попытка добавления пользователя не администратором', function() {
       before(function(done) {
-        var user = {email: "user1@testero", password: "user1"};
-        var req = request.post('/users/login');
+        var req = request.post('/users/logout');
         agent.attachCookies(req);
         req
-          .send(user)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -108,12 +106,30 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
-            
+
             agent.saveCookies(res);
             
-            res.body.status.should.equal(true);
-            
-            done();
+            res.body.status.should.equal(true, res.body.msg);
+        
+            var user = {email: "user1@testero", password: "user1"};
+            var req = request.post('/users/login');
+            agent.attachCookies(req);
+            req
+              .send(user)
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .end(function (err, res) {
+                if (err) {
+                  throw err;
+                }
+
+                agent.saveCookies(res);
+
+                res.body.status.should.equal(true, res.body.msg);
+
+                done();
+              });
           });
       });
       
@@ -138,7 +154,7 @@ describe('Модуль users', function () {
             
             agent.saveCookies(res);
             
-            res.body.status.should.equal(true);
+            res.body.status.should.equal(false, res.body.msg);
             
             done();
           });
@@ -146,10 +162,9 @@ describe('Модуль users', function () {
     });
     
     after(function(done) {
-      var req = request.post('/users/clearUsers');
+      var req = request.post('/users/logout');
       agent.attachCookies(req);
       req
-        .send({email: "user1@testero"})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -158,9 +173,43 @@ describe('Модуль users', function () {
             throw err;
           }
 
-          res.body.status.should.equal(true);
+          agent.saveCookies(res);
 
-          done();
+          res.body.status.should.equal(true, res.body.msg);
+      
+          var req = request.post('/users/login');
+          agent.attachCookies(req);
+          req
+            .send({email: "admin1@testero", password: "admin1"})
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .end(function (err, res) {
+              if (err) {
+                throw err;
+              }
+
+              agent.saveCookies(res);
+
+              res.body.status.should.equal(true, res.body.msg);
+
+              var req = request.post('/users/clearUsers');
+              agent.attachCookies(req);
+              req
+                .send({email: "user1@testero"})
+                .set('X-Requested-With', 'XMLHttpRequest')
+                .expect('Content-Type', /application\/json/)
+                .expect(200)
+                .end(function (err, res) {
+                  if (err) {
+                    throw err;
+                  }
+
+                  res.body.status.should.equal(true);
+
+                  done();
+                });
+            });
         });
     });
   });

@@ -7,8 +7,9 @@ describe('Модуль users', function() {
   describe('Выход из системы (logout)', function() {
     context('Пользователь не был авторизован', function() {
       it('Возвращается успех', function(done) {
-        request
-          .post('/users/logout')
+        var req = request.post('/users/logout');
+        agent.attachCookies(req);
+        req
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -17,6 +18,8 @@ describe('Модуль users', function() {
               throw err;
             }
 
+            agent.saveCookies(res);
+            
             res.body.status.should.equal(true, res.body.msg);
 
             done();
