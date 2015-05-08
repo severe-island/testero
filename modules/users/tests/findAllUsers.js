@@ -77,7 +77,7 @@ describe('Модуль users', function () {
           password: "user1",
           passwordDuplicate: "user1"
         };
-        var req = request.post('/users/addUser');
+        var req = request.post('/users/registerUser');
         agent.attachCookies(req);
         req
           .send(user1)
@@ -113,21 +113,21 @@ describe('Модуль users', function () {
         });
       });
     });
-    
-    after(function(done) {
-      request
-        .post('/users/removeUser')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .send({email: "user1"})
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function(err, res) {
-          if (err) {
-            throw err;
-          }
-          res.body.status.should.equal(true);
-          done();
-      });
+  });
+  
+  after(function(done) {
+    var req = request.post('/users/clearUsers');
+    agent.attachCookies(req);
+    req
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .expect('Content-Type', /application\/json/)
+      .expect(200)
+      .end(function(err, res) {
+        if (err) {
+          throw err;
+        }
+        res.body.status.should.equal(true);
+        done();
     });
   });
 });
