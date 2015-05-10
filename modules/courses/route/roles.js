@@ -72,11 +72,11 @@ function checkRoles(userEmail, targetEmail, targetRole, callback) {
         callback(targetRole=="student" && userEmail == targetEmail); 
         return;
       }
-      if(roles.indexOf("teacher")>-1) {
+      if(userRoles.indexOf("teacher")>-1) {
         callback(targetRole=="teacher");
         return;
       }
-      if(roles.indexOf("student")>-1) {
+      if(userRoles.indexOf("student")>-1) {
         callback(targetRole=="student" && userEmail == targetEmail); 
         return;
       }

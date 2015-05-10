@@ -22,25 +22,25 @@ function getIndexOption(field, uniqueOption, sparseOption) {
 var collection = new dataStore(getConnectionOptions("courses-roles"));
 //collection.ensureIndex(getIndexOption("email", true, false));
 
-  exports.assignRole = function(email, role, callback) {
+exports.assignRole = function(email, role, callback) {
   var date = new Date();
-    collection.findOne({"email" : email, created_at: {$exists: true}}, function (err, findedUser){
-      if (!err && findedUser)
-      {
-        collection.update({ "email": email},
-                          { $addToSet: { roles: role }, updated_at: date },
-                          { upsert: true },
-                          function (err) {
-                            callback(err);
-                          });
-        return;
-      }
-      collection.insert({"email": email, roles: [role], created_at: date, update_at: date},
-                        function (err, newUser) {
+  collection.findOne({"email" : email, created_at: {$exists: true}}, function (err, findedUser){
+    if (!err && findedUser)
+    {
+      collection.update({ "email": email},
+                        { $addToSet: { roles: role }, updated_at: date },
+                        { upsert: true },
+                        function (err) {
                           callback(err);
                         });
-    });
-  };
+      return;
+    }
+    collection.insert({"email": email, roles: [role], created_at: date, update_at: date},
+                      function (err, newUser) {
+                        callback(err);
+                      });
+  });
+};
 
 exports.getRolesByEmail = function(email, callback) {
   collection.findOne({ email: email }, function (err, userRoles) {
