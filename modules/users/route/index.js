@@ -90,6 +90,15 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
+  if(req.session.login)
+  {
+    res.json({
+      msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
+      status: false,
+      level: "warning"
+    });
+    return;
+  }
   if(!req.body.email || !req.body.password || !req.body.passwordDuplicate) {
     res.json({
       msg: "Указаны не все данные.",
