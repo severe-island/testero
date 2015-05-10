@@ -70,13 +70,6 @@ describe('Модуль courses.', function() {
           });
         });
       });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });      
-      });
     });
     
     context('Назначение роли teacher другим teacher.', function() {
@@ -116,13 +109,6 @@ describe('Модуль courses.', function() {
           }); 
         });
       });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
-      });
     });
     
     context('Назначение роли teacher пользователем без ролей.', function() {
@@ -158,13 +144,6 @@ describe('Модуль courses.', function() {
             done();
           }); 
         });
-      });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
       });
     });
     
@@ -205,13 +184,6 @@ describe('Модуль courses.', function() {
           }); 
         });
       });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
-      });
     });
     
     context('Назначение роли student администратором.', function() {
@@ -247,13 +219,6 @@ describe('Модуль courses.', function() {
             done();
           }); 
         });
-      });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
       });
     });
     
@@ -291,13 +256,6 @@ describe('Модуль courses.', function() {
           }); 
         });
       });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
-      });
     });
     
     context('Назначение роли student самим пользователем.', function() {
@@ -334,13 +292,6 @@ describe('Модуль courses.', function() {
           }); 
         });
       });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
-      });
     });
     
     context('Назначение роли без входа в систему.', function() {
@@ -362,13 +313,13 @@ describe('Модуль courses.', function() {
           }); 
         });
       });
-      
-      after('Очистка всех ролей после теста.', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        });  
-      });
+    });
+    
+    afterEach('Очистка всех ролей после теста.', function(done) {
+      rolesDB.clearRoles(function(err) {
+        should.not.exist(err);
+        done();
+      });      
     });
     
     after('Очистка пользователей', function(done) {

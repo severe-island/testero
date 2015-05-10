@@ -28,17 +28,12 @@ exports.assignRole = function(email, role, callback) {
     if (!err && findedUser)
     {
       collection.update({ "email": email},
-                        { $addToSet: { roles: role }, updated_at: date },
+                        { $addToSet: { roles: role }, $set: { updated_at: date } },
                         { upsert: true },
-                        function (err) {
-                          callback(err);
-                        });
+                        callback);
       return;
     }
-    collection.insert({"email": email, roles: [role], created_at: date, update_at: date},
-                      function (err, newUser) {
-                        callback(err);
-                      });
+    collection.insert({"email": email, roles: [role], created_at: date, update_at: date}, callback);
   });
 };
 
