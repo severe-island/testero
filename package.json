@@ -1,7 +1,24 @@
 {
   "name": "testero",
-  "version": "0.0.0",
-  "private": true,
+  "description": "Testero -- software for testing of knowledges of students",
+  "version": "0.0.1",
+  "license": "MIT",
+  "contributors": [
+    {
+        "name": "Evgeniy A. Simonenko",
+        "email": "easimonenko@mail.ru",
+        "url": "http://vk.com/easimonenko"
+    },
+    {
+        "name": "Konstantin Baydin",
+        "email": "sparhoks@mail.ru"
+    }
+  ],
+  "homepage": "https://bitbucket.org/severeisland/testero",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/severeisland/testero"
+  },
   "scripts": {
     "start": "node ./bin/production"
   },
