@@ -1,9 +1,9 @@
 <link href="../../../public/css/bootstrap.css" rel="stylesheet" media="screen"/>
 
 <div id="login">
-  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+  <div class="col-lg-5 col-md-4 col-sm-3"></div>
   
-  <form id="login-form" class="col-lg-4 col-md-6 col-sm-8">
+  <form id="login-form" class="col-lg-2 col-md-4 col-sm-6">
     <div class="page-header">
       <h2>Вход с систему</h2>
     </div>
@@ -15,7 +15,7 @@
       <label>Email-адрес:</label>
       <div class="input-group">
         <span class="input-group-addon">@</span>
-        <input type="email" class="form-control" placeholder="Введите email"
+        <input type="email" class="form-control input-sm" placeholder="Введите email"
           aria-describedly="helpBlockEmail" name="email" id="email"/>
         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
       </div>
@@ -26,7 +26,7 @@
     
     <div class="form-group has-feedback" id="form-group-password">
       <label>Пароль:</label>
-      <input type="password" class="form-control" placeholder="Введите пароль"
+      <input type="password" class="form-control input-sm" placeholder="Введите пароль"
         name="password" id="password"/>
       <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
     </div>
@@ -38,10 +38,10 @@
       </label>
     </div>
     
-    <input class="btn btn-primary" type="submit" value="Войти"/>
+    <input class="btn btn-primary btn-sm" type="submit" value="Войти"/>
   </form>
   
-  <div class="col-lg-4 col-md-3 col-sm-2"></div>
+  <div class="col-lg-5 col-md-4 col-sm-3"></div>
   
   <script>
     eval(app.modules.users.js.login)
