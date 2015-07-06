@@ -18,6 +18,12 @@ $.getJSON('/main/main-menu.json', function (mainMenu) {
                 loadPage(data.page);
               });
             }
+            if (app.isLoggedIn) {
+              $("#users-my-profile-main-menu-item").removeClass("disabled");
+            }
+            else {
+              $("#users-my-profile-main-menu-item").addClass("disabled");
+            }
           };
         })(menuItem)
       });

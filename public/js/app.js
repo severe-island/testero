@@ -5,21 +5,6 @@ var app = {
 };
 var modules = ["app", "users", "courses"];
 
-function showMainMenu() {
-  $("#content")
-    .hide("slow", function () {
-      $(this)
-        .html(app.modules.app.html["main-menu"])
-        .slideDown("slow");
-      if (app.isLoggedIn) {
-        $("#content #main-menu #my-profile-item").removeClass("disabled");
-      }
-      else {
-        $("#content #main-menu #my-profile-item").addClass("disabled");
-      }
-    });
-}
-
 function tuneTopMenu() {
   if (app.isLoggedIn) {
     $("#top-menu #users-login-menu-item").hide();
@@ -93,11 +78,6 @@ function onLoadAllModules() {
   });
 
   // Верхнее меню:
-  
-  /*$("#top-menu #main-menu-item").click(function () {
-    showMainMenu();
-    return false;
-  });*/
 
   $("#top-menu #courses-item").click(function () {
     $("#content")
@@ -140,7 +120,6 @@ function onLoadAllModules() {
             app.isLoggedIn = false;
             app.user = {};
             tuneTopMenu();
-            //showMainMenu();
             loadPage('/main.json');
           }
         });
