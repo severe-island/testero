@@ -22,18 +22,18 @@ function showMainMenu() {
 
 function tuneTopMenu() {
   if (app.isLoggedIn) {
-    $("#top-menu #login-item").hide();
-    $("#top-menu #signup-item").hide();
-    $("#top-menu #my-profile-item").show();
-    $("#top-menu #logout-item").show();
-    $("#top-menu #courses-item").show();
+    $("#top-menu #users-login-menu-item").hide();
+    $("#top-menu #users-signup-menu-item").hide();
+    $("#top-menu #users-my-profile-menu-item").show();
+    $("#top-menu #users-logout-menu-item").show();
+    $("#top-menu #courses-menu-item").show();
   }
   else {
-    $("#top-menu #login-item").show();
-    $("#top-menu #signup-item").show();
-    $("#top-menu #my-profile-item").hide();
-    $("#top-menu #logout-item").hide();
-    $("#top-menu #courses-item").hide();
+    $("#top-menu #users-login-menu-item").show();
+    $("#top-menu #users-signup-menu-item").show();
+    $("#top-menu #users-my-profile-menu-item").hide();
+    $("#top-menu #users-logout-menu-item").hide();
+    $("#top-menu #courses-menu-item").hide();
   }
 }
 
@@ -159,6 +159,8 @@ function onLoadAllModules() {
 }
 
 $(document).ready(function () {
+  $.getScript('/app/js/top-menu.js');
+  
   $.ajax({
     type: "POST",
     url: "/app",

@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Меню", "url": "/#!main", "id": "main", 
+    "glyphicon": "menu-hamburger", "page": "/main.json"
+  },
+  {
+    "title": "Курсы", "url": "/#!courses", "id": "courses", 
+    "glyphicon": "education", "page": "/projects.json"
+  },
+  {
+    "title": "Зарегистрироваться", "url": "/#!users/signup", "id": "users-signup", 
+    "glyphicon": "ok", "page": "/users/signup.json"
+  },
+  {
+    "title": "Войти", "url": "/#!users/login", "id": "users-login", 
+    "glyphicon": "log-in", "page": "/users/login.json"
+  },
+  {
+    "title": "Мой профиль", "url": "/#!users/my-profile", "id": "users-my-profile", 
+    "glyphicon": "user", "page": "/users/my-profile.json"
+  },
+  {
+    "title": "Выйти", "url": "/#!users/logout", "id": "users-logout", 
+    "glyphicon": "log-out", "page": "/users/logout.json"
+  },
+  {
+    "title": "Помощь", "url": "/#!help", "id": "help", 
+    "glyphicon": "question-sign", "page": "/help.json"
+  }
+]
