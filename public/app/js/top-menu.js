@@ -4,7 +4,7 @@ $.getJSON('/app/top-menu.json', function (topMenu) {
     $("#top-menu").loadTemplate(
       '/app/html/top-menu-item.html',
       {
-        id: menuItem.id + '-menu-item',
+        id: menuItem.id + '-top-menu-item',
         url: menuItem.url,
         title: menuItem.title,
         class: menuItem.glyphicon ? 'glyphicon glyphicon-' + menuItem.glyphicon : ''

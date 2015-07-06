@@ -7,18 +7,18 @@ var modules = ["app", "users", "courses"];
 
 function tuneTopMenu() {
   if (app.isLoggedIn) {
-    $("#top-menu #users-login-menu-item").hide();
-    $("#top-menu #users-signup-menu-item").hide();
-    $("#top-menu #users-my-profile-menu-item").show();
-    $("#top-menu #users-logout-menu-item").show();
-    $("#top-menu #courses-menu-item").show();
+    $("#users-login-top-menu-item").hide();
+    $("#users-signup-top-menu-item").hide();
+    $("#users-my-profile-top-menu-item").show();
+    $("#users-logout-top-menu-item").show();
+    $("#courses-top-menu-item").show();
   }
   else {
-    $("#top-menu #users-login-menu-item").show();
-    $("#top-menu #users-signup-menu-item").show();
-    $("#top-menu #users-my-profile-menu-item").hide();
-    $("#top-menu #users-logout-menu-item").hide();
-    $("#top-menu #courses-menu-item").hide();
+    $("#users-login-top-menu-item").show();
+    $("#users-signup-top-menu-item").show();
+    $("#users-my-profile-top-menu-item").hide();
+    $("#users-logout-top-menu-item").hide();
+    $("#courses-top-menu-item").hide();
   }
 }
 
