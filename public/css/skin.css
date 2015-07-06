@@ -2,3 +2,17 @@ body {
   padding-top: 60px;
   padding-bottom: 60px;
 }
+
+footer .navbar {
+  min-height: 3em;
+}
+
+footer .navbar-brand {
+  min-height: 3em;
+}
+
+footer .navbar-brand {
+  font-size: 90%;
+  line-height: 1;
+  padding: 10px;
+}

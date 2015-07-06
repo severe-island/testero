@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Курсы", "url": "/#!courses", "id": "courses", 
+    "glyphicon": "education", "page": "/courses.json"
+  },
+  {
+    "title": "Пользователи", "url": "/#!users", "id": "users", 
+    "glyphicon": "user", "page": "/users.json"
+  },
+  {
+    "title": "Мой профиль", "url": "/#!users/my-profile", "id": "users-my-profile", 
+    "glyphicon": "cog", "page": "/users/my-profile.json"
+  },
+  {
+    "title": "Помощь", "url": "/#!help", "id": "help", 
+    "glyphicon": "question-sign", "page": "/help.json"
+  }
+]

@@ -5,7 +5,7 @@
   },
   {
     "title": "Курсы", "url": "/#!courses", "id": "courses", 
-    "glyphicon": "education", "page": "/projects.json"
+    "glyphicon": "education", "page": "/courses.json"
   },
   {
     "title": "Зарегистрироваться", "url": "/#!users/signup", "id": "users-signup", 

@@ -1,0 +1,8 @@
+{
+  "title": "Главное меню",
+  "id": "main",
+  "url": "/#!main",
+  "layout": "/main/html/main-layout.html",
+  "content": "/main/html/main-menu.html",
+  "script": "/main/js/main-menu.js"
+}
