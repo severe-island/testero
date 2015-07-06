@@ -79,16 +79,6 @@ function onLoadAllModules() {
 
   // Верхнее меню:
 
-  $("#top-menu #courses-item").click(function () {
-    $("#content")
-      .hide("slow", function () {
-        $(this)
-          .html(app.modules.courses.html["menu"])
-          .slideDown("slow");
-      });
-    return false;
-  });
-
   $("#top-menu #signup-item").click(function () {
     $("#content")
       .hide("slow", function () {
@@ -170,7 +160,7 @@ function loadPage(path) {
                 if (page.breadcrumb) {
                   $("#content #breadcrumb")
                     .loadTemplate(
-                      '/html/breadcrumb.html',
+                      '/app/html/breadcrumb.html',
                       {},
                       {
                         success: function () {
@@ -181,7 +171,7 @@ function loadPage(path) {
                                 $.getJSON(page.breadcrumb[i].page, (function (page_path) {
                                   return function (page_item) {
                                     $("#breadcrumb-list")
-                                      .loadTemplate('/html/breadcrumb-item.html',
+                                      .loadTemplate('/app/html/breadcrumb-item.html',
                                         {
                                           url: page_item.url,
                                           title: page_item.title
@@ -201,7 +191,7 @@ function loadPage(path) {
                               else {
                                 var title = page.breadcrumb[i].title || page.title;
                                 $("#breadcrumb-list")
-                                  .loadTemplate('/html/breadcrumb-item-active.html',
+                                  .loadTemplate('/app/html/breadcrumb-item-active.html',
                                     {
                                       title: title
                                     },
@@ -224,19 +214,22 @@ function loadPage(path) {
                       });
                 }
 
+                function onLoadPageContent() {
+                  $.getScript(page.script);
+                  if (!(window.history && history.pushState)) {
+                    placeTraps('#page-content');
+                  }
+                  $("#content").slideDown("slow");
+                }
+                
                 $("#page-content")
                   .loadTemplate(
                     page.content,
                     {},
                     {
                       append: true,
-                      success: function () {
-                        $.getScript(page.script);
-                        if (!(window.history && history.pushState)) {
-                          placeTraps('#page-content');
-                        }
-                        $("#content").slideDown("slow");
-                      }
+                      success: onLoadPageContent,
+                      error: onLoadPageContent
                     }
                   );
               }
