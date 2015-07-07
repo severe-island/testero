@@ -13,10 +13,14 @@ $.ajax({
     }
     else {
       $('#page-content').loadTemplate(
-        '/courses/html/courses.html', {}, {success: function() {
+        '/courses/html/courses.html',
+        {},
+        {
+          append: true,
+          success: function() {
             for (var i = 0; i < data.courses.length; i++) {
               $("#content #list table tbody")
-                .loadTemplate('/courses/html/courses-item',
+                .loadTemplate('/courses/html/courses-item.html',
                   {
                     number: i + 1,
                     title: data.courses[i].title,
