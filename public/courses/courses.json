@@ -1,0 +1,8 @@
+{
+  "title": "Все курсы",
+  "url": "/#!courses/courses",
+  "id": "courses-courses",
+  "breadcrumb": [
+    {"page": "/main.json"}, {"page": "/courses.json"}, {}
+  ]
+}

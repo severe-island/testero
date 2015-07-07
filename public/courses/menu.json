@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Все курсы", "url": "/#!courses/courses", "id": "courses-courses", 
+    "glyphicon": "list-alt", "page": "/courses/courses.json"
+  },
+  {
+    "title": "Студенты", "url": "/#!courses/students", "id": "courses-students", 
+    "glyphicon": "user", "page": "/courses/students.json"
+  },
+  {
+    "title": "Преподаватели", "url": "/#!courses/teachers", "id": "courses-teachers",
+    "glyphicon": "briefcase", "page": "/courses/teachers.json"
+  },
+  {
+    "title": "Мои курсы", "url": "/#!courses/my-courses", "id": "courses-my-courses",
+    "glyphicon": "tasks", "page": "/courses/my-courses.json"
+  },
+  {
+    "title": "Мой профиль", "url": "/#!courses/my-profile", "id": "courses-my-profile", 
+    "glyphicon": "cog", "page": "/courses/my-profile.json"
+  },
+  {
+    "title": "Добавить курс", "url": "/#!courses/add-course", "id": "courses-add-course",
+    "glyphicon": "plus-sign", "page": "/courses/add-course.json"
+  }
+]

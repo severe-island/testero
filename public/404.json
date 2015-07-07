@@ -1,0 +1,10 @@
+{
+  "title": "404 &ndash; Страница не найдена",
+  "id": "404",
+  "url": "/#!404",
+  "layout": "/app/html/generic-layout.html",
+  "content": "/404/html/content.html",
+  "breadcrumb": [
+    {"page": "/main.json"}, {}
+  ]
+}

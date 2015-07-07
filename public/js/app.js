@@ -137,6 +137,14 @@ function placeTraps(where) {
 }
 
 function loadPage(path) {
+  function onLoadPageContent() {
+    $.getScript(page.script);
+    if (!(window.history && history.pushState)) {
+      placeTraps('#page-content');
+    }
+    $("#content").slideDown("slow");
+  }
+
   $.ajax({
     url: path,
     dataType: 'json',
@@ -151,6 +159,7 @@ function loadPage(path) {
       document.title = (document.title.split('-')[0] += (' - ' + page.title));
       $("#content")
         .hide("slow", function () {
+          if (page.layout) {
           $(this)
             .loadTemplate(
               page.layout,
@@ -213,14 +222,6 @@ function loadPage(path) {
                         }
                       });
                 }
-
-                function onLoadPageContent() {
-                  $.getScript(page.script);
-                  if (!(window.history && history.pushState)) {
-                    placeTraps('#page-content');
-                  }
-                  $("#content").slideDown("slow");
-                }
                 
                 $("#page-content")
                   .loadTemplate(
@@ -232,8 +233,10 @@ function loadPage(path) {
                       error: onLoadPageContent
                     }
                   );
-              }
+              },
+              error: onLoadPageContent
             });
+          }
         });
     }
   });
