@@ -5,19 +5,14 @@ body {
 
 #content h1 {
   font-size: 150%;
-  border-width: 0 0 1px 0px;
-  border-style: solid;
 }
 
 footer .navbar {
-  min-height: 3em;
+  height: 3em;
 }
 
 footer .navbar-brand {
-  min-height: 3em;
-}
-
-footer .navbar-brand {
+  height: 3em;
   font-size: 90%;
   line-height: 1;
   padding: 10px;

@@ -19,7 +19,7 @@ $.ajax({
           append: true,
           success: function() {
             for (var i = 0; i < data.courses.length; i++) {
-              $("#content #list table tbody")
+              $("#courses-list table tbody")
                 .loadTemplate('/courses/html/courses-item.html',
                   {
                     number: i + 1,
@@ -32,9 +32,6 @@ $.ajax({
             }
         }}
       );
-      
-      //$("#content #list").removeAttr("hidden");
     }
-    //$("#content").slideDown("slow");
   }
 });
