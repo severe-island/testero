@@ -2,6 +2,8 @@
   "title": "Все курсы",
   "url": "/#!courses/courses",
   "id": "courses-courses",
+  "layout": "/app/html/generic-layout.html",
+  "script": "/courses/js/courses.js",
   "breadcrumb": [
     {"page": "/main.json"}, {"page": "/courses.json"}, {}
   ]

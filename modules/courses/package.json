@@ -1,7 +1,6 @@
 {
-  "name": "users",
+  "name": "courses",
   "dependencies": {
     "users": "latest"
   }
 }
-

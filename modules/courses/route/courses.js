@@ -5,13 +5,14 @@ var rolesDB = require('../db/roles');
 var conf = require('../../../config');
 var usersDB = require('../../users/db');
 
-router.post('/findAllCourses', function(req, res, next) {
+router.get('/findAllCourses', function(req, res, next) {
   db.findAllCourses(function(err, courses) {
     if(err) {
       res.json({ 
         status: false,
-        msg: err.msg
-      })
+        msg: err.msg,
+        level: "danger"
+      });
       return;
     }
     if(courses.length === 0) {
@@ -20,54 +21,70 @@ router.post('/findAllCourses', function(req, res, next) {
         msg: "Пока не зарегистрировано ни одного курса.",
         level: "info",
         courses: courses
-      })
+      });
       return;
     }
     res.json({ 
       status: true,
-      msg: "Успешно получен массив курсов!",
+      msg: "Успешно получен список всех курсов!",
       level: "info",
       courses: courses
-    })
+    });
   });
 });
 
-router.post('/findCourseById', function(req, res, next) {
+router.get('/findCourseById', function(req, res, next) {
   db.findCourse({ _id: req.body.id }, function(err, course) {
-    if(err || !course) {
+    if (err) {
+      res.json({
+        status: false,
+        msg: err.msg,
+        level: "danger"
+      });
+      return;
+    }
+    else if(!course) {
       res.json({
         status: true,
         msg: "Курс не был найден.",
-        level: "info"
-      })
+        level: "warning"
+      });
     }
     else {
       res.json({
         status: true,
-        msg: "Курс был успешно найден!",
+        msg: "Курс был успешно найден.",
         level: "info",
         course: course
-      })
+      });
     }
   });
 });
 
-router.post('/findCourseByTitle', function(req, res, next) {
+router.get('/findCourseByTitle', function(req, res, next) {
   db.findCourse({ title: req.body.title }, function(err, course) {
-    if(err || !course) {
+    if (err) {
+      res.json({
+        status: false,
+        msg: err.msg,
+        level: "danger"
+      });
+      return;
+    }
+    else if(!course) {
       res.json({
         status: false,
         msg: "Курс не был найден.",
-        level: "info"
-      })
+        level: "warning"
+      });
     }
     else {
       res.json({
         status: true,
-        msg: "Курс был успешно найден!",
+        msg: "Курс был успешно найден.",
         level: "info",
         course: course
-      })
+      });
     }
   });
 });

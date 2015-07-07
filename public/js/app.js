@@ -22,7 +22,7 @@ function tuneTopMenu() {
   }
 }
 
-function bootstrapAlert(msg, type, delay, callback) {
+function showAlert(msg, type, delay, callback) {
   $("#content")
     .hide("slow", function () {
       $(this).html(app.modules.app.html["alert"]);
@@ -31,8 +31,10 @@ function bootstrapAlert(msg, type, delay, callback) {
         .html(msg);
       $("#content")
         .slideDown("slow", function () {
-          $(this).delay(delay)
-            .hide("slow");
+          if (delay !== 0) {
+            $(this).delay(delay)
+              .hide("slow");
+          }
           if (callback !== undefined) {
             callback();
           }
@@ -57,7 +59,7 @@ function onLoadAllModules() {
       }
       else {
         if (app.mode !== "production") {
-          bootstrapAlert(data.msg, data.level, 750);
+          showAlert(data.msg, data.level, 750);
         }
         $.ajax({
           type: "POST",
@@ -67,7 +69,7 @@ function onLoadAllModules() {
               app.user = data.user;
               app.isLoggedIn = true;
             }
-            bootstrapAlert(data.msg, data.level, 500, function () {
+            showAlert(data.msg, data.level, 500, function () {
               tuneTopMenu();
               //showMainMenu();
             });
@@ -105,7 +107,7 @@ function onLoadAllModules() {
       type: "POST",
       url: url,
       success: function (data) {
-        bootstrapAlert(data.msg, "info", 2000, function () {
+        showAlert(data.msg, "info", 2000, function () {
           if (data.status) {
             app.isLoggedIn = false;
             app.user = {};
@@ -223,19 +225,27 @@ function loadPage(path) {
                       });
                 }
                 
-                $("#page-content")
-                  .loadTemplate(
-                    page.content,
-                    {},
-                    {
-                      append: true,
-                      success: onLoadPageContent,
-                      error: onLoadPageContent
-                    }
-                  );
+                if (page.content) {
+                  $("#page-content")
+                    .loadTemplate(
+                      page.content,
+                      {},
+                      {
+                        append: true,
+                        success: onLoadPageContent,
+                        error: onLoadPageContent
+                      }
+                    );
+                }
+                else {
+                  onLoadPageContent();
+                }
               },
               error: onLoadPageContent
             });
+          }
+          else {
+            onLoadPageContent();
           }
         });
     }
