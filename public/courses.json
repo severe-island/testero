@@ -2,9 +2,9 @@
   "title": "Курсы",
   "id": "courses",
   "url": "/#!courses",
-  "layout": "/courses/html/courses-layout.html",
-  "content": "/courses/html/courses-menu.html",
-  "script": "/courses/js/courses-menu.js",
+  "layout": "/app/html/menu-layout.html",
+  "content": "/courses/html/menu.html",
+  "script": "/courses/js/menu.js",
   "breadcrumb": [
     {"page": "main.json"},
     {}

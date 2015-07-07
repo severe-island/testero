@@ -1,8 +1,8 @@
-$.getJSON('/main/main-menu.json', function (mainMenu) {
+$.getJSON('/main/menu.json', function (mainMenu) {
   for (var i in mainMenu) {
     var menuItem = mainMenu[i];
     $("#main-menu").loadTemplate(
-      '/main/html/main-menu-item.html',
+      '/main/html/menu-item.html',
       {
         id: menuItem.id + '-main-menu-item',
         url: menuItem.url,
