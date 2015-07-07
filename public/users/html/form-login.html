@@ -1,0 +1,30 @@
+<form id="form-login">
+  <div class="form-group has-feedback" id="form-group-email">
+    <label>Email-адрес:</label>
+    <div class="input-group">
+      <span class="input-group-addon">@</span>
+      <input type="email" class="form-control input-sm" placeholder="Введите email"
+             aria-describedly="helpBlockEmail" name="email" id="email"/>
+      <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+    </div>
+    <span id="helpBlockEmail" class="help-block">
+      Используйте для входа в систему email-адрес, который Вы вводили при регистрации.
+    </span>
+  </div>
+
+  <div class="form-group has-feedback" id="form-group-password">
+    <label>Пароль:</label>
+    <input type="password" class="form-control input-sm" placeholder="Введите пароль"
+           name="password" id="password"/>
+    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+  </div>
+
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" class="" value="remember-me" name="remember"/>
+      Запомнить меня
+    </label>
+  </div>
+
+  <input class="btn btn-primary btn-sm" type="submit" value="Войти"/>
+</form>

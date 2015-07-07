@@ -91,16 +91,6 @@ function onLoadAllModules() {
     return false;
   });
 
-  $("#top-menu #login-item").click(function () {
-    $("#content")
-      .hide("slow", function () {
-        $(this)
-          .html(app.modules.users.html["login"])
-          .slideDown("slow");
-      });
-    return false;
-  });
-
   $("#top-menu #logout-item").click(function () {
     var url = "/users/logout";
     $.ajax({

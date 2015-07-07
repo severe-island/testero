@@ -1,0 +1,8 @@
+{
+  "title": "Вход в систему",
+  "url": "/#!users/login",
+  "id": "users-login",
+  "layout": "/app/html/form-layout.html",
+  "content": "/users/html/form-login.html",
+  "script": "/users/js/login.js"
+}

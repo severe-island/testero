@@ -19,10 +19,14 @@ $.getJSON('/courses/menu.json', function (coursesMenu) {
               });
             }
             if (app.isLoggedIn) {
+              $("#courses-my-courses-courses-menu-item").removeClass("disabled");
               $("#courses-my-profile-courses-menu-item").removeClass("disabled");
+              $("#courses-add-course-courses-menu-item").removeClass("disabled");
             }
             else {
+              $("#courses-my-courses-courses-menu-item").addClass("disabled");
               $("#courses-my-profile-courses-menu-item").addClass("disabled");
+              $("#courses-add-course-courses-menu-item").addClass("disabled");
             }
           };
         })(menuItem)

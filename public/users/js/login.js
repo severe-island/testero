@@ -1,11 +1,11 @@
-$("#login-form").submit(function() {
+$("#form-login").submit(function() {
   $.ajax({
     type: "POST",
     url: "/users/login",
-    data: $("#login-form").serialize(),
+    data: $("#form-login").serialize(),
     success: function (data) {
       if (data.status) {
-        bootstrapAlert(data.msg, "info", 1000, function() {
+        showAlert(data.msg, "info", 1000, function() {
           app.isLoggedIn = true;
           $.ajax({
             type: "POST",
@@ -14,16 +14,15 @@ $("#login-form").submit(function() {
               if (data.status) {
                 app.user = data.user;
                 tuneTopMenu();
-                showMainMenu();
+                history.pushState({}, "", "/#!main");
               }
             }
           });
         });
       }
       else {
-        $("#content #alert")
-          .html(data.msg);
-        $("#content #alert")
+        $("#page-content #alert")
+          .html(data.msg)
           .addClass("alert-warning")
           .slideDown("slow", function() {
             $(this)
@@ -33,9 +32,8 @@ $("#login-form").submit(function() {
       }
     },
     error: function(data) {
-      $("#content #alert")
-        .html("Сервер недоступен! Повторите позже.");
-      $("#content #alert")
+      $("#page-content #alert")
+        .html("Сервер недоступен! Повторите позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
           $(this).delay(1000)
@@ -46,46 +44,46 @@ $("#login-form").submit(function() {
   return false;
 }); 
 
-$("#login-form #email").blur(function() {
+$("#form-login #email").blur(function() {
   if (!$(this).val())
   {
-    $("#login-form #form-group-email").addClass("has-error");
+    $("#form-login #form-group-email").addClass("has-error");
     $(this).next("span").addClass("glyphicon-remove");
   }
   else
   {
-    $("#login-form #form-group-email").removeClass("has-error");
-    $("#login-form #form-group-email").addClass("has-success");
+    $("#form-login #form-group-email").removeClass("has-error");
+    $("#form-login #form-group-email").addClass("has-success");
     $(this).next("span").removeClass("glyphicon-remove");
     $(this).next("span").addClass("glyphicon-ok");
   }
 });
 
-$("#login-form #password").blur(function() {
+$("#form-login #password").blur(function() {
   if (!$(this).val())
   {
-    $("#login-form #form-group-password").addClass("has-error");
+    $("#form-login #form-group-password").addClass("has-error");
     $(this).next("span").addClass("glyphicon-remove");
   }
   else
   {
-    $("#login-form #form-group-password").removeClass("has-error");
-    $("#login-form #form-group-password").addClass("has-success");
+    $("#form-login #form-group-password").removeClass("has-error");
+    $("#form-login #form-group-password").addClass("has-success");
     $(this).next("span").removeClass("glyphicon-remove");
     $(this).next("span").addClass("glyphicon-ok");
   }
 });
 
-$("#login-form #email").focus(function() {
-  $("#login-form #form-group-email").removeClass("has-error");
-  $("#login-form #form-group-email").removeClass("has-success");
+$("#form-login #email").focus(function() {
+  $("#form-login #form-group-email").removeClass("has-error");
+  $("#form-login #form-group-email").removeClass("has-success");
   $(this).next("span").removeClass("glyphicon-remove");
   $(this).next("span").removeClass("glyphicon-ok");
 });
 
 $("#signup-form #password").focus(function() {
-  $("#login-form #form-group-password").removeClass("has-error");
-  $("#login-form #form-group-password").removeClass("has-success");
+  $("#form-login #form-group-password").removeClass("has-error");
+  $("#form-login #form-group-password").removeClass("has-success");
   $(this).next("span").removeClass("glyphicon-remove");
   $(this).next("span").removeClass("glyphicon-ok");
 });
