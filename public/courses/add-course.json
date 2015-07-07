@@ -1,0 +1,11 @@
+{
+  "title": "Добавление курса",
+  "url": "/#!courses/add-course",
+  "id": "courses-add-course",
+  "layout": "/app/html/form-layout.html",
+  "content": "/courses/html/form-add-course.html",
+  "script": "/courses/js/add-course.js",
+  "breadcrumb": [
+    {"page": "/main.json"}, {"page": "/courses.json"}, {}
+  ]
+}

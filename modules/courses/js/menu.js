@@ -1,19 +1,3 @@
-$("#courses-menu #all-courses-item").click(function() {
-  $("#content").hide("slow", function() {
-    $(this)
-      .html(app.modules.courses.html["courses-list"]);
-  });
-  return false;
-});
-
-$("#courses-menu #add-course-item").click(function() {
-  $("#content").hide("slow", function() {
-    $(this)
-      .html(app.modules.courses.html["add-course"]);
-  });
-  return false;
-});
-
 $("#courses-menu #teachers-item").click(function() {
   $("#courses-menu").hide("slow");
   $("#content").html(app.modules.courses.html.teachers);
