@@ -3,6 +3,10 @@ body {
   padding-bottom: 60px;
 }
 
+.page-header {
+  margin: 10px 0px 10px;
+}
+
 #content h1 {
   font-size: 150%;
 }

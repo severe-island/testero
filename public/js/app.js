@@ -84,24 +84,12 @@ function onLoadAllModules() {
             }
             showAlert(data.msg, data.level, 500, function () {
               tuneTopMenu();
-              //showMainMenu();
+              loadPage('/main.json');
             });
           }
         });
       }
     }
-  });
-
-  // Верхнее меню:
-
-  $("#top-menu #signup-item").click(function () {
-    $("#content")
-      .hide("slow", function () {
-        $(this)
-          .html(app.modules.users.html["signup"])
-          .slideDown("slow");
-      });
-    return false;
   });
 }
 

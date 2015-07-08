@@ -1,0 +1,11 @@
+{
+  "title": "Регистрация в системе",
+  "url": "/#!users/signup",
+  "id": "users-signup",
+  "layout": "/app/html/form-layout.html",
+  "content": "/users/html/signup.html",
+  "script": "/users/js/signup.js",
+  "breadcrumb": [
+    {"page": "/main.json"}, {"page": "/users.json"}, {}
+  ]
+}
