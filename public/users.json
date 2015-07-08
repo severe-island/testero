@@ -1,0 +1,10 @@
+{
+  "title": "Пользователи",
+  "url": "/#!users/menu",
+  "layout": "/app/html/menu-layout.html",
+  "content": "/users/html/menu.html",
+  "script": "/users/js/menu.js",
+  "breadcrumb": [
+    {"page": "/main.json"}, {}
+  ]
+}

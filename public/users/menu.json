@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Все пользователи", "url": "/#!users/users", "id": "users-list-item", 
+    "glyphicon": "list-alt", "page": "/users/users.json"
+  },
+  {
+    "title": "Добавить пользователя", "url": "/#!users/add-user", "id": "users-add-user", 
+    "glyphicon": "plus-sign", "page": "/users/add-user.json"
+  },
+  {
+    "title": "Мой профиль", "url": "/#!users/my-profile", "id": "users-my-profile", 
+    "glyphicon": "cog", "page": "/users/my-profile.json"
+  }
+]
