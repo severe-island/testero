@@ -8,13 +8,18 @@ $("#form-login").submit(function() {
         showAlert(data.msg, "info", 1000, function() {
           app.isLoggedIn = true;
           $.ajax({
-            type: "POST",
+            type: "GET",
             url: "/users/getMe",
             success: function(data) {
               if (data.status) {
                 app.user = data.user;
                 tuneTopMenu();
-                history.pushState({}, "", "/#!main");
+                if (!(window.history && history.pushState)) {
+                  loadPage('/main.json');
+                }
+                else {
+                  history.back();
+                }
               }
             }
           });

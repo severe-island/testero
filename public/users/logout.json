@@ -1,0 +1,5 @@
+{
+  "title": "Выход из системы",
+  "url": "/#!users/logout",
+  "script": "/users/js/logout.js"
+}

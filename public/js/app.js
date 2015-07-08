@@ -23,23 +23,36 @@ function tuneTopMenu() {
 }
 
 function showAlert(msg, type, delay, callback) {
-  $("#content")
-    .hide("slow", function () {
-      $(this).html(app.modules.app.html["alert"]);
-      $("#content .alert")
-        .addClass("alert-" + type)
-        .html(msg);
-      $("#content")
-        .slideDown("slow", function () {
-          if (delay !== 0) {
-            $(this).delay(delay)
-              .hide("slow");
-          }
-          if (callback !== undefined) {
-            callback();
-          }
-        });
-    });
+  $('#content').slideUp("slow", function() {
+    $(this).loadTemplate(
+      '/app/html/generic-layout.html',
+      {},
+      {
+        success: function() {
+          $('#page-content').loadTemplate(
+            '/app/html/alert.html',
+            {},
+            {
+              success: function() {
+                $("#alert")
+                  .addClass("alert-" + type)
+                  .html(msg);
+                $("#content")
+                  .slideDown("slow", function () {
+                    if (delay !== 0) {
+                      $(this).delay(delay)
+                        .hide("slow");
+                    }
+                    if (callback !== undefined) {
+                      callback();
+                    }
+                  });
+              }
+            }
+          );
+        }
+      });
+  });
 }
 
 function onLoadAllModules() {
@@ -62,7 +75,7 @@ function onLoadAllModules() {
           showAlert(data.msg, data.level, 750);
         }
         $.ajax({
-          type: "POST",
+          type: "GET",
           url: "/users/getMe",
           success: function (data) {
             if (data.status) {
@@ -88,25 +101,6 @@ function onLoadAllModules() {
           .html(app.modules.users.html["signup"])
           .slideDown("slow");
       });
-    return false;
-  });
-
-  $("#top-menu #logout-item").click(function () {
-    var url = "/users/logout";
-    $.ajax({
-      type: "POST",
-      url: url,
-      success: function (data) {
-        showAlert(data.msg, "info", 2000, function () {
-          if (data.status) {
-            app.isLoggedIn = false;
-            app.user = {};
-            tuneTopMenu();
-            loadPage('/main.json');
-          }
-        });
-      }
-    });
     return false;
   });
 

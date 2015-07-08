@@ -69,7 +69,7 @@ router.post('/login', function(req, res, next) {
   });
 });
 
-router.post('/logout', function(req, res, next) {
+router.get('/logout', function(req, res, next) {
   if (req.session.login) { 
     delete req.session.login;
     var email = req.session.email;
@@ -465,13 +465,13 @@ router.post('/clearUsers', function(req, res, next) {
 })
 
 
-router.post('/getMe', function(req, res, next) {
+router.get('/getMe', function(req, res, next) {
   if(!req.session.login) {
     res.json({
       status: false,
-      level: "info",
+      level: "warning",
       msg: "Вы ещё не вошли в систему."
-    })
+    });
     return;
   }
   db.findUserByEmailWithoutPassword(req.session.email, true, function(err, user) {
