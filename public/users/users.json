@@ -1,0 +1,10 @@
+{
+  "title": "Все пользователи",
+  "url": "/#!users/users",
+  "id": "users-users",
+  "layout": "/app/html/generic-layout.html",
+  "script": "/users/js/users.js",
+  "breadcrumb": [
+    {"page": "/main.json"}, {"page": "/users.json"}, {}
+  ]
+}
