@@ -1,22 +1,11 @@
-$("#content #my-profile-menu #email").append(app.user.email);
-$("#content #my-profile-menu #email-input").val(app.user.email);
-$("#content #familyName").val(app.user.familyName);
-$("#familyName-save-button").hide();
-$("#content #name").val(app.user.name);
-$("#name-save-button").hide();
-$("#content #patronymic").val(app.user.patronymic);
-$("#patronymic-save-button").hide();
-
-$("#my-profile-menu #users-menu").click(function () {
-  $("#content")
-    .hide("slow", function () {
-      $(this)
-        .html(app.modules.users.html["menu"])
-        .slideDown("slow");
-    });
-
-  return false;
-});
+$("#user-profile-edit-form #email").append(app.user.email);
+$("#user-profile-edit-form #email-input").val(app.user.email);
+$("#user-profile-edit-form #familyName").val(app.user.familyName);
+$("#user-profile-edit-form #familyName-save-button").hide();
+$("#user-profile-edit-form #name").val(app.user.name);
+$("#user-profile-edit-form #name-save-button").hide();
+$("#user-profile-edit-form #patronymic").val(app.user.patronymic);
+$("#user-profile-edit-form #patronymic-save-button").hide();
 
 $("#familyName-edit-button").click(function() {
   $("#familyName").removeAttr("disabled").focus();
@@ -32,7 +21,7 @@ $("#familyName-save-button").click(function() {
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
-        $("#content #alert-familyName")
+        $("#alert-familyName")
           .html(data.msg)
           .addClass("alert-" + data.level)
           .slideDown("slow", function() {
@@ -48,7 +37,7 @@ $("#familyName-save-button").click(function() {
       }
     },
     error: function (data) {
-      $("#content #alert-familyName")
+      $("#alert-familyName")
         .html("Сервер недоступен. Попробуйте позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
@@ -84,7 +73,7 @@ $("#name-save-button").click(function() {
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
-        $("#content #alert-name")
+        $("#alert-name")
           .html(data.msg)
           .addClass("alert-" + data.level)
           .slideDown("slow", function() {
@@ -100,7 +89,7 @@ $("#name-save-button").click(function() {
       }
     },
     error: function (data) {
-      $("#content #alert-name")
+      $("#alert-name")
         .html("Сервер недоступен. Попробуйте позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
@@ -130,7 +119,7 @@ $("#patronymic-save-button").click(function() {
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
-        $("#content #alert-patronymic")
+        $("#alert-patronymic")
           .html(data.msg)
           .addClass("alert-" + data.level)
           .slideDown("slow", function() {
@@ -146,7 +135,7 @@ $("#patronymic-save-button").click(function() {
       }
     },
     error: function (data) {
-      $("#content #alert-patronymic")
+      $("#alert-patronymic")
         .html("Сервер недоступен. Попробуйте позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
@@ -161,25 +150,6 @@ $("#patronymic-save-button").click(function() {
   
   return false;
 });
-
-$("#content #my-profile-menu #user-logout-item").click(function() {
-  $.ajax({
-    type: "POST",
-    url: "/users/logout",
-    success: function (data) {
-      bootstrapAlert(data.msg, "info", 2000, function () {
-        if (data.status) {
-          app.isLoggedIn = false;
-          app.user = {};
-          tuneTopMenu();
-          showMainMenu();
-        }
-      });
-    }
-  });
-  return false;
-});
-
 
 $("#user-password-edit-dialog #save-button").click(function() {
   $("#user-edit-password-form #email").val(app.user.email);

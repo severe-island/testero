@@ -1,5 +1,5 @@
 {
-  "title": "404 &ndash; Страница не найдена",
+  "title": "404 - Страница не найдена",
   "id": "404",
   "url": "/#!404",
   "layout": "/app/html/generic-layout.html",

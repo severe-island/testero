@@ -12,7 +12,13 @@ $.ajax({
         loadPage('/main.json');
       }
       else {
-        history.back();
+        if (false) {
+          history.back();
+        }
+        else {
+          history.pushState(null, null, '/#!main');
+          loadPage('/main.json');
+        }
       }
     });
   }

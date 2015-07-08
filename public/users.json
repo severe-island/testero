@@ -1,6 +1,7 @@
 {
   "title": "Пользователи",
-  "url": "/#!users/menu",
+  "url": "/#!users",
+  "id": "users",
   "layout": "/app/html/menu-layout.html",
   "content": "/users/html/menu.html",
   "script": "/users/js/menu.js",
