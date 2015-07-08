@@ -1,0 +1,28 @@
+<form id="admin-account-form">
+  <div id="alert" class="alert" role="alert" hidden="hidden">
+  </div>
+
+  <div class="form-group has-feedback" id="form-group-email">
+    <label class="control-label">Email-адрес:</label>
+    <div class="input-group">
+      <span class="input-group-addon">@</span>
+      <input type="email" class="form-control" placeholder="Введите Ваш email"
+             name="email" id="email"/>
+    </div>
+  </div>
+  <div class="form-group has-feedback" id="form-group-password">
+    <label class="control-label">Пароль:</label>
+    <input type="password" class="form-control" placeholder="Введите пароль"
+           name="password" id="password"/>
+    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+  </div>
+  <div class="form-group has-feedback" id="form-group-password-duplicate">
+    <label class="control-label">Пароль ещё раз:</label>
+    <input type="password" class="form-control" placeholder="Введите пароль ещё раз"
+           id="password-duplicate" name="passwordDuplicate"/>
+    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+  </div>
+  <input type="hidden" name="agreementAccepted" id="agreement-accepted"/>
+  <input class="btn btn-primary" type="submit" value="Сохранить"
+         id="signup-submit"/>
+</form>

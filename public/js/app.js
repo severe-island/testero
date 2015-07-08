@@ -57,18 +57,11 @@ function showAlert(msg, type, delay, callback) {
 
 function onLoadAllModules() {
   $.ajax({
-    type: "POST",
+    type: "GET",
     url: "/users/isAdminExists",
     success: function (data) {
       if (!data.status) {
-        $("#content")
-          .hide("slow", function () {
-            $(this)
-              .html(app.modules.users.html["admin-account"])
-              .slideDown("slow", function() {
-                $("#top-menu").hide();
-            });
-          });
+        loadPage('/users/admin-account.json');
       }
       else {
         if (app.mode !== "production") {

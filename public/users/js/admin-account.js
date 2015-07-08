@@ -31,13 +31,13 @@ $("#admin-account-form").submit(function() {
   {
     $.ajax({
       type: "POST",
-      url: "/users/addAdmin",
+      url: "/users/registerAdministrator",
       data: $("#admin-account-form").serialize(),
       success: function(data) {
         if (data.status) {
-          bootstrapAlert(data.msg, "info", 1000, function () {
+          showAlert(data.msg, "info", 1000, function () {
             $.ajax({
-              type: "POST",
+              type: "GET",
               url: "/users/getMe",
               success: function(data) {
                 if (data.status) {
@@ -45,8 +45,10 @@ $("#admin-account-form").submit(function() {
                   app.isLoggedIn = true;
                 }
                 tuneTopMenu();
-                $("#top-menu").show();
-                showMainMenu();
+                if (window.history && history.pushState) {
+                  history.pushState(null, null, '/#!main');
+                }
+                loadPage('/main.json');
               }
             });
           });
@@ -108,13 +110,11 @@ $("#admin-account-form #password").blur(function() {
 });
 
 $("#admin-account-form #password-duplicate").blur(function() {
-  if (!$(this).val())
-  {
+  if (!$(this).val() || $(this).val() !== $('#password').val()) {
     $("#admin-account-form #form-group-password-duplicate").addClass("has-error");
     $(this).next("span").addClass("glyphicon-remove");
   }
-  else
-  {
+  else {
     $("#admin-account-form #form-group-password-duplicate").removeClass("has-error");
     $("#admin-account-form #form-group-password-duplicate").addClass("has-success");
     $(this).next("span").removeClass("glyphicon-remove");

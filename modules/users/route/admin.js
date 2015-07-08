@@ -107,7 +107,7 @@ function registerAdministrator(req, res) {
   }) 
 }
 
-router.post('/isAdminExists', function(req, res, next) { 
+router.get('/isAdminExists', function(req, res, next) { 
   db.isAdminExists(function(adminExists){
     if(!adminExists) {
       res.json({
