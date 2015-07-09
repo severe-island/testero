@@ -3,24 +3,8 @@ var app = {
   isLoggedIn: false,
   user: {}
 };
-var modules = ["app", "users", "courses"];
 
-function tuneTopMenu() {
-  if (app.isLoggedIn) {
-    $("#users-login-top-menu-item").hide();
-    $("#users-signup-top-menu-item").hide();
-    $("#users-my-profile-top-menu-item").show();
-    $("#users-logout-top-menu-item").show();
-    $("#courses-top-menu-item").show();
-  }
-  else {
-    $("#users-login-top-menu-item").show();
-    $("#users-signup-top-menu-item").show();
-    $("#users-my-profile-top-menu-item").hide();
-    $("#users-logout-top-menu-item").hide();
-    $("#courses-top-menu-item").hide();
-  }
-}
+var page;
 
 function showAlert(msg, type, delay, callback) {
   $('#content').slideUp("slow", function() {
@@ -55,7 +39,8 @@ function showAlert(msg, type, delay, callback) {
   });
 }
 
-function onLoadAllModules() {
+
+function startUp() {
   $.ajax({
     type: "GET",
     url: "/users/isAdminExists",
@@ -77,7 +62,18 @@ function onLoadAllModules() {
             }
             showAlert(data.msg, data.level, 500, function () {
               tuneTopMenu();
-              loadPage('/main.json');
+              
+              loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
+
+              if (!(window.history && history.pushState)) {
+                $('[href="/#!about"]').click(function () {
+                  loadPage('/help/about.json');
+                });
+              }
+
+              $(window).on('popstate', function () {
+                loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
+              });
             });
           }
         });
@@ -86,13 +82,13 @@ function onLoadAllModules() {
   });
 }
 
-var page;
 
 function placeTraps(where) {
   $(where + ' [href^="/#!"]').click(function () {
     loadPage('/' + $(this).attr('href').slice(3) + '.json');
   });
 }
+
 
 function loadPage(path) {
   function onLoadPageContent() {
@@ -208,29 +204,9 @@ function loadPage(path) {
   });
 }
 
+
 $(document).ready(function () {
   
-  $.getScript('/app/js/top-menu.js');
+  startUp();
   
-  loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
-  
-  if (!(window.history && history.pushState)) {
-    $('[href="/#!about"]').click(function () {
-      loadPage('/help/about.json');
-    });
-  }
-  
-  $(window).on('popstate', function() {
-    loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
-  });
-  
-  $.ajax({
-    type: "POST",
-    url: "/app",
-    success: function (data)
-    {
-      app = data;
-      onLoadAllModules();
-    }
-  });
 });

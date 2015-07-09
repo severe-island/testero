@@ -1,3 +1,20 @@
+function tuneTopMenu() {
+  if (app.isLoggedIn) {
+    $("#users-login-top-menu-item").hide();
+    $("#users-signup-top-menu-item").hide();
+    $("#users-my-profile-top-menu-item").show();
+    $("#users-logout-top-menu-item").show();
+    $("#courses-top-menu-item").show();
+  }
+  else {
+    $("#users-login-top-menu-item").show();
+    $("#users-signup-top-menu-item").show();
+    $("#users-my-profile-top-menu-item").hide();
+    $("#users-logout-top-menu-item").hide();
+    $("#courses-top-menu-item").hide();
+  }
+}
+
 $.getJSON('/app/top-menu.json', function (topMenu) {
   for (var i in topMenu) {
     var menuItem = topMenu[i];
