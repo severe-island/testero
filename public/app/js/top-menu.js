@@ -1,20 +1,3 @@
-function tuneTopMenu() {
-  if (app.isLoggedIn) {
-    $("#users-login-top-menu-item").hide();
-    $("#users-signup-top-menu-item").hide();
-    $("#users-my-profile-top-menu-item").show();
-    $("#users-logout-top-menu-item").show();
-    $("#courses-top-menu-item").show();
-  }
-  else {
-    $("#users-login-top-menu-item").show();
-    $("#users-signup-top-menu-item").show();
-    $("#users-my-profile-top-menu-item").hide();
-    $("#users-logout-top-menu-item").hide();
-    $("#courses-top-menu-item").hide();
-  }
-}
-
 $.getJSON('/app/top-menu.json', function (topMenu) {
   for (var i in topMenu) {
     var menuItem = topMenu[i];
@@ -26,18 +9,18 @@ $.getJSON('/app/top-menu.json', function (topMenu) {
         title: menuItem.title,
         class: menuItem.glyphicon ? 'glyphicon glyphicon-' + menuItem.glyphicon : ''
       },
-      {
-        append: true,
-        success: (function (data) {
-          return function () {
-            if (!(window.history && history.pushState)) {
-              $('#top-menu [href="' + data.url + '"]').click(function () {
-                loadPage(data.page);
-              });
-            }
-          };
-        })(menuItem)
-      });
+    {
+      append: true,
+      success: (function (data) {
+        return function () {
+          if (!(window.history && history.pushState)) {
+            $('#top-menu [href="' + data.url + '"]').click(function () {
+              loadPage(data.page);
+            });
+          }
+        };
+      })(menuItem)
+    });
   }
 });
 
@@ -48,4 +31,20 @@ $('#top-menu').click(function () {
       .removeClass('in')
       .attr('aria-expanded', false);
   }
+});
+
+$('#top-menu').on('users-login', function () {
+  $("#users-login-top-menu-item").hide();
+  $("#users-signup-top-menu-item").hide();
+  $("#users-my-profile-top-menu-item").show();
+  $("#users-logout-top-menu-item").show();
+  $("#courses-top-menu-item").show();
+});
+
+$('#top-menu').on('users-logout', function () {
+  $("#users-login-top-menu-item").show();
+  $("#users-signup-top-menu-item").show();
+  $("#users-my-profile-top-menu-item").hide();
+  $("#users-logout-top-menu-item").hide();
+  $("#courses-top-menu-item").hide();
 });

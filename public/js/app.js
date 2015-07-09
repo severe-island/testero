@@ -59,10 +59,14 @@ function startUp() {
             if (data.status) {
               app.user = data.user;
               app.isLoggedIn = true;
+              $('*').trigger('users-login');
+            }
+            else {
+              app.user = {};
+              app.isLoggedIn = false;
+              $('*').trigger('users-logout');
             }
             showAlert(data.msg, data.level, 500, function () {
-              tuneTopMenu();
-              
               loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
 
               if (!(window.history && history.pushState)) {

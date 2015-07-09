@@ -4,9 +4,9 @@ $.ajax({
   success: function (data) {
     showAlert(data.msg, "info", 2000, function () {
       if (data.status) {
-        app.isLoggedIn = false;
         app.user = {};
-        tuneTopMenu();
+        app.isLoggedIn = false;
+        $('*').trigger('users-logout');
       }
       if (!(window.history && history.pushState)) {
         loadPage('/main.json');

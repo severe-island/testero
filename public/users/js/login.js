@@ -13,7 +13,8 @@ $("#form-login").submit(function() {
             success: function(data) {
               if (data.status) {
                 app.user = data.user;
-                tuneTopMenu();
+                app.isLoggedIn = true;
+                $('*').trigger('users-login');
                 if (!(window.history && history.pushState)) {
                   loadPage('/main.json');
                 }

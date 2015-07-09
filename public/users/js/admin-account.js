@@ -43,8 +43,13 @@ $("#admin-account-form").submit(function() {
                 if (data.status) {
                   app.user = data.user;
                   app.isLoggedIn = true;
+                  $('*').trigger('users-login');
                 }
-                tuneTopMenu();
+                else {
+                  app.user = {};
+                  app.isLoggedIn = false;
+                  $('*').trigger('users-logout');
+                }
                 if (window.history && history.pushState) {
                   history.pushState(null, null, '/#!main');
                 }

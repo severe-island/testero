@@ -38,7 +38,7 @@ $("#users-form-signup").submit(function() {
           if (data.status) {
             app.isLoggedIn = true;
             app.user = data.user;
-            tuneTopMenu();
+            $('*').trigger('users-login');
             if (!(window.history && history.pushState)) {
               loadPage('/main.json');
             }
