@@ -23,7 +23,7 @@ function showAlert(msg, type, delay, callback) {
                   .html(msg);
                 $("#content")
                   .slideDown("slow", function () {
-                    if (delay !== 0) {
+                    if (!!delay) {
                       $(this).delay(delay)
                         .hide("slow");
                     }
@@ -204,6 +204,10 @@ function loadPage(path) {
             onLoadPageContent();
           }
         });
+    },
+    error: function() {
+      showAlert('Сервер временно недоступен. Попробуйте обновить страницу через\n\
+        некоторое время.', 'danger');
     }
   });
 }
