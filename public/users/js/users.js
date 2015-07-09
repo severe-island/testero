@@ -37,7 +37,9 @@ $.ajax({
                     isAdministrator:
                       data.users[i].isAdministrator
                       ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>'
-                      : ""
+                      : "",
+                    id: data.users[i]._id,
+                    href: "/#!users/profile?id=" + data.users[i]._id
                   },
                   {
                     append: true

@@ -1,0 +1,13 @@
+{
+  "title": "Профиль пользователя",
+  "url": "/#!users/profile",
+  "id": "users-profile",
+  "layout": "/app/html/generic-layout.html",
+  "script": "/users/js/profile.js",
+  "breadcrumb": [
+    {"page": "/main.json"},
+    {"page": "/users.json"},
+    {"page": "/users/users.json"},
+    {}
+  ]
+}

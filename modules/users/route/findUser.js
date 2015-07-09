@@ -89,58 +89,5 @@ function findUserByEmail(email, admin, res) {
   })
 }
 
-router.post('/findUserById', function(req, res, next) {
-  if(!req.body.id) {
-    res.json({
-      status: false,
-      level: "danger",
-      msg: "Укажите Id!"
-    })
-    return;
-  }
-  if(!req.session.login) {
-    findUserById(req.body.id, false, res);
-    return;
-  }
-  db.findUserById(req.session.id, function(err, user) {
-    if(err || !user || !user.isAdministrator) {
-      findUserById(req.body.id, false, res);
-      return;
-    } else {
-      findUserById(req.body.id, true, res);
-      return;
-    }
-  })
-});
-
-function findUserById(id, admin, res) {
-  db.findUserByIdWithoutPassword(id, admin, function(err, user) {
-    if(err) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Ошибка БД: " + err.message
-      })
-      return;
-    }   
-    if(!user) {
-      res.json({
-        status: false,
-        level: "info",
-        msg: "Пользователь не найден"
-      })
-      return;
-    }
-    res.json({
-      status: true,
-      level: "info",
-      msg: "Пользователь найден!: ",
-      user: user
-    })
-  })
-}
-
-
-
 module.exports = router;
  

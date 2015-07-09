@@ -67,7 +67,8 @@ function startUp() {
               $('*').trigger('users-logout');
             }
             showAlert(data.msg, data.level, 500, function () {
-              loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
+              var p = window.location.hash.slice(2).split('?');
+              loadPage('/' + (p[0] || 'main') + '.json', p[1]);
 
               if (!(window.history && history.pushState)) {
                 $('[href="/#!about"]').click(function () {

@@ -57,22 +57,29 @@ module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, call
   }
 };
 
-module.exports.findUserByIdWithoutPassword = function (id, admin, callback) {
-  if(admin) {
-    collection.findOne({ id: id }, 
-    { password: 0 }, function (err, findedUser) {
-      callback(err, findedUser);
-    }); 
-  } else {
-    collection.findOne({$and: [ { id: id } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
-                       { password: 0, isAdministrator : 0, editor: 0 }, function (err, findedUser) {
-                         if(!findedUser.showEmail) {
-                           delete findedUser.email;
-                         }
-                         callback(err, findedUser);
-                       }); 
+
+module.exports.findUserByIdWithoutPassword = function(id, admin, callback) {
+  if (admin) {
+    collection.findOne(
+      { _id: id },
+      { password: 0 },
+      function(err, foundUser) {
+        callback(err, foundUser);
+      }); 
+  }
+  else {
+    collection.findOne(
+      { $and: [ { _id: id } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ] },
+      { password: 0, isAdministrator : 0, editor: 0 },
+      function(err, foundUser) {
+        if(!!foundUser && !foundUser.showEmail) {
+          delete foundUser.email;
+        }
+        callback(err, foundUser);
+      });
   }
 };
+
 
 module.exports.findUserByEmail = function (userEmail, callback) {
   collection.findOne({ email: userEmail }, function (err, findedUser) {
