@@ -474,31 +474,37 @@ router.get('/getMe', function(req, res, next) {
     });
     return;
   }
+  
   db.findUserByEmailWithoutPassword(req.session.email, true, function(err, user) {
-    if(err) {
+    if (err) {
+      var msg = 'Ошибка базы данных' 
+        + (conf.mode !== 'production' ? ': ' + err.message : '.');
       res.json({
         status: false,
         level: "danger",
-        msg: "Ошибка БД: " + err.message
-      })
+        msg: msg
+      });
       return;
     }
-    if(!user) {
+    
+    if (!user) {
       res.json({
         status: false,
         level: "danger",
-        msg: "Пользователь не найден! Скорее всего, ошибка с сессией."
-      })
+        msg: "Пользователь не найден. Возможно ошибка с сессией или базой данных. \n\
+          Войдите в систему заново."
+      });
       return;
     }
+    
     res.json({
       status: true,
-      level: "info",
-      msg: "Пользователь найден!",
+      level: "success",
+      msg: "Пользователь найден.",
       user: user
-    })
-  })
-})
+    });
+  });
+});
 
 router.post("/user/", function(req, res) {
   var email = req.body.email;

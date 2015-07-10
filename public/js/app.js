@@ -1,7 +1,9 @@
 var app = {
   modules: {},
   isLoggedIn: false,
-  user: {}
+  user: {},
+  page: '',
+  params: {}
 };
 
 var page;
@@ -66,9 +68,11 @@ function startUp() {
               app.isLoggedIn = false;
               $('*').trigger('users-logout');
             }
-            showAlert(data.msg, data.level, 500, function () {
+            showAlert(data.msg, data.level, 1000, function () {
               var p = window.location.hash.slice(2).split('?');
-              loadPage('/' + (p[0] || 'main') + '.json', p[1]);
+              app.page = '/' + (p[0] || 'main') + '.json';
+              app.params = $.parseParams('?' + p[1]);
+              loadPage(app.page, app.params);
 
               if (!(window.history && history.pushState)) {
                 $('[href="/#!about"]').click(function () {
@@ -77,7 +81,10 @@ function startUp() {
               }
 
               $(window).on('popstate', function () {
-                loadPage('/' + (window.location.hash.slice(2) || 'main') + '.json');
+                var p = window.location.hash.slice(2).split('?');
+                app.page = '/' + (p[0] || 'main') + '.json';
+                app.params = $.parseParams('?' + p[1]);
+                loadPage(app.page, app.params);
               });
             });
           }
@@ -95,7 +102,7 @@ function placeTraps(where) {
 }
 
 
-function loadPage(path) {
+function loadPage(path, params) {
   function onLoadPageContent() {
     $.getScript(page.script);
     if (!(window.history && history.pushState)) {

@@ -33,7 +33,7 @@ $.ajax({
                     familyName: data.users[i].familyName,
                     name: data.users[i].name,
                     patronymic: data.users[i].patronymic,
-                    email: data.users[i].email,
+                    email: data.users[i].email || '<em>Пользователь скрыл свой email.</em>',
                     isAdministrator:
                       data.users[i].isAdministrator
                       ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>'
