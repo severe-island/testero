@@ -40,9 +40,6 @@ config.modules.forEach(function(moduleName){
   }
 })
 
-var modulesRoute = require('./modules');
-app.use('/modules', modulesRoute);
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
