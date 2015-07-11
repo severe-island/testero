@@ -63,6 +63,7 @@ router.post('/login', function(req, res, next) {
       }
       req.session.login = true
       req.session.email = email
+      req.session.user_id = data._id;
       res.json({
         msg: msg,
         status: true,
@@ -75,9 +76,10 @@ router.post('/login', function(req, res, next) {
 router.get('/logout', function(req, res, next) {
   checkSession(req, res, function(authorized) {
     if (authorized) { 
-      delete req.session.login;
+      //delete req.session.login;
+      req.session.login = false;
       var email = req.session.email;
-      delete req.session.email;
+      //delete req.session.email;
       res.json({
         msg: "Вы вышли и теперь больше не " + email + ".",
         status: true,

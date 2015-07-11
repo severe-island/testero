@@ -14,6 +14,7 @@ $("#form-login").submit(function() {
               if (data.status) {
                 app.user = data.user;
                 app.isLoggedIn = true;
+                localStorage.user_id = data.user._id;
                 $('*').trigger('users-login');
                 if (!(window.history && history.pushState)) {
                   loadPage('/main.json');

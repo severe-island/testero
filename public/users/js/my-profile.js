@@ -1,3 +1,16 @@
+$.ajax({
+  type: 'GET',
+  url: '/users/users/' + localStorage.user_id + '/auth',
+  success: function(data) {
+    if (data.status) {
+      alert(true);
+    }
+    else {
+      alert(false);
+    }
+  }
+});
+
 $("#user-profile-edit-form #email").append(app.user.email);
 $("#user-profile-edit-form #email-input").val(app.user.email);
 $("#user-profile-edit-form #familyName").val(app.user.familyName);
