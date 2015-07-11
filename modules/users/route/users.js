@@ -63,18 +63,34 @@ function findUserById(id, admin, res) {
 
 
 router.get('/users/', function(req, res, next) {
-  if (!req.session.login) {
-    findAllUsers(false, res);
-    return;
-  }
-  
-  db.findUserByEmail(req.session.email, function(err, user) {
-    if (err || !user || !user.isAdministrator) {
-      findAllUsers(false, res);
-    } else {
-      findAllUsers(true, res);
+  if (!!req.query['email']) { // by email
+    if (!req.session.login) {
+      findUserByEmail(req.query['email'], false, res);
+      return;
     }
-  });
+    
+    db.findUserByEmail(req.session.email, function(err, user) {
+      if (err || !user || !user.isAdministrator) {
+        findUserByEmail(req.query['email'], false, res);
+      } else {
+        findUserByEmail(req.query['email'], true, res);
+      }
+    });
+  }
+  else { // all
+    if (!req.session.login) {
+      findAllUsers(false, res);
+      return;
+    }
+
+    db.findUserByEmail(req.session.email, function(err, user) {
+      if (err || !user || !user.isAdministrator) {
+        findAllUsers(false, res);
+      } else {
+        findAllUsers(true, res);
+      }
+    });
+  }
 });
 
 function findAllUsers(admin, res) {
@@ -98,30 +114,6 @@ function findAllUsers(admin, res) {
     });
   });
 }
-  
-router.post('/findUserByEmail', function(req, res, next) {
-  if(!req.body.email) {
-    res.json({
-      status: false,
-      level: "danger",
-      msg: "Укажите email!"
-    })
-    return;
-  }
-  if(!req.session.login) {
-    findUserByEmail(req.body.email, false, res);
-    return;
-  }
-  db.findUserByEmail(req.session.email, function(err, user) {
-    if(err || !user || !user.isAdministrator) {
-      findUserByEmail(req.body.email, false, res);
-      return;
-    } else {
-      findUserByEmail(req.body.email, true, res);
-      return;
-    }
-  })
-});
 
 function findUserByEmail(email, admin, res) {
   db.findUserByEmailWithoutPassword(email, admin, function(err, user) {
