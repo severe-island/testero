@@ -62,39 +62,41 @@ function findUserById(id, admin, res) {
 }
 
 
-router.post('/findAllUsers', function(req, res, next) {
-  if(!req.session.login) {
+router.get('/users/', function(req, res, next) {
+  if (!req.session.login) {
     findAllUsers(false, res);
     return;
   }
+  
   db.findUserByEmail(req.session.email, function(err, user) {
-    if(err || !user || !user.isAdministrator) {
+    if (err || !user || !user.isAdministrator) {
       findAllUsers(false, res);
-      return;
     } else {
       findAllUsers(true, res);
-      return;
     }
-  })
+  });
 });
 
 function findAllUsers(admin, res) {
   db.findAllUsersWithoutPassword(admin, function(err, users) {
-    if(err) {
+    if (err) {
+      var msg = 'Ошибка базы данных' 
+        + (conf.mode !== 'production' ? ': ' + err.message : '.');
       res.json({
         status: false,
         level: "danger",
-        msg: "Ошибка БД: " + err.message
-      })
+        msg: msg
+      });
       return;
     }
+    
     res.json({
       status: true,
-      level: "info",
-      msg: "Список пользователей получен!: ",
+      level: "success",
+      msg: "Список всех пользователей получен.",
       users: users
-    })
-  })
+    });
+  });
 }
   
 router.post('/findUserByEmail', function(req, res, next) {
@@ -152,5 +154,5 @@ function findUserByEmail(email, admin, res) {
   });
 }
 
+
 module.exports = router;
- 

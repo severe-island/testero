@@ -506,7 +506,7 @@ router.get('/getMe', function(req, res, next) {
   });
 });
 
-router.post("/user/", function(req, res) {
+router.post("/users/", function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
   var passwordDuplicate = req.body.passwordDuplicate;
