@@ -1,6 +1,6 @@
 $.ajax({
-  type: "POST",
-  url: "/users/findAllUsers",
+  type: "GET",
+  url: "/users/users/",
   success: function (data)
   {
     if (!data.status) {

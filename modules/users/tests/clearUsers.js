@@ -127,7 +127,7 @@ describe('Модуль users', function() {
             res.body.status.should.equal(false, res.body.msg);
             
             request
-              .post('/users/findAllUsers')
+              .get('/users/users/')
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
               .expect(200)
@@ -200,7 +200,7 @@ describe('Модуль users', function() {
             res.body.status.should.equal(true, res.body.msg);
             
             request
-              .post('/users/findAllUsers')
+              .get('/users/users/')
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
               .expect(200)

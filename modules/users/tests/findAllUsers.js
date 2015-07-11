@@ -4,11 +4,11 @@ var superagent = require('superagent');
 var agent = superagent.agent();
 
 describe('Модуль users', function () {
-  describe('Список всех пользователей (findAllUsers)', function() {
+  describe('Список всех пользователей (GET /users/)', function() {
     context('Список пуст', function() {
       it('Возвращается массив длины нуль', function (done) {
       request
-        .post('/users/findAllUsers')
+        .get('/users/users/')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -52,7 +52,7 @@ describe('Модуль users', function () {
     
       it('Возвращается массив длиной единица', function(done) {
         request
-          .post('/users/findAllUsers')
+          .get('/users/users/')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -96,7 +96,7 @@ describe('Модуль users', function () {
 
       it('Возвращается массив длиной два', function(done) {
         request
-          .post('/users/findAllUsers')
+          .get('/users/users/')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
