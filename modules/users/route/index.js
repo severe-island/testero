@@ -91,7 +91,7 @@ router.get('/logout', function(req, res, next) {
 
 // DEPRECATED:
 
-router.post('/signup', function(req, res, next) {
+/*router.post('/signup', function(req, res, next) {
   if(req.session.login)
   {
     res.json({
@@ -169,7 +169,7 @@ router.post('/signup', function(req, res, next) {
       });
     });
   });
-}); 
+}); */
 
 // DEPRECATED:
 
@@ -506,89 +506,5 @@ router.get('/getMe', function(req, res, next) {
   });
 });
 
-router.post("/users/", function(req, res) {
-  var email = req.body.email;
-  var password = req.body.password;
-  var passwordDuplicate = req.body.passwordDuplicate;
-
-  if(!email) {
-    res.json({
-      level: false,
-      status: "danger",
-      msg: "Не передан email."
-    });
-    return;
-  }
-
-  if(!password) {
-    res.json({
-      level: false,
-      status: "danger",
-      msg: "Не передан пароль (password)."
-    });
-    return;
-  }
-
-  if(!passwordDuplicate) {
-    res.json({
-      level: false,
-      status: "danger",
-      msg: "Не передано подтверждение пароля (passwordDuplicate)."
-    });
-    return;
-  }
-
-  if(password !== passwordDuplicate) {
-    res.json({
-      level: false,
-      status: "danger",
-      msg: "Пароль и подтверждение не совпадают."
-    });
-    return;
-  }
-
-  db.findUserByEmail(email, function(err, user) {
-    if(err) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Ошибка базы данных: " + err.message
-      });
-      return;
-    }
-
-    if(user) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Пользователь " + email + " уже существует."
-      });
-      return;
-    }
-
-    db.isAdminExists(function(adminExists) {
-      var user = { };
-      user.email = email;
-      user.password = password;
-      user.registeredBy = null;
-      user.isAdministrator = !adminExists;
-      db.registerUser(user, function(err, newUser) {
-        delete newUser.password;
-        if(adminExists) {
-          var msg = "Пользователь успешно зарегистрирован.";
-        }
-        else {
-          var msg = "Первый пользователь был успешно зарегистрирован и стал администратором."
-        }
-        res.json({
-          status: true,
-          level: "success",
-          msg: msg,
-          user: newUser
-        });
-      });
-    });
-  });
-});
 
 module.exports = router;

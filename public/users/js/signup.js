@@ -31,7 +31,7 @@ $("#users-form-signup").submit(function() {
   {
     $.ajax({
       type: "POST",
-      url: "/users/signup",
+      url: "/users/users",
       data: $("#users-form-signup").serialize(),
       success: function (data) {
         showAlert(data.msg, "info", 2000, function() {

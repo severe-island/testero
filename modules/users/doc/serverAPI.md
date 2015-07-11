@@ -10,12 +10,12 @@
 ### Ответ:  
 `{ status, msg }`
 
-# /users/signup
-Регистрация обычного пользователя. Если status==1, то регистрация прошла успешно.
+# /users/signup -> POST /users/users
+Регистрация обычного пользователя. Если status == true, то регистрация прошла успешно.
 ### Запрос: 
-`{ email, password, passwordDuplicate}`  
+`{ email, password, passwordDuplicate}`
 ### Ответ:  
-`{ status, msg }`
+`{ status, msg, level }`
 
 # /users/addAdmin
 Регистрация админа. Отличается от /users/signup тем, что самого первого админа может зарегистрировать любой, а вот следующих админов может добавлять только админ. Если status==1, то регистрация прошла успешно.
