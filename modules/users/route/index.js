@@ -4,205 +4,108 @@ var db = require('../db');
 var conf = require('../../../config');
 
 router.post('/login', function(req, res, next) {
-  if (req.session.login) {
-    var status, level;
-    if (req.session.email === req.body.email) {
-      status = true;
-      level = "info";
-    }
-    else {
-      status = false;
-      level = "warning";
-    }
-    res.json({
-      msg: "Вы уже зашли с почтой " + req.session.email + ".",
-      status: status,
-      level: level
-    });
-    return;
-  }
-  
-  var email = req.body.email;
-  var password = req.body.password;
-  var remember = (req.body.remember !== undefined);
-  db.findUserByEmail(email, function(err, data){
-    if(err || data==null) {
+  checkSession(req, res, function(authorized) {
+    if(authorized)
+    {
+      var status, level;
+      if (req.session.email === req.body.email) {
+        status = true;
+        level = "info";
+      }
+      else {
+        status = false;
+        level = "warning";
+      }
       res.json({
-        msg: "Пользователь не найден!",
-        status: false, 
-        level: "info"
-      })
-      return;
-    }
-    if(data.removed) {
-      res.json({
-        status: false,
-        level: "info",
-        msg: "Ваш пользователь удалён!"
+        msg: "Вы уже зашли с почтой " + req.session.email + ".",
+        status: status,
+        level: level
       });
       return;
     }
-    if(data.password != password) {
+    
+    var email = req.body.email;
+    var password = req.body.password;
+    var remember = (req.body.remember !== undefined);
+    db.findUserByEmail(email, function(err, data){
+      if(err || data==null) {
+        res.json({
+          msg: "Пользователь не найден!",
+          status: false, 
+          level: "info"
+        })
+        return;
+      }
+      if(data.removed) {
+        res.json({
+          status: false,
+          level: "info",
+          msg: "Ваш пользователь удалён!"
+        });
+        return;
+      }
+      if(data.password != password) {
+        res.json({
+          msg: "Неверный пароль!",
+          status: false,
+          level: "info"
+        });
+        return;
+      }
+      var msg = "Вы вошли!"
+      if(remember){
+        msg+=" Я постараюсь вас запомнить."
+        req.session.cookie.originalMaxAge = 1000*60*60;
+      }
+      else {
+        req.session.cookie.originalMaxAge = null
+        req.session.cookie.expires = false
+      }
+      req.session.login = true
+      req.session.email = email
       res.json({
-        msg: "Неверный пароль!",
-        status: false,
-        level: "info"
+        msg: msg,
+        status: true,
+        level: "success"
       });
-      return;
-    }
-    var msg = "Вы вошли!"
-    if(remember){
-      msg+=" Я постараюсь вас запомнить."
-      req.session.cookie.originalMaxAge = 1000*60*60;
-    }
-    else {
-      req.session.cookie.originalMaxAge = null
-      req.session.cookie.expires = false
-    }
-    req.session.login = true
-    req.session.email = email
-    res.json({
-      msg: msg,
-      status: true,
-      level: "success"
     });
   });
 });
 
 router.get('/logout', function(req, res, next) {
-  if (req.session.login) { 
-    delete req.session.login;
-    var email = req.session.email;
-    delete req.session.email;
-    res.json({
-      msg: "Вы вышли и теперь больше не " + email + ".",
-      status: true,
-      level: "success"
-    });
-  }
-  else {
-    res.json({
-      msg: "Так ведь вы и не входили!",
-      status: true,
-      level: "info"
-    });
-  }
+  checkSession(req, res, function(authorized) {
+    if (authorized) { 
+      delete req.session.login;
+      var email = req.session.email;
+      delete req.session.email;
+      res.json({
+        msg: "Вы вышли и теперь больше не " + email + ".",
+        status: true,
+        level: "success"
+      });
+    }
+    else {
+      res.json({
+        msg: "Так ведь вы и не входили!",
+        status: true,
+        level: "info"
+      });
+    }
+  });
 });
 
-// DEPRECATED:
-
-/*router.post('/signup', function(req, res, next) {
-  if(req.session.login)
-  {
-    res.json({
-      msg: "Вы уже вошли как "+ req.session.email +"! Зачем вам регистрироваться?",
-      status: false,
-      level: "warning"
-    });
-    return;
-  }
-  if(!req.body.email || !req.body.password || !req.body.passwordDuplicate) {
-    res.json({
-      msg: "Указаны не все данные.",
-      status: false,
-      level: "danger"
-    });
-    return;
-  }
-  var email = req.body.email;
-  var password = req.body.password;
-  var passwordDuplicate = req.body.passwordDuplicate;
-  db.findUserByEmail(email, function(err, data) {
-    if(err)
-    {
-      res.json({
-        msg: "Ошибка БД: " + err.message,
-        status: false,
-        level: "danger"
-      });
-      return;
-    }
-    if(data!=null)
-    {
-      res.json({
-        msg: "Такой пользователь с этой почтой уже есть!",
-        status: false,
-        level: "danger"
-      });
-      return;
-    }
-    if (password != passwordDuplicate)
-    {
-      res.json({
-        msg: "Пароли не совпадают!",
-        status: false,
-        level: "danger"
-      });
-      return;
-    }
-    if(email.indexOf('@')<0)
-    {
-      res.json({
-        msg: "Некорректный email!",
-        status: false,
-        level: "danger"
-      });
-    }
-    db.addNewUser(email, password, false, function(err, newUser) {
-      if(err)
-      {
-        res.json({
-          msg: "Ошибка БД: " + err.message,
-          status: false,
-          level: "danger"
-        });
-        return;
-      }
-      delete newUser.password;
-      req.session.login = true;
-      req.session.email = email;
-      res.json({
-        msg: "Пользователь успешно зарегистрирован!",
-        status: true,
-        level: "success",
-        user: newUser
-      });
-    });
-  });
-}); */
-
-// DEPRECATED:
-
 router.post('/registerUser', function(req, res, next) {
-  if (!req.session.login) {
-    res.json({
-      msg: "Вы должны быть авторизованным пользователем",
-      status: false,
-      level: "danger"
-    });
-    return;
-  }
-  
-  db.findUserByEmail(req.session.email, function(err, data){
-    if (err || data === null) {
+  checkSession(req, res, function(authorized, user) {
+    if (!req.session.login) {
       res.json({
-        msg: "Вы не являетесь пользователем системы",
+        msg: "Вы должны быть авторизованным пользователем",
         status: false,
         level: "danger"
       });
       return;
     }
     
-    var initiator = data;
-    
-    if (initiator.removed) {
-      res.json({
-        msg: "Ваш аккаунт " + email + " был удалён",
-        status: false,
-        level: "danger"
-      });
-      return;
-    }
+    var initiator = user;
 
     if (!initiator.isAdministrator) {
       res.json({
@@ -218,7 +121,7 @@ router.post('/registerUser', function(req, res, next) {
     var passwordDuplicate = req.body.passwordDuplicate;
     var isAdministrator = req.body.isAdministrator;
     var registeredBy = initiator.email;
-
+    
     if(!email) {
       res.json({
         msg: "Не задан email нового пользователя",
@@ -227,7 +130,7 @@ router.post('/registerUser', function(req, res, next) {
       });
       return;
     }
-
+    
     if (email.indexOf('@') < 0) {
       res.json({
         msg: "Некорректный email",
@@ -236,7 +139,7 @@ router.post('/registerUser', function(req, res, next) {
       });
       return;
     }
-
+    
     if (!password) {
       res.json({
         msg: "Не задан пароль нового пользователя",
@@ -245,7 +148,7 @@ router.post('/registerUser', function(req, res, next) {
       });
       return;
     }
-
+    
     if (!passwordDuplicate) {
       res.json({
         msg: "Не задан повтор пароля нового пользователя",
@@ -254,7 +157,7 @@ router.post('/registerUser', function(req, res, next) {
       });
       return;
     }
-
+    
     if (password !== passwordDuplicate) {
       res.json({
         msg: "Пароли не совпадают",
@@ -280,7 +183,7 @@ router.post('/registerUser', function(req, res, next) {
         });
         return;
       }
-
+      
       if (data !== null) {
         res.json({
           msg: "Пользователь " + email + " уже есть",
@@ -289,7 +192,7 @@ router.post('/registerUser', function(req, res, next) {
         });
         return;
       }
-
+      
       var user = {
         email: email,
         password: password,
@@ -308,7 +211,7 @@ router.post('/registerUser', function(req, res, next) {
         
         delete newUser.password;
         /*req.session.login = true;
-        req.session.email = email;*/
+         *        req.session.email = email;*/
         
         res.json({
           msg: "Пользователь " + email + " успешно зарегистрирован!",
@@ -323,60 +226,54 @@ router.post('/registerUser', function(req, res, next) {
 
 
 router.post('/requestRemoving', function(req, res, next) {
-  if(!req.session.login) {
-    res.json({
-      status: true,
-      level: "info",
-      msg: "Вы не вошли, поэтому не можете себя удалить."
-    });
-    return;
-  }
-  db.updateUser(req.session.email, { removingRequested: true }, req.session.email, function(err) {
-    if(err) {
+  checkSession(req, res, function(authorized) {
+    if(!authorized) {
       res.json({
         status: true,
         level: "info",
-        msg: "Ошибка БД: " + err.message
+        msg: "Вы не вошли, поэтому не можете себя удалить."
       });
       return;
     }
-    delete req.session.login;
-    delete req.session.email;
-    res.json({
-      status: true,
-      level: "info",
-      msg: "Запрос на удаление оставлен."
+    db.updateUser(req.session.email, { removingRequested: true }, req.session.email, function(err) {
+      if(err) {
+        res.json({
+          status: true,
+          level: "info",
+          msg: "Ошибка БД: " + err.message
+        });
+        return;
+      }
+      delete req.session.login;
+      delete req.session.email;
+      res.json({
+        status: true,
+        level: "info",
+        msg: "Запрос на удаление оставлен."
+      });
     });
-  })
+  });
 });
 
 router.post('/removeUser', function(req, res, next) {
-  if(!req.session.login) {
-    res.json({
-      status: false,
-      level: "danger",
-      msg: "Сначала войдите в систему!"
-    })
-    return
-  }
-  if(!req.body.email) {
-    res.json({
-      status: false,
-      level: "danger",
-      msg: "Укажите email!"
-    });
-    return;
-  }
-  var targetEmail = req.body.email
-  db.findUserByEmail(req.session.email, function(err, user) {
-    if(err) {
+  checkSession(req, res, function(authorized, user) {
+    if(!authorized) {
       res.json({
-        msg: "Ошибка БД: " + err.message,
         status: false,
-        level: "danger"
+        level: "danger",
+        msg: "Сначала войдите в систему!"
+      })
+      return
+    }
+    if(!req.body.email) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Укажите email!"
       });
       return;
     }
+    var targetEmail = req.body.email
     if(!user) {
       res.json({
         status: false,
@@ -408,27 +305,19 @@ router.post('/removeUser', function(req, res, next) {
         level: "success"
       });
       return;
-    })
-  })
-})
+    });
+  });
+});
 
 router.post('/clearUsers', function(req, res, next) {
-  if(!req.session.login) {
-    res.json({
-      status: false,
-      level: "danger",
-      msg: "Сначала войдите в систему!"
-    })
-    return
-  }
-  db.findUserByEmail(req.session.email, function(err, user) {
-    if(err) {
+  checkSession(req, res, function(authorized, user) {
+    if(!authorized) {
       res.json({
-        msg: "Ошибка БД: " + err.message,
         status: false,
-        level: "danger"
-      });
-      return;
+        level: "danger",
+        msg: "Сначала войдите в систему!"
+      })
+      return
     }
     if(!user) {
       res.json({
@@ -460,42 +349,23 @@ router.post('/clearUsers', function(req, res, next) {
         status: true,
         level: "success"
       });
-    })
-  })
-})
+    });
+  });
+});
 
 
 router.get('/getMe', function(req, res, next) {
-  if(!req.session.login) {
-    res.json({
-      status: false,
-      level: "warning",
-      msg: "Вы ещё не вошли в систему."
-    });
-    return;
-  }
-  
-  db.findUserByEmailWithoutPassword(req.session.email, true, function(err, user) {
-    if (err) {
-      var msg = 'Ошибка базы данных' 
-        + (conf.mode !== 'production' ? ': ' + err.message : '.');
+  checkSession(req, res, function(authorized, user) {
+    if(!authorized) {
       res.json({
         status: false,
-        level: "danger",
-        msg: msg
+        level: "warning",
+        msg: "Вы ещё не вошли в систему."
       });
       return;
     }
     
-    if (!user) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Пользователь не найден. Возможно ошибка с сессией или базой данных. \n\
-          Войдите в систему заново."
-      });
-      return;
-    }
+    delete user.password;
     
     res.json({
       status: true,
@@ -506,5 +376,43 @@ router.get('/getMe', function(req, res, next) {
   });
 });
 
+function checkSession(req, res, callback) {
+  if(!req.session.login || !req.session.email) {
+    callback(false, null);
+    return;
+  }
+  
+  db.findUserByEmail(req.session.email, function(err, user) {
+    if(err) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Ошибка базы данных: " 
+          + (conf.mode !== 'production' ? ': ' + err.message : '.')
+      });
+    }
+    
+    if(!user) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Ваша сессия не найдена. Возможно ошибка с сессией или базой данных. \n\
+        Войдите в систему заново."
+      });
+    }
+    
+    if(user.removed) {
+      req.session.login = false;
+      res.json({
+        msg: "Ваш аккаунт " + user.email + " был удалён. Сессия будет разорвана.",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    
+    callback(true, user);
+  });
+}
 
 module.exports = router;
