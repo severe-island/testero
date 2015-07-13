@@ -3,27 +3,7 @@ var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
 
-router.get('/isAdminExists', function(req, res, next) {
-  db.isAdminExists(function(adminExists){
-    if(!adminExists) {
-      res.json({
-        msg: "Админа ещё нет!",
-        status: false,
-        level: "info"
-      })
-    }
-    else
-    {
-      res.json({
-        msg: "Админ уже есть!",
-        status: true,
-        level: "info"
-      })
-    }
-  })
-})
-
-router.post('/setAsAdministrator', function(req, res, next) { 
+router.post('/setAsAdministrator', function(req, res, next) {
   if(!req.session.login) {
     res.json({
       msg: "Сначала войдите в систему!",
