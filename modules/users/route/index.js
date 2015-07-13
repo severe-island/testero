@@ -2,11 +2,12 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
+var lib = require('./lib');
 
 router.post('/login', function(req, res, next) {
-  checkSession(req, res, function(authorized) {
-    if(authorized)
-    {
+  checkSession(req, checkSessionResult, function(authorized) {
+    console.log(checkSessionResult)
+    if (authorized) {
       var status, level;
       if (req.session.email === req.body.email) {
         status = true;
@@ -357,7 +358,7 @@ router.post('/clearUsers', function(req, res, next) {
 
 
 router.get('/getMe', function(req, res, next) {
-  checkSession(req, res, function(authorized, user) {
+  lib.checkSession(req, res, function(authorized, user) {
     if(!authorized) {
       res.json({
         status: false,
@@ -378,43 +379,5 @@ router.get('/getMe', function(req, res, next) {
   });
 });
 
-function checkSession(req, res, callback) {
-  if(!req.session.login || !req.session.email) {
-    callback(false, null);
-    return;
-  }
-  
-  db.findUserByEmail(req.session.email, function(err, user) {
-    if(err) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Ошибка базы данных: " 
-          + (conf.mode !== 'production' ? ': ' + err.message : '.')
-      });
-    }
-    
-    if(!user) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Ваша сессия не найдена. Возможно ошибка с сессией или базой данных. \n\
-        Войдите в систему заново."
-      });
-    }
-    
-    if(user.removed) {
-      req.session.login = false;
-      res.json({
-        msg: "Ваш аккаунт " + user.email + " был удалён. Сессия будет разорвана.",
-        status: false,
-        level: "danger"
-      });
-      return;
-    }
-    
-    callback(true, user);
-  });
-}
 
 module.exports = router;

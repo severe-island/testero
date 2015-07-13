@@ -82,12 +82,12 @@ module.exports.findUserByIdWithoutPassword = function(id, admin, callback) {
 
 
 module.exports.findUserByEmail = function (userEmail, callback) {
-  collection.findOne({ email: userEmail }, function (err, findedUser) {
+  collection.findOne({ email: userEmail }, function (err, foundUser) {
     if (err && config.mode !== "testing")
     {
       console.log("Ошибка при поиске пользователя ", userEmail, " :", err.message);
     }
-    callback(err, findedUser);
+    callback(err, foundUser);
   }); 
 };
 
