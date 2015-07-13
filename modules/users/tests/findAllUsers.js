@@ -4,7 +4,7 @@ var superagent = require('superagent');
 var agent = superagent.agent();
 
 describe('Модуль users', function () {
-  describe('Список всех пользователей (GET /users/)', function() {
+  describe('Список всех пользователей (GET /users/users/)', function() {
     context('Список пуст', function() {
       it('Возвращается массив длины нуль', function (done) {
       request
@@ -33,7 +33,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "admin1"
         };
         request
-          .post('/users/registerAdministrator')
+          .post('/users/users')
           .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -76,7 +76,7 @@ describe('Модуль users', function () {
           password: "user1",
           passwordDuplicate: "user1"
         };
-        var req = request.post('/users/registerUser');
+        var req = request.post('/users/users');
         agent.attachCookies(req);
         req
           .send(user1)
@@ -88,7 +88,7 @@ describe('Модуль users', function () {
               throw err;
             }
             
-            res.body.status.should.equal(true);
+            res.body.status.should.equal(true, res.body.msg);
             
             done();
         });
@@ -115,20 +115,39 @@ describe('Модуль users', function () {
   });
   
   after(function(done) {
-    var req = request.post('/users/clearUsers');
-    agent.attachCookies(req);
-    req
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .expect('Content-Type', /application\/json/)
-      .expect(200)
-      .end(function(err, res) {
-        if (err) {
-          throw err;
-        }
-        
-        res.body.status.should.equal(true);
-        
-        done();
-    });
+    var admin1 = {
+          email: "admin1@testero",
+          password: "admin1"
+        };
+        request
+          .post('/users/login')
+          .send(admin1)
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) {
+              throw err;
+            }
+            
+            agent.saveCookies(res);
+            res.body.status.should.equal(true, res.body.msg);
+    
+            var req = request.post('/users/clearUsers');
+            agent.attachCookies(req);
+            req
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .end(function(err, res) {
+                if (err) {
+                  throw err;
+                }
+
+                res.body.status.should.equal(true, res.body.msg);
+
+                done();
+            });
+          });
   });
 });

@@ -7,7 +7,7 @@ describe('Модуль users', function() {
   describe('Выход из системы (logout)', function() {
     context('Пользователь не был авторизован', function() {
       it('Возвращается успех', function(done) {
-        var req = request.post('/users/logout');
+        var req = request.get('/users/logout');
         agent.attachCookies(req);
         req
           .set('X-Requested-With', 'XMLHttpRequest')

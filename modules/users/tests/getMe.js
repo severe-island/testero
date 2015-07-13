@@ -7,7 +7,7 @@ describe('Модуль users', function() {
   describe('Получение информации о самом себе (getMe)', function() {
     context('Пользователь не авторизован', function() {
       it('Возвращается отказ', function(done) {
-        var req = request.post('/users/getMe');
+        var req = request.get('/users/getMe');
         agent.attachCookies(req);
         req
           .set('X-Requested-With', 'XMLHttpRequest')

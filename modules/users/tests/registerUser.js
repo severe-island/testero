@@ -33,15 +33,15 @@ describe('Модуль users', function () {
     
     context('После добавления первого администратора', function () {
       before(function (done) {
-        var data = {
+        var admin1 = {
           email: "admin1@testero",
           password: "admin1",
           passwordDuplicate: "admin1",
           agreementAccepted: true
         };
         request
-          .post('/users/registerAdministrator')
-          .send(data)
+          .post('/users/users')
+          .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -53,8 +53,25 @@ describe('Модуль users', function () {
             agent.saveCookies(res);
             
             res.body.status.should.equal(true, res.body.msg);
+            
+            var req = request.post('/users/login');
+            agent.attachCookies(req);
+            req
+              .send(admin1)
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .end(function (err, res) {
+                if (err) {
+                  throw err;
+                }
+
+                agent.saveCookies(res);
+
+                res.body.status.should.equal(true, res.body.msg);
                 
-            done();
+                done();
+              });
           });
       });
       
@@ -79,7 +96,7 @@ describe('Модуль users', function () {
             }
             
             res.body.should.have.property('status');
-            res.body.status.should.equal(true);
+            res.body.status.should.equal(true, res.body.msg);
             res.body.should.have.property('level');
             res.body.level.should.equal("success");
             res.body.should.have.property('user');
@@ -96,7 +113,7 @@ describe('Модуль users', function () {
     
     context('Попытка добавления пользователя не администратором', function() {
       before(function(done) {
-        var req = request.post('/users/logout');
+        var req = request.get('/users/logout');
         agent.attachCookies(req);
         req
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -162,7 +179,7 @@ describe('Модуль users', function () {
     });
     
     after(function(done) {
-      var req = request.post('/users/logout');
+      var req = request.get('/users/logout');
       agent.attachCookies(req);
       req
         .set('X-Requested-With', 'XMLHttpRequest')

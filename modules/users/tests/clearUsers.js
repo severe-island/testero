@@ -35,7 +35,7 @@ describe('Модуль users', function() {
           password: "admin1",
           passwordDuplicate: "admin1"
         };
-        var req = request.post('/users/registerAdministrator');
+        var req = request.post('/users/users');
         agent.attachCookies(req);
         req
           .send(admin1)
@@ -51,15 +51,10 @@ describe('Модуль users', function() {
             
             res.body.status.should.equal(true, res.body.msg);
             
-            var user1 = {
-              email: "user1@testero",
-              password: "user1",
-              passwordDuplicate: "user1"
-            };
-            var req = request.post('/users/registerUser');
+            var req = request.post('/users/login');
             agent.attachCookies(req);
             req
-              .send(user1)
+              .send(admin1)
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
               .expect(200)
@@ -69,28 +64,34 @@ describe('Модуль users', function() {
                 }
 
                 agent.saveCookies(res);
-                
-                res.body.status.should.equal(true);
-                
-                var req = request.post('/users/logout');
+
+                res.body.status.should.equal(true, res.body.msg);
+              
+            
+                var user1 = {
+                  email: "user1@testero",
+                  password: "user1",
+                  passwordDuplicate: "user1"
+                };
+                var req = request.post('/users/registerUser');
                 agent.attachCookies(req);
                 req
+                  .send(user1)
                   .set('X-Requested-With', 'XMLHttpRequest')
                   .expect('Content-Type', /application\/json/)
                   .expect(200)
-                  .end(function (err, res) {
+                  .end(function(err, res) {
                     if (err) {
                       throw err;
                     }
 
                     agent.saveCookies(res);
-                    
+
                     res.body.status.should.equal(true, res.body.msg);
-                    
-                    var req = request.post('/users/login');
+
+                    var req = request.get('/users/logout');
                     agent.attachCookies(req);
                     req
-                      .send({email: "user1@testero", password: "user1"})
                       .set('X-Requested-With', 'XMLHttpRequest')
                       .expect('Content-Type', /application\/json/)
                       .expect(200)
@@ -103,10 +104,27 @@ describe('Модуль users', function() {
 
                         res.body.status.should.equal(true, res.body.msg);
 
-                        done();
+                        var req = request.post('/users/login');
+                        agent.attachCookies(req);
+                        req
+                          .send({email: "user1@testero", password: "user1"})
+                          .set('X-Requested-With', 'XMLHttpRequest')
+                          .expect('Content-Type', /application\/json/)
+                          .expect(200)
+                          .end(function (err, res) {
+                            if (err) {
+                              throw err;
+                            }
+
+                            agent.saveCookies(res);
+
+                            res.body.status.should.equal(true, res.body.msg);
+
+                            done();
+                          });
                       });
-                  });
-            });
+                });
+              });
         });
       });
       
@@ -147,7 +165,7 @@ describe('Модуль users', function() {
     
     context('Очистка администратором', function() {
       before(function(done) {
-        var req = request.post('/users/logout');
+        var req = request.get('/users/logout');
         agent.attachCookies(req);
         req
           .set('X-Requested-With', 'XMLHttpRequest')

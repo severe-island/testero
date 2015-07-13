@@ -45,51 +45,37 @@ function showAlert(msg, type, delay, callback) {
 function startUp() {
   $.ajax({
     type: "GET",
-    url: "/users/isAdminExists",
+    url: "/users/getMe",
     success: function (data) {
-      if (!data.status) {
-        loadPage('/users/admin-account.json');
+      if (data.status) {
+        app.user = data.user;
+        app.isLoggedIn = true;
+        $('*').trigger('users-login');
       }
       else {
-        if (app.mode !== "production") {
-          showAlert(data.msg, data.level, 750);
-        }
-        $.ajax({
-          type: "GET",
-          url: "/users/getMe",
-          success: function (data) {
-            if (data.status) {
-              app.user = data.user;
-              app.isLoggedIn = true;
-              $('*').trigger('users-login');
-            }
-            else {
-              app.user = {};
-              app.isLoggedIn = false;
-              $('*').trigger('users-logout');
-            }
-            showAlert(data.msg, data.level, 1000, function () {
-              var p = window.location.hash.slice(2).split('?');
-              app.page = '/' + (p[0] || 'main') + '.json';
-              app.params = $.parseParams('?' + p[1]);
-              loadPage(app.page, app.params);
-
-              if (!(window.history && history.pushState)) {
-                $('[href="/#!about"]').click(function () {
-                  loadPage('/help/about.json');
-                });
-              }
-
-              $(window).on('popstate', function () {
-                var p = window.location.hash.slice(2).split('?');
-                app.page = '/' + (p[0] || 'main') + '.json';
-                app.params = $.parseParams('?' + p[1]);
-                loadPage(app.page, app.params);
-              });
-            });
-          }
-        });
+        app.user = {};
+        app.isLoggedIn = false;
+        $('*').trigger('users-logout');
       }
+      showAlert(data.msg, data.level, 1000, function () {
+        var p = window.location.hash.slice(2).split('?');
+        app.page = '/' + (p[0] || 'main') + '.json';
+        app.params = $.parseParams('?' + p[1]);
+        loadPage(app.page, app.params);
+
+        if (!(window.history && history.pushState)) {
+          $('[href="/#!about"]').click(function () {
+            loadPage('/help/about.json');
+          });
+        }
+
+        $(window).on('popstate', function () {
+          var p = window.location.hash.slice(2).split('?');
+          app.page = '/' + (p[0] || 'main') + '.json';
+          app.params = $.parseParams('?' + p[1]);
+          loadPage(app.page, app.params);
+        });
+      });
     }
   });
 }

@@ -11,7 +11,7 @@ describe('Модуль users', function() {
           password: "admin1",
           passwordDuplicate: "admin1"
         };
-        var req = request.post('/users/registerAdministrator');
+        var req = request.post('/users/users');
         agent.attachCookies(req);
         req
           .send(admin1)
