@@ -6,8 +6,8 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var NedbStore = require('connect-nedb-session')(session);
 var bodyParser = require('body-parser');
-var config = require('./config')
-var fs = require('fs')
+var config = require('./config');
+var fs = require('fs');
 
 var app = express();
 
@@ -19,7 +19,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
   secret: 'sksskjfsdfkn2131',
-  store: new NedbStore({ filename: '../db/'+config.mode+'/sessions', autoload: true, inMemoryOnly: false})
+  store: new NedbStore({
+    filename: '../db/'+config.mode+'/sessions',
+    autoload: true,
+    inMemoryOnly: false}),
+  resave: true,
+  saveUninitialized: false
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
