@@ -34,19 +34,35 @@ $("#users-form-signup").submit(function() {
       url: "/users/users",
       data: $("#users-form-signup").serialize(),
       success: function (data) {
-        showAlert(data.msg, "info", 2000, function() {
-          if (data.status) {
-            app.isLoggedIn = true;
-            app.user = data.user;
-            $('*').trigger('users-login');
-            if (!(window.history && history.pushState)) {
-              loadPage('/main.json');
-            }
-            else {
-              history.back();
-            }
+        var user = data.user;
+        user.password = $("#users-form-signup #password").val();
+        showAlert(data.msg, data.level, 1000, function() {
+          if (!!data.status) {
+            $.ajax({
+              type: 'POST',
+              url: '/users/login',
+              data: user,
+              success: function(data) {
+                showAlert(data.msg, data.level, 1000, function() {
+                  if (!!data.status) {
+                    app.isLoggedIn = true;
+                    delete user.password;
+                    app.user = user;
+                    localStorage.user_id = user._id;
+                    $('*').trigger('users-login');
+                    if (window.history && history.pushState) {
+                      history.pushState(null, null, '/#!main');
+                    }
+                    loadPage('/main.json');
+                  }
+                });
+              }
+            });
           }
         });
+      },
+      error: function() {
+        showAlert("Сервер недоступен. Попробуйте позже.", "danger");
       }
     });
   }
