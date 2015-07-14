@@ -8,6 +8,9 @@ $.ajax({
     else {
       alert(false);
     }
+  },
+  error: function() {
+    showAlert('Ошибка сервера.', 'danger');
   }
 });
 

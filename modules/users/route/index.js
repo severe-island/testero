@@ -5,9 +5,8 @@ var conf = require('../../../config');
 var lib = require('../lib/session');
 
 router.post('/login', function(req, res, next) {
-  checkSession(req, checkSessionResult, function(authorized) {
-    console.log(checkSessionResult)
-    if (authorized) {
+  lib.checkSession(req, function(checkResult) {
+    if (checkResult.status) {
       var status, level;
       if (req.session.email === req.body.email) {
         status = true;
@@ -29,41 +28,41 @@ router.post('/login', function(req, res, next) {
     var password = req.body.password;
     var remember = (req.body.remember !== undefined);
     db.findUserByEmail(email, function(err, data){
-      if(err || data==null) {
+      if (err || !data) {
         res.json({
-          msg: "Пользователь не найден!",
+          msg: "Пользователь не найден.",
           status: false, 
           level: "info"
-        })
+        });
         return;
       }
-      if(data.removed) {
+      if (data.removed) {
         res.json({
           status: false,
           level: "info",
-          msg: "Ваш пользователь удалён!"
+          msg: "Ваш аккаунт удалён."
         });
         return;
       }
-      if(data.password != password) {
+      if (data.password !== password) {
         res.json({
-          msg: "Неверный пароль!",
+          msg: "Неверный пароль.",
           status: false,
-          level: "info"
+          level: "warning"
         });
         return;
       }
-      var msg = "Вы вошли!"
-      if(remember){
-        msg+=" Я постараюсь вас запомнить."
+      var msg = "Вы вошли.";
+      if (!!remember) {
+        msg += " Я постараюсь вас запомнить.";
         req.session.cookie.originalMaxAge = 1000*60*60;
       }
       else {
-        req.session.cookie.originalMaxAge = null
-        req.session.cookie.expires = false
+        req.session.cookie.originalMaxAge = null;
+        req.session.cookie.expires = false;
       }
-      req.session.login = true
-      req.session.email = email
+      req.session.login = true;
+      req.session.email = email;
       req.session.user_id = data._id;
       res.json({
         msg: msg,
@@ -74,13 +73,12 @@ router.post('/login', function(req, res, next) {
   });
 });
 
+
 router.get('/logout', function(req, res, next) {
-  checkSession(req, res, function(authorized) {
-    if (authorized) { 
-      //delete req.session.login;
+  lib.checkSession(req, function(checkResult) {
+    if (checkResult.status) { 
       req.session.login = false;
       var email = req.session.email;
-      //delete req.session.email;
       res.json({
         msg: "Вы вышли и теперь больше не " + email + ".",
         status: true,
@@ -89,7 +87,7 @@ router.get('/logout', function(req, res, next) {
     }
     else {
       res.json({
-        msg: "Так ведь вы и не входили!",
+        msg: "Так ведь Вы и не входили!",
         status: true,
         level: "info"
       });
@@ -97,9 +95,10 @@ router.get('/logout', function(req, res, next) {
   });
 });
 
+
 router.post('/registerUser', function(req, res, next) {
-  checkSession(req, res, function(authorized, user) {
-    if (!req.session.login) {
+  lib.checkSession(req, function(checkResult) {
+    if (!checkResult.status) {
       res.json({
         msg: "Вы должны быть авторизованным пользователем",
         status: false,
@@ -108,7 +107,7 @@ router.post('/registerUser', function(req, res, next) {
       return;
     }
     
-    var initiator = user;
+    var initiator = checkResult.user;
 
     if (!initiator.isAdministrator) {
       res.json({
@@ -313,24 +312,22 @@ router.post('/removeUser', function(req, res, next) {
 });
 
 router.post('/clearUsers', function(req, res, next) {
-  checkSession(req, res, function(authorized, user) {
-    if(!authorized) {
+  lib.checkSession(req, function(checkResult) {
+    if (!checkResult.status) {
+      res.json(checkResult);
+      return;
+    }
+    
+    if (!checkResult.user) {
       res.json({
         status: false,
         level: "danger",
-        msg: "Сначала войдите в систему!"
-      })
-      return
+        msg: "Сначала войдите в систему."
+      });
+      return;
     }
-    if(!user) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Сначала войдите в систему!"
-      })
-      return 
-    }
-    if(!user.isAdministrator) {
+    
+    if(!checkResult.user.isAdministrator) {
       res.json({
         msg: "Очистить базу пользователей может только администратор!",
         status: false,
@@ -338,8 +335,9 @@ router.post('/clearUsers', function(req, res, next) {
       });
       return;
     }
+    
     db.clearUsers(function(err) { 
-      if(err) {
+      if (err) {
         res.json({
           msg: "Ошибка БД: " + err.message,
           status: false,
@@ -347,6 +345,7 @@ router.post('/clearUsers', function(req, res, next) {
         });
         return;
       }
+      
       res.json({
         msg: "Все пользователи были удалены!",
         status: true,

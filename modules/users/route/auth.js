@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
+var lib = require('../lib/session');
 
 router.get('/users/:id\/auth', function(req, res) {
-  checkSession(req, checkSessionResult, function(authorized, user) {
-    if (authorized) {
+  lib.checkSession(req, function(checkResult) {
+    if (checkResult.status) {
       res.json({
         status: true,
         level: 'success',
@@ -13,11 +14,7 @@ router.get('/users/:id\/auth', function(req, res) {
       });
     }
     else {
-      res.json({
-        status: false,
-        level: 'info',
-        msg: 'Пользователь не авторизован.'
-      });
+      res.json(checkResult);
     }
   });
 });
