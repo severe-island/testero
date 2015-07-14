@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
-var lib = require('./lib');
+var lib = require('../lib/session');
 
 router.post('/login', function(req, res, next) {
   checkSession(req, checkSessionResult, function(authorized) {

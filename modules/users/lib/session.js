@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+var db = require('../db');
+var conf = require('../../../config');
 
 module.exports.checkSession = function (req, res, callback) {
   if (!req.session.login || !req.session.email) {
@@ -55,5 +55,3 @@ module.exports.checkSession = function (req, res, callback) {
   });
   callback(authorized, user);
 };
-
-module.exports = router;
