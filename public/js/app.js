@@ -42,21 +42,37 @@ function showAlert(msg, type, delay, callback) {
 }
 
 
-function startUp() {
+function getMe(callback) {
   $.ajax({
     type: "GET",
     url: "/users/getMe",
-    success: function (data) {
+    success: function(data) {
       if (data.status) {
         app.user = data.user;
         app.isLoggedIn = true;
-        $('*').trigger('users-login');
+        localStorage.user_id = data.user._id;
       }
       else {
         app.user = {};
         app.isLoggedIn = false;
-        $('*').trigger('users-logout');
+        delete localStorage.user_id;
       }
+      callback(data);
+    },
+    error: function() {
+      callback({
+        msg: 'Сервер временно недоступен. Попробуйте позже.',
+        level: 'danger',
+        status: false,
+        user: undefined
+      });
+    }
+  });
+}
+
+
+function startUp() {
+  getMe(function (data) {
       showAlert(data.msg, data.level, 1000, function () {
         var p = window.location.hash.slice(2).split('?');
         app.page = '/' + (p[0] || 'main') + '.json';
@@ -75,9 +91,15 @@ function startUp() {
           app.params = $.parseParams('?' + p[1]);
           loadPage(app.page, app.params);
         });
+        
+        if (data.status) {
+          $('*').trigger('users-login');
+        }
+        else {
+          $('*').trigger('users-logout');
+        }
       });
-    }
-  });
+    });
 }
 
 

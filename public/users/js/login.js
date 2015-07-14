@@ -6,15 +6,8 @@ $("#form-login").submit(function() {
     success: function (data) {
       if (data.status) {
         showAlert(data.msg, "info", 1000, function() {
-          app.isLoggedIn = true;
-          $.ajax({
-            type: "GET",
-            url: "/users/getMe",
-            success: function(data) {
+          getMe(function(data) {
               if (data.status) {
-                app.user = data.user;
-                app.isLoggedIn = true;
-                localStorage.user_id = data.user._id;
                 $('*').trigger('users-login');
                 if (!(window.history && history.pushState)) {
                   loadPage('/main.json');
@@ -23,9 +16,8 @@ $("#form-login").submit(function() {
                   history.back();
                 }
               }
-            }
+            });
           });
-        });
       }
       else {
         $("#page-content #alert")
