@@ -357,25 +357,13 @@ router.post('/clearUsers', function(req, res, next) {
 });
 
 
-router.get('/getMe', function(req, res, next) {
-  lib.checkSession(req, res, function(authorized, user) {
-    if(!authorized) {
-      res.json({
-        status: false,
-        level: "warning",
-        msg: "Вы ещё не вошли в систему."
-      });
-      return;
+router.get('/getMe', function(req, res) {
+  lib.checkSession(req, function(checkResult) {
+    if (checkResult.user) {
+      delete checkResult.user.password;
     }
     
-    delete user.password;
-    
-    res.json({
-      status: true,
-      level: "success",
-      msg: "Пользователь найден.",
-      user: user
-    });
+    res.json(checkResult);
   });
 });
 
