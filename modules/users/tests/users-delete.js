@@ -4,13 +4,13 @@ var superagent = require('superagent');
 var agent = superagent.agent();
 
 describe('Модуль users', function() {
-  describe('Очистка коллекции пользователей (clearUsers)', function() {
+  describe('Очистка коллекции пользователей (DELETE /users)', function() {
     context('Попытка очистки не авторизованным пользователем', function() {
       it('Возвращается отказ', function(done) {
-        var req = request.post('/users/clearUsers');
+        var req = request.delete('/users/users');
         agent.attachCookies(req);
         req
-          .send({email: "user1@testero"})
+          //.send({email: "user1@testero"})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -49,12 +49,17 @@ describe('Модуль users', function() {
             
             agent.saveCookies(res);
             
-            res.body.status.should.equal(true, res.body.msg);
+            res.body.status.should.equal(true, res.body.msg);  
             
-            var req = request.post('/users/login');
+            var user1 = {
+              email: "user1@testero",
+              password: "user1",
+              passwordDuplicate: "user1"
+            };
+            var req = request.post('/users/users');
             agent.attachCookies(req);
             req
-              .send(admin1)
+              .send(user1)
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
               .expect(200)
@@ -66,21 +71,15 @@ describe('Модуль users', function() {
                 agent.saveCookies(res);
 
                 res.body.status.should.equal(true, res.body.msg);
-              
-            
-                var user1 = {
-                  email: "user1@testero",
-                  password: "user1",
-                  passwordDuplicate: "user1"
-                };
-                var req = request.post('/users/users');
+
+                var req = request.post('/users/login');
                 agent.attachCookies(req);
                 req
                   .send(user1)
                   .set('X-Requested-With', 'XMLHttpRequest')
                   .expect('Content-Type', /application\/json/)
                   .expect(200)
-                  .end(function(err, res) {
+                  .end(function (err, res) {
                     if (err) {
                       throw err;
                     }
@@ -89,47 +88,14 @@ describe('Модуль users', function() {
 
                     res.body.status.should.equal(true, res.body.msg);
 
-                    var req = request.get('/users/logout');
-                    agent.attachCookies(req);
-                    req
-                      .set('X-Requested-With', 'XMLHttpRequest')
-                      .expect('Content-Type', /application\/json/)
-                      .expect(200)
-                      .end(function (err, res) {
-                        if (err) {
-                          throw err;
-                        }
-
-                        agent.saveCookies(res);
-
-                        res.body.status.should.equal(true, res.body.msg);
-
-                        var req = request.post('/users/login');
-                        agent.attachCookies(req);
-                        req
-                          .send({email: "user1@testero", password: "user1"})
-                          .set('X-Requested-With', 'XMLHttpRequest')
-                          .expect('Content-Type', /application\/json/)
-                          .expect(200)
-                          .end(function (err, res) {
-                            if (err) {
-                              throw err;
-                            }
-
-                            agent.saveCookies(res);
-
-                            res.body.status.should.equal(true, res.body.msg);
-
-                            done();
-                          });
-                      });
-                });
-              });
+                    done();
+                  });
+            });
         });
       });
       
       it('Возвращается отказ. Количество пользователей не изменилось.', function(done) {
-        var req = request.post('/users/clearUsers');
+        var req = request.delete('/users/users');
         agent.attachCookies(req);
         req
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -145,7 +111,7 @@ describe('Модуль users', function() {
             res.body.status.should.equal(false, res.body.msg);
             
             request
-              .get('/users/users/')
+              .get('/users/users')
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
               .expect(200)
@@ -154,7 +120,7 @@ describe('Модуль users', function() {
                   throw err;
                 }
 
-                res.body.status.should.equal(true);
+                res.body.status.should.equal(true, res.body.msg);
                 res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
 
                 done();
@@ -202,7 +168,7 @@ describe('Модуль users', function() {
       });
       
       it('Возвращается успех. В коллекции пользователей нуль', function(done) {
-        var req = request.post('/users/clearUsers');
+        var req = request.delete('/users/users');
         agent.attachCookies(req);
         req
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -218,7 +184,7 @@ describe('Модуль users', function() {
             res.body.status.should.equal(true, res.body.msg);
             
             request
-              .get('/users/users/')
+              .get('/users/users')
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
               .expect(200)
@@ -227,7 +193,7 @@ describe('Модуль users', function() {
                   throw err;
                 }
 
-                res.body.status.should.equal(true);
+                res.body.status.should.equal(true, res.body.msg);
                 res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
 
                 done();

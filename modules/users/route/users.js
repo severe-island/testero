@@ -259,4 +259,49 @@ router.post("/users/", function(req, res) {
 });
 
 
+router.delete('/users', function(req, res, next) {
+  lib.checkSession(req, function(checkResult) {
+    if (!checkResult.status) {
+      res.json(checkResult);
+      return;
+    }
+    
+    if (!checkResult.user) {
+      res.json({
+        status: false,
+        level: "danger",
+        msg: "Сначала войдите в систему."
+      });
+      return;
+    }
+    
+    if (!checkResult.user.isAdministrator) {
+      res.json({
+        msg: "Очистить базу пользователей может только администратор.",
+        status: false,
+        level: "danger"
+      });
+      return;
+    }
+    
+    db.clearUsers(function(err) {
+      if (err) {
+        res.json({
+          msg: "Ошибка БД: " + err.message,
+          status: false,
+          level: "danger"
+        });
+        return;
+      }
+      
+      res.json({
+        msg: "Все пользователи были удалены!",
+        status: true,
+        level: "success"
+      });
+    });
+  });
+});
+
+
 module.exports = router;

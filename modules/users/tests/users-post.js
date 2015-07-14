@@ -159,10 +159,10 @@ describe('Модуль users', function () {
 
               res.body.status.should.equal(true, res.body.msg);
 
-              var req = request.post('/users/clearUsers');
+              var req = request.delete('/users/users');
               agent.attachCookies(req);
               req
-                .send({email: "user1@testero"})
+                //.send({email: "user1@testero"})
                 .set('X-Requested-With', 'XMLHttpRequest')
                 .expect('Content-Type', /application\/json/)
                 .expect(200)
@@ -171,7 +171,7 @@ describe('Модуль users', function () {
                     throw err;
                   }
 
-                  res.body.status.should.equal(true);
+                  res.body.status.should.equal(true, res.body.msg);
 
                   done();
                 });

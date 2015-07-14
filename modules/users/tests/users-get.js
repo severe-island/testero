@@ -133,7 +133,7 @@ describe('Модуль users', function () {
             agent.saveCookies(res);
             res.body.status.should.equal(true, res.body.msg);
     
-            var req = request.post('/users/clearUsers');
+            var req = request.delete('/users/users');
             agent.attachCookies(req);
             req
               .set('X-Requested-With', 'XMLHttpRequest')
