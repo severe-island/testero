@@ -5,16 +5,17 @@ $("#form-login").submit(function() {
     data: $("#form-login").serialize(),
     success: function (data) {
       if (data.status) {
+        localStorage.user_id = data.user._id;
         showAlert(data.msg, "info", 1000, function() {
           getMe(function(data) {
               if (data.status) {
-                $('*').trigger('users-login');
                 if (!(window.history && history.pushState)) {
                   loadPage('/main.json');
                 }
                 else {
                   history.back();
                 }
+                $('*').trigger('users-login');
               }
             });
           });

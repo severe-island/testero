@@ -6,7 +6,7 @@ $.ajax({
       if (data.status) {
         app.user = {};
         app.isLoggedIn = false;
-        $('*').trigger('users-logout');
+        delete localStorage.user_id;
       }
       if (!(window.history && history.pushState)) {
         loadPage('/main.json');
@@ -19,6 +19,9 @@ $.ajax({
           history.pushState(null, null, '/#!main');
           loadPage('/main.json');
         }
+      }
+      if (data.status) {
+        $('*').trigger('users-logout');
       }
     });
   }

@@ -19,7 +19,8 @@ router.post('/login', function(req, res, next) {
       res.json({
         msg: "Вы уже зашли с почтой " + req.session.email + ".",
         status: status,
-        level: level
+        level: level,
+        user: checkResult.user
       });
       return;
     }
@@ -63,11 +64,13 @@ router.post('/login', function(req, res, next) {
       }
       req.session.login = true;
       req.session.email = email;
+      delete data.password;
       req.session.user_id = data._id;
       res.json({
         msg: msg,
         status: true,
-        level: "success"
+        level: "success",
+        user: data
       });
     });
   });

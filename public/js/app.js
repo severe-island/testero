@@ -43,6 +43,16 @@ function showAlert(msg, type, delay, callback) {
 
 
 function getMe(callback) {
+  if (!localStorage.user_id) {
+    callback({
+      msg: 'Ранее Вы не были авторизованы.',
+      level: 'warning',
+      status: false,
+      user: undefined
+    });
+    return;
+  }
+  
   $.ajax({
     type: "GET",
     url: "/users/getMe",
