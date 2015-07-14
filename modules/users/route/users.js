@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db');
 var conf = require('../../../config');
+var lib = require('../lib/session');
 
 router.get('/users/:id', function(req, res) {
   if (!req.params.id) {
@@ -50,7 +51,6 @@ function findUserById(id, admin, res) {
     }
     
     user.id = user._id;
-    delete user._id;
     
     res.json({
       status: true,
@@ -156,14 +156,14 @@ router.post("/users/", function(req, res) {
     res.json({
       level: "danger",
       status: false,
-      msg: "Не передан email."
+      msg: "Не задан email нового пользователя."
     });
     return;
   }
   
   if (email.indexOf('@')<0) {
     res.json({
-      msg: "Некорректный email.",
+      msg: "Некорректный email нового пользователя.",
       status: false,
       level: "danger"
     });
@@ -174,7 +174,7 @@ router.post("/users/", function(req, res) {
     res.json({
       level: "danger",
       status: false,
-      msg: "Не передан пароль (password)."
+      msg: "Не задан пароль (password) нового пользователя."
     });
     return;
   }
@@ -183,7 +183,7 @@ router.post("/users/", function(req, res) {
     res.json({
       level: "danger",
       status: false,
-      msg: "Не передано подтверждение пароля (passwordDuplicate)."
+      msg: "Не задано подтверждение пароля (passwordDuplicate)."
     });
     return;
   }
@@ -192,60 +192,66 @@ router.post("/users/", function(req, res) {
     res.json({
       level: "danger",
       status: false,
-      msg: "Пароль и подтверждение не совпадают."
+      msg: "Пароль и подтверждение пароля не совпадают."
     });
     return;
   }
 
-  db.findUserByEmail(email, function(err, user) {
-    if (err) {
-      var msg = 'Ошибка базы данных' 
-        + (conf.mode !== 'production' ? ': ' + err.message : '.');
-      res.json({
-        status: false,
-        level: "danger",
-        msg: msg
-      });
-      return;
-    }
+  lib.checkSession(req, function(checkResult) {
+    var initiator = checkResult.status ? checkResult.user : undefined;
+    var registeredBy = initiator ? initiator.email : undefined;
 
-    if (user) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Пользователь " + email + " уже существует."
-      });
-      return;
-    }
-
-    db.isAdminExists(function(adminExists) {
-      var user = { };
-      user.email = email;
-      user.password = password;
-      user.registeredBy = null;
-      user.isAdministrator = !adminExists;
-      db.registerUser(user, function(err, newUser) {
-        if (err) {
-          var msg = 'Ошибка базы данных' 
-            + (conf.mode !== 'production' ? ': ' + err.message : '.');
-          res.json({
-            status: false,
-            level: "danger",
-            msg: msg
-          });
-          return;
-        }
-        
-        delete newUser.password;
-        
-        var msg = adminExists 
-          ? "Пользователь успешно зарегистрирован."
-          : "Первый пользователь успешно зарегистрирован и назначен администратором.";
+    db.findUserByEmail(email, function(err, user) {
+      if (err) {
+        var msg = 'Ошибка базы данных' 
+          + (conf.mode !== 'production' || initiator.isAdministrator ? ': ' + err.message : '.');
         res.json({
-          status: true,
-          level: "success",
-          msg: msg,
-          user: newUser
+          status: false,
+          level: "danger",
+          msg: msg
+        });
+        return;
+      }
+
+      if (user) {
+        res.json({
+          status: false,
+          level: "danger",
+          msg: "Пользователь " + email + " уже существует."
+        });
+        return;
+      }
+
+      db.isAdminExists(function(adminExists) {
+        var user = {
+          email: email,
+          password: password,
+          isAdministrator: !adminExists,
+          registeredBy: registeredBy
+        };
+        db.registerUser(user, function(err, newUser) {
+          if (err) {
+            var msg = 'Ошибка базы данных' 
+              + (conf.mode !== 'production' ? ': ' + err.message : '.');
+            res.json({
+              status: false,
+              level: "danger",
+              msg: msg
+            });
+            return;
+          }
+
+          delete newUser.password;
+
+          var msg = adminExists 
+            ? "Пользователь (" + email + ") успешно зарегистрирован."
+            : "Первый пользователь (" + email + ") успешно зарегистрирован и назначен администратором.";
+          res.json({
+            status: true,
+            level: "success",
+            msg: msg,
+            user: newUser
+          });
         });
       });
     });

@@ -73,7 +73,7 @@ describe('Модуль users', function() {
                   password: "user1",
                   passwordDuplicate: "user1"
                 };
-                var req = request.post('/users/registerUser');
+                var req = request.post('/users/users');
                 agent.attachCookies(req);
                 req
                   .send(user1)

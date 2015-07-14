@@ -4,17 +4,17 @@ var superagent = require('superagent');
 var agent = superagent.agent();
 
 describe('Модуль users', function () {
-  describe('Регистрация нового пользователя (registerUser)', function() {
+  describe('Регистрация нового пользователя (POST /users/users)', function() {
     context('Пользователей ещё нет', function() {
-      it('Возвращается отказ', function (done) {
+      it('Возвращается успех, пользователь зарегистрирован администратором', function (done) {
         var data = {
-          email: "user1@testero",
-          password: "user1",
-          passwordDuplicate: "user1",
+          email: "admin1@testero",
+          password: "admin1",
+          passwordDuplicate: "admin1",
           agreementAccepted: true
         };
         request
-          .post('/users/registerUser')
+          .post('/users/users')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -24,15 +24,16 @@ describe('Модуль users', function () {
               throw err;
             }
             
-            res.body.status.should.equal(false);
+            res.body.status.should.equal(true, res.body.msg);
+            res.body.user.isAdministrator.should.equal(true, res.body.msg);
             
             done();
           });
       });
     });
     
-    context('После добавления первого администратора', function () {
-      before(function (done) {
+    context('Попытка зарегистрировать ещё одного такого же пользователя', function () {
+      it('Возвращается отказ', function (done) {
         var admin1 = {
           email: "admin1@testero",
           password: "admin1",
@@ -52,30 +53,15 @@ describe('Модуль users', function () {
             
             agent.saveCookies(res);
             
-            res.body.status.should.equal(true, res.body.msg);
-            
-            var req = request.post('/users/login');
-            agent.attachCookies(req);
-            req
-              .send(admin1)
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function (err, res) {
-                if (err) {
-                  throw err;
-                }
-
-                agent.saveCookies(res);
-
-                res.body.status.should.equal(true, res.body.msg);
+            res.body.status.should.equal(false, res.body.msg);
                 
-                done();
-              });
+            done();
           });
       });
-      
-      it('Возвращается успех и объект пользователя', function (done) {
+    });
+
+    context('Регистрация ещё одного пользователя', function() {
+      it('Возвращается успех и объект простого пользователя', function (done) {
         var data = {
           email: "user1@testero",
           password: "user1",
@@ -83,7 +69,7 @@ describe('Модуль users', function () {
           isAdministrator: false,
           agreementAccepted: true
         };
-        var req = request.post('/users/registerUser');
+        var req = request.post('/users/users');
         agent.attachCookies(req);
         req
           .send(data)
@@ -101,7 +87,8 @@ describe('Модуль users', function () {
             res.body.level.should.equal("success");
             res.body.should.have.property('user');
             res.body.user.should.have.property('email');
-            res.body.user.should.have.property('isAdministrator');
+            //res.body.user.should.not.have.property('isAdministrator');
+            res.body.user.isAdministrator.should.equal(false, res.body.msg);
             res.body.user.should.have.property('showEmail');
             res.body.user.should.have.property('created_at');
             res.body.user.should.have.property('updated_at');
@@ -111,53 +98,15 @@ describe('Модуль users', function () {
       });
     });
     
-    context('Попытка добавления пользователя не администратором', function() {
-      before(function(done) {
-        var req = request.get('/users/logout');
-        agent.attachCookies(req);
-        req
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-
-            agent.saveCookies(res);
-            
-            res.body.status.should.equal(true, res.body.msg);
-        
-            var user = {email: "user1@testero", password: "user1"};
-            var req = request.post('/users/login');
-            agent.attachCookies(req);
-            req
-              .send(user)
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function (err, res) {
-                if (err) {
-                  throw err;
-                }
-
-                agent.saveCookies(res);
-
-                res.body.status.should.equal(true, res.body.msg);
-
-                done();
-              });
-          });
-      });
-      
+    context('Попытка добавления пользователя с не указанным email', function() {
       it('Возвращается отказ', function(done) {
         var data = {
-          email: "user2@testero",
+          //email: "user2@testero",
           password: "user2",
           passwordDuplicate: "user2",
           agreementAccepted: true
         };
-        var req = request.post('/users/registerUser');
+        var req = request.post('/users/users');
         agent.attachCookies(req);
         req
           .send(data)
