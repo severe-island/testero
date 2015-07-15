@@ -1,6 +1,6 @@
 $.ajax({
   type: "GET",
-  url: "/courses/findAllCourses",
+  url: "/courses/courses",
   success: function (data)
   {
     if (!data.status) {

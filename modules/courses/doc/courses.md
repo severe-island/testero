@@ -1,5 +1,5 @@
-# /courses/findAllCourses
-Возвращает массив всех курсов. Если status!=1, то courses == undefined.
+# GET /courses/courses
+Возвращает список всех курсов. Если status != true, то courses == undefined.
 ### Ответ:
 `{ status, msg, courses }`
 

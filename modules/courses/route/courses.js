@@ -1,33 +1,38 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../db');
+var db = require('../db/courses');
 var rolesDB = require('../db/roles');
 var conf = require('../../../config');
 var usersDB = require('../../users/db');
 
-router.get('/findAllCourses', function(req, res, next) {
+router.get('/courses', function(req, res, next) {
   db.findAllCourses(function(err, courses) {
-    if(err) {
+    if (err) {
       res.json({ 
         status: false,
-        msg: err.msg,
+        msg:
+          conf.mode !== 'production' 
+          ? 'Ошибка базы данных: "' + err.msg + '".'
+          : 'Внутренняя ошибка сервера',
         level: "danger"
       });
       return;
     }
-    if(courses.length === 0) {
+    
+    if (courses.length === 0) {
       res.json({ 
         status: true,
-        msg: "Пока не зарегистрировано ни одного курса.",
+        msg: "Ещё не зарегистрировано ни одного курса.",
         level: "info",
         courses: courses
       });
       return;
     }
+    
     res.json({ 
       status: true,
-      msg: "Успешно получен список всех курсов!",
-      level: "info",
+      msg: "Успешно получен список всех курсов.",
+      level: "success",
       courses: courses
     });
   });
