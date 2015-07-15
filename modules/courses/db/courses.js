@@ -32,6 +32,17 @@ exports.findAllCourses = function (callback) {
   })
 };
 
+
+exports.findCourses = function (filter, callback) {
+  collection.find (filter, function (err, courses) { 
+    if (err) {
+      console.log('Ошибка получения курсов: "' + err + '"');
+    }
+    callback(err, courses);
+  });
+};
+
+
 exports.findCourse = function (filter, callback) {
   collection.findOne (filter, callback);
 }

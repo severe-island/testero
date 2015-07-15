@@ -8,8 +8,8 @@
 ### Ответ:  
 `{ status, msg, course }`
 
-# /courses/findCourseByTitle/?title=title
-Находит курс(ы) по его заголовку (title). Если status != true, то course(s) == undefined.
+# /courses/courses/?title=title
+Находит курсы по заголовку (title). Если status != true, то courses == undefined.
 ### Ответ:
 `{ status, msg, courses }`
 

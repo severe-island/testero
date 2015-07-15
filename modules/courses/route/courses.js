@@ -6,6 +6,39 @@ var conf = require('../../../config');
 var usersDB = require('../../users/db');
 
 router.get('/courses', function(req, res, next) {
+  if (!!req.query['title']) { // by title
+    db.findCourses({ title: req.query['title'] }, function(err, courses) {
+      if (err) {
+        res.json({
+          status: false,
+          msg: 
+            conf.mode !== 'production'
+            ? 'Ошибка базы данных: "' + err.msg + '".'
+            : 'Внутренняя ошибка сервера.',
+          level: "danger"
+        });
+      }
+      else if(!(!!courses && courses.length !== 0)) {
+        res.json({
+          status: false,
+          msg: "Курсы не были найдены.",
+          level: "info"
+        });
+      }
+      else {
+        res.json({
+          status: true,
+          msg: "Курсы успешно найдены.",
+          level: "success",
+          courses: courses
+        });
+      }
+    });
+    return;
+  }
+  
+  // all:
+  
   db.findAllCourses(function(err, courses) {
     if (err) {
       res.json({ 
@@ -70,34 +103,6 @@ router.get('/courses/:id', function(req, res, next) {
   });
 });
 
-
-router.get('/findCourseByTitle', function(req, res, next) {
-  db.findCourse({ title: req.body.title }, function(err, course) {
-    if (err) {
-      res.json({
-        status: false,
-        msg: err.msg,
-        level: "danger"
-      });
-      return;
-    }
-    else if(!course) {
-      res.json({
-        status: false,
-        msg: "Курс не был найден.",
-        level: "warning"
-      });
-    }
-    else {
-      res.json({
-        status: true,
-        msg: "Курс был успешно найден.",
-        level: "info",
-        course: course
-      });
-    }
-  });
-});
 
 router.post('/addCourse', function(req, res, next) {
   if(!req.session.login)

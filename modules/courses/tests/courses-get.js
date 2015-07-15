@@ -181,7 +181,133 @@ describe('Модуль courses', function () {
         });
       });
     });
+  });
+  
+  describe('Поиск курсов по названию (GET /courses/courses/?title=title', function() {
+    context('Нет ни одного курса', function() {
+      before(function(done) {
+        coursesDB.clearCourses(function() {
+          done();
+        });
+      });
+      
+      it('Курс не найден', function(done) {
+        request
+        .get('/courses/courses/?title=Any')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          
+          res.body.status.should.equal(false, res.body.msg);
+          res.body.should.not.have.property('courses');
+          
+          done();
+        });
+      });
+    });
     
+    context('Есть один курс, но ищем другой', function() {
+      before(function(done) {
+        coursesDB.addCourse('First', null, function() {
+          done();
+        });
+      });
+      
+      it('Курс не найден', function() {
+        request
+        .get('/courses/courses/?title=Second')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          
+          res.body.status.should.equal(false, res.body.msg);
+          res.body.should.not.have.property('courses');
+          
+          done();
+        });
+      });
+    });
+    
+    context('Есть один курс, ищем именно его', function() {
+      it('Курс найден', function(done) {
+        request
+        .get('/courses/courses/?title=First')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          
+          res.body.status.should.equal(true, res.body.msg);
+          res.body.courses.length.should.equal(1);
+          res.body.courses[0].title.should.equal('First');
+          
+          done();
+        });
+      });
+    });
+    
+    context('Есть два курса с разными названиями', function() {
+      before(function(done) {
+        coursesDB.addCourse('Second', null, function() {
+          done();
+        });
+      });
+      it('Курс найден', function(done) {
+        request
+        .get('/courses/courses/?title=Second')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          res.body.status.should.equal(true, res.body.msg);
+          res.body.courses.length.should.equal(1);
+          res.body.courses[0].title.should.equal('Second');
+          
+          done();
+        });
+      });
+    });
+    
+    context('Есть два курса с одинаковыми названиями', function() {
+      before(function(done) {
+        coursesDB.addCourse('First', null, function() {
+          done();
+        });
+      });
+      it('Найдено два курса', function(done) {
+        request
+        .get('/courses/courses/?title=First')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          
+          res.body.status.should.equal(true, res.body.msg);
+          res.body.courses.length.should.equal(2);
+          res.body.courses[0].title.should.equal('First');
+          res.body.courses[1].title.should.equal('First');
+          
+          done();
+        });
+      });
+    });
   });
   
   after(function(done) {
