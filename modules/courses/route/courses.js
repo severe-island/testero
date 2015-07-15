@@ -4,6 +4,7 @@ var db = require('../db/courses');
 var rolesDB = require('../db/roles');
 var conf = require('../../../config');
 var usersDB = require('../../users/db');
+var sessions = require('../../users/lib/session');
 
 router.get('/courses', function(req, res, next) {
   if (!!req.query['title']) { // by title
@@ -104,84 +105,55 @@ router.get('/courses/:id', function(req, res, next) {
 });
 
 
-router.post('/addCourse', function(req, res, next) {
-  if(!req.session.login)
-  {
-    res.json({
-      status: false,
-      msg: "Вы должны зайти в систему!",
-      level: "danger"
-    })
-    return;
-  }
-  if(!req.body.title)
-  {
-    res.json({
-      status: false,
-      msg: "Необходимо указать имя курса! (title)",
-      level: "danger"
-    })
-    return;
-  }
-  rolesDB.getRolesByEmail(req.session.email, function(err, userRoles) {
-    if(!userRoles || userRoles.indexOf("teacher")<0) {
-      res.json({
-        status: false,
-        msg: "Вы должны быть teacher!",
-        level: "danger"
-      })
+router.post('/courses', function(req, res, next) {
+  sessions.checkSession(req, function(checkResult){
+    if (!checkResult.status) {
+      res.json(checkResult);
       return;
     }
-    if(req.body["i-am-author"])
-    {
-      usersDB.findUserByEmail(req.session.email, function(err, user){
-        if(err || !user) {
-          res.json({
-            status: false,
-            msg: "Вы должны зайти в систему!",
-            level: "danger"
-          })
-          return;
-        }
-        db.addCourse(req.body.title, user.email, function(err) {
-          if(err) {
-            res.json({
-              status: false,
-              msg: err.msg,
-              level: "danger"
-            })
-            return;
-          }
-          else {
-            res.json({
-              status: true,
-              msg: "Курс был успешно добавлен!",
-              level: "success"
-            })
-          }
-        });
-      })
+    
+    if(!req.body.title) {
+      res.json({
+        status: false,
+        msg: "Необходимо указать название курса.",
+        level: "danger"
+      });
+      return;
     }
-    else
-    {
-      db.addCourse(req.body.title, undefined, function(err) {
-        if(err) {
+    
+    rolesDB.getRolesByEmail(req.session.email, function(err, userRoles) {
+      if (!userRoles || userRoles.indexOf("teacher") < 0) {
+        res.json({
+          status: false,
+          msg: "Вы должны быть преподавателем.",
+          level: "danger"
+        });
+        return;
+      }
+      
+      var author = !!req.body["i-am-author"] ? req.session.email : undefined;
+      db.addCourse(req.body.title, author, function(err, course) {
+        if (err) {
           res.json({
             status: false,
-            msg: err.msg,
+            msg:
+              conf.mode !== 'production'
+              ? 'Ошибка базы данных: "' + err.msg + '".'
+              : 'Внутренняя ошибка сервера.',
             level: "danger"
-          })
+          });
         }
         else {
           res.json({
             status: true,
-            msg: "Курс был успешно добавлен!",
-            level: "success"
-          })
+            msg: "Курс успешно добавлен",
+            level: "success",
+            course: course
+          });
         }
       });
-    } 
-  })
+    });
+  });
 });
 
 /*

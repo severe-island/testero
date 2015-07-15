@@ -47,17 +47,20 @@ exports.findCourse = function (filter, callback) {
   collection.findOne (filter, callback);
 }
 
+
 exports.addCourse = function(title, author, callback) {
-  var course = { title: title }
-  if(author) course.authors = [author]
-  var date = new Date();
-  course.created_at = date;
-  course.updated_at = date;
+  var course = { title: title };
+  if (author) {
+    course.authors = [author];
+  }
+  course.created_at = new Date();
+  course.updated_at = null;
   course.subjects = [ ];
   collection.insert(course, function (err, newCourse) {
     callback(err, newCourse);
   });
 };
+
 
 exports.addSubject = function(courseId, subjectTitle, callback) {
   var subject = { };

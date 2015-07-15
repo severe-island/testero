@@ -1,7 +1,7 @@
 $("#form-add-course").submit(function() {
   $.ajax({
     type: "POST",
-    url: "/courses/addCourse",
+    url: "/courses/courses",
     data: $("#form-add-course").serialize(),
     success: function(data)
     {
