@@ -38,33 +38,38 @@ router.get('/courses', function(req, res, next) {
   });
 });
 
-router.get('/findCourseById', function(req, res, next) {
-  db.findCourse({ _id: req.body.id }, function(err, course) {
+
+router.get('/courses/:id', function(req, res, next) {
+  db.findCourse({ _id: req.params.id }, function(err, course) {
     if (err) {
       res.json({
         status: false,
-        msg: err.msg,
+        msg:
+          conf.mode !== 'production'
+          ? 'Ошибка базы данных: "' + err.msg + '".'
+          : 'Внутренняя ошибка сервера',
         level: "danger"
       });
       return;
     }
-    else if(!course) {
+    else if (!course) {
       res.json({
-        status: true,
+        status: false,
         msg: "Курс не был найден.",
-        level: "warning"
+        level: "info"
       });
     }
     else {
       res.json({
         status: true,
-        msg: "Курс был успешно найден.",
-        level: "info",
+        msg: "Курс успешно найден.",
+        level: "success",
         course: course
       });
     }
   });
 });
+
 
 router.get('/findCourseByTitle', function(req, res, next) {
   db.findCourse({ title: req.body.title }, function(err, course) {

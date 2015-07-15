@@ -3,17 +3,13 @@
 ### Ответ:
 `{ status, msg, courses }`
 
-# /courses/findCourseById
-Находит курс по его id. Если status!=1, то courses == undefined.
-### Запрос: 
-`{ id }`  
+# GET /courses/courses/:id
+Находит курс по его id. Если status != true, то course == undefined.
 ### Ответ:  
-`{ status, msg, courses }`
+`{ status, msg, course }`
 
-# /courses/findCourseById
-Находит курс по его заголовку. Если status!=1, то courses == undefined.
-### Запрос: 
-`{ title }`
+# /courses/findCourseByTitle/?title=title
+Находит курс(ы) по его заголовку (title). Если status != true, то course(s) == undefined.
 ### Ответ:
 `{ status, msg, courses }`
 

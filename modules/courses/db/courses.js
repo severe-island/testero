@@ -44,7 +44,7 @@ exports.addCourse = function(title, author, callback) {
   course.updated_at = date;
   course.subjects = [ ];
   collection.insert(course, function (err, newCourse) {
-    callback(err);
+    callback(err, newCourse);
   });
 };
 
