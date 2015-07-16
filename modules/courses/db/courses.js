@@ -48,6 +48,20 @@ exports.findCourse = function (filter, callback) {
 }
 
 
+exports.add = function(course, callback) {
+  if (course.author) {
+    course.authors = [course.author];
+    delete course.author;
+  }
+  course.created_at = new Date();
+  course.updated_at = null;
+  course.subjects = [ ];
+  collection.insert(course, function (err, newCourse) {
+    callback(err, newCourse);
+  });
+};
+
+
 exports.addCourse = function(title, author, callback) {
   var course = { title: title };
   if (author) {
@@ -62,13 +76,13 @@ exports.addCourse = function(title, author, callback) {
 };
 
 
-exports.addSubject = function(courseId, subjectTitle, callback) {
-  var subject = { };
-  subject.title = subjectTitle;
+exports.addSubject = function(subject, callback) {
   var updated_at = new Date();
-  collection.update({ _id: courseId }, { $set: {updated_at: updated_at} }, { });
-  collection.update({ _id: courseId }, { $push: { subjects: subject } }, {}, callback);
+  subject.created_at = updated_at;
+  collection.update({ _id: subject.course_id }, { $set: {updated_at: updated_at} }, { });
+  collection.update({ _id: subject.course_id }, { $push: { subjects: subject } }, {}, callback);
 };
+
 
 exports.updateCourse = function(course, callback) {
   course.updated_at = new Date();
