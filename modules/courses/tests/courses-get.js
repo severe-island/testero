@@ -34,7 +34,7 @@ describe('Модуль courses', function () {
     
     context('В списке один курс', function() {
       before(function(done) {
-        coursesDB.addCourse('Первый курс', null, function() {
+        coursesDB.add({title: 'Первый курс', author: null}, function() {
           done();
         });
       });
@@ -61,7 +61,7 @@ describe('Модуль courses', function () {
     
     context('В списке два курса', function() {
       before(function(done) {
-        coursesDB.addCourse('Второй курс', null, function() {
+        coursesDB.add({title: 'Второй курс', author: null}, function() {
           done();
         });
       });
@@ -115,10 +115,10 @@ describe('Модуль courses', function () {
     context('Есть два курса', function() {
       var ID1, ID2;
       before(function(done) {
-        coursesDB.addCourse('Первый курс', null, function(err, course) {
+        coursesDB.add({title: 'Первый курс', author: null}, function(err, course) {
           ID1 = course._id;
         });
-        coursesDB.addCourse('Второй курс', null, function(err, course) {
+        coursesDB.add({title: 'Второй курс', author: null}, function(err, course) {
           ID2 = course._id;
         });
         done();
@@ -212,7 +212,7 @@ describe('Модуль courses', function () {
     
     context('Есть один курс, но ищем другой', function() {
       before(function(done) {
-        coursesDB.addCourse('First', null, function() {
+        coursesDB.add({title: 'First', author: null}, function() {
           done();
         });
       });
@@ -259,7 +259,7 @@ describe('Модуль courses', function () {
     
     context('Есть два курса с разными названиями', function() {
       before(function(done) {
-        coursesDB.addCourse('Second', null, function() {
+        coursesDB.add({title: 'Second', author: null}, function() {
           done();
         });
       });
@@ -284,7 +284,7 @@ describe('Модуль courses', function () {
     
     context('Есть два курса с одинаковыми названиями', function() {
       before(function(done) {
-        coursesDB.addCourse('First', null, function() {
+        coursesDB.add({title: 'First', author: null}, function() {
           done();
         });
       });

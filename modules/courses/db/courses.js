@@ -62,7 +62,7 @@ exports.add = function(course, callback) {
 };
 
 
-exports.addCourse = function(title, author, callback) {
+/*exports.addCourse = function(title, author, callback) {
   var course = { title: title };
   if (author) {
     course.authors = [author];
@@ -73,7 +73,7 @@ exports.addCourse = function(title, author, callback) {
   collection.insert(course, function (err, newCourse) {
     callback(err, newCourse);
   });
-};
+};*/
 
 
 exports.addSubject = function(subject, callback) {

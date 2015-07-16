@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../db/courses');
+var coursesDB = require('../db/courses');
 var rolesDB = require('../db/roles');
 var conf = require('../../../config');
 var usersDB = require('../../users/db');
@@ -8,7 +8,7 @@ var sessions = require('../../users/lib/session');
 
 router.get('/courses', function(req, res, next) {
   if (!!req.query['title']) { // by title
-    db.findCourses({ title: req.query['title'] }, function(err, courses) {
+    coursesDB.findCourses({ title: req.query['title'] }, function(err, courses) {
       if (err) {
         res.json({
           status: false,
@@ -40,7 +40,7 @@ router.get('/courses', function(req, res, next) {
   
   // all:
   
-  db.findAllCourses(function(err, courses) {
+  coursesDB.findAllCourses(function(err, courses) {
     if (err) {
       res.json({ 
         status: false,
@@ -74,7 +74,7 @@ router.get('/courses', function(req, res, next) {
 
 
 router.get('/courses/:id', function(req, res, next) {
-  db.findCourse({ _id: req.params.id }, function(err, course) {
+  coursesDB.findCourse({ _id: req.params.id }, function(err, course) {
     if (err) {
       res.json({
         status: false,
@@ -132,7 +132,7 @@ router.post('/courses', function(req, res, next) {
       }
       
       var author = !!req.body["i-am-author"] ? req.session.email : undefined;
-      db.addCourse(req.body.title, author, function(err, course) {
+      coursesDB.add({title: req.body.title, author: author}, function(err, course) {
         if (err) {
           res.json({
             status: false,
@@ -158,7 +158,7 @@ router.post('/courses', function(req, res, next) {
 
 /*
 router.post('/updateCourse', function(req, res, next) {
-  db.updateCourse(req.body.course, function(err) {
+  coursesDB.updateCourse(req.body.course, function(err) {
     if(err) {
       res.json({
         status: false,
