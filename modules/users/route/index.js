@@ -77,28 +77,6 @@ router.post('/login', function(req, res, next) {
 });
 
 
-router.get('/logout', function(req, res, next) {
-  lib.checkSession(req, function(checkResult) {
-    if (checkResult.status) { 
-      req.session.login = false;
-      var email = req.session.email;
-      res.json({
-        msg: "Вы вышли и теперь больше не " + email + ".",
-        status: true,
-        level: "success"
-      });
-    }
-    else {
-      res.json({
-        msg: "Так ведь Вы и не входили!",
-        status: true,
-        level: "info"
-      });
-    }
-  });
-});
-
-
 router.post('/requestRemoving', function(req, res, next) {
   checkSession(req, res, function(authorized) {
     if(!authorized) {

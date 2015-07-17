@@ -128,9 +128,10 @@ describe('Модуль users', function () {
     });
     
     after(function(done) {
-      var req = request.get('/users/logout');
+      var req = request.post('/users/login');
       agent.attachCookies(req);
       req
+        .send({email: "admin1@testero", password: "admin1"})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -142,11 +143,10 @@ describe('Модуль users', function () {
           agent.saveCookies(res);
 
           res.body.status.should.equal(true, res.body.msg);
-      
-          var req = request.post('/users/login');
+
+          var req = request.delete('/users/users');
           agent.attachCookies(req);
           req
-            .send({email: "admin1@testero", password: "admin1"})
             .set('X-Requested-With', 'XMLHttpRequest')
             .expect('Content-Type', /application\/json/)
             .expect(200)
@@ -155,26 +155,9 @@ describe('Модуль users', function () {
                 throw err;
               }
 
-              agent.saveCookies(res);
-
               res.body.status.should.equal(true, res.body.msg);
 
-              var req = request.delete('/users/users');
-              agent.attachCookies(req);
-              req
-                //.send({email: "user1@testero"})
-                .set('X-Requested-With', 'XMLHttpRequest')
-                .expect('Content-Type', /application\/json/)
-                .expect(200)
-                .end(function (err, res) {
-                  if (err) {
-                    throw err;
-                  }
-
-                  res.body.status.should.equal(true, res.body.msg);
-
-                  done();
-                });
+              done();
             });
         });
     });

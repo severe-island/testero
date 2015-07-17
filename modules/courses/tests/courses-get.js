@@ -217,7 +217,7 @@ describe('Модуль courses', function () {
         });
       });
       
-      it('Курс не найден', function() {
+      it('Курс не найден', function(done) {
         request
         .get('/courses/courses/?title=Second')
         .set('X-Requested-With', 'XMLHttpRequest')

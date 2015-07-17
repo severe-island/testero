@@ -5,7 +5,7 @@
 ### Ответ:  
 `{ status, msg, level }`
 
-# /users/logout
+# DELETE /users/users/:id/auth
 Прекращает сессию пользователя. На данный момент status всегда 1.
 ### Ответ:  
 `{ status, msg, level }`

@@ -1,6 +1,6 @@
 $.ajax({
-  type: "GET",
-  url: "/users/logout",
+  type: "DELETE",
+  url: "/users/users/" + localStorage.user_id + "/auth",
   success: function (data) {
     showAlert(data.msg, "info", 2000, function () {
       if (data.status) {
