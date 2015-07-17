@@ -162,15 +162,4 @@ router.post('/removeUser', function(req, res, next) {
 });
 
 
-router.get('/getMe', function(req, res) {
-  lib.checkSession(req, function(checkResult) {
-    if (checkResult.user) {
-      delete checkResult.user.password;
-    }
-    
-    res.json(checkResult);
-  });
-});
-
-
 module.exports = router;

@@ -55,19 +55,35 @@ function getMe(callback) {
   
   $.ajax({
     type: "GET",
-    url: "/users/getMe",
+    url: "/users/users/" + localStorage.user_id + "/auth",
     success: function(data) {
       if (data.status) {
-        app.user = data.user;
-        app.isLoggedIn = true;
-        localStorage.user_id = data.user._id;
+        $.ajax({
+          type: 'GET',
+          url: '/users/users/' + localStorage.user_id,
+          success: function(data) {
+            if (data.status) {
+              app.user = data.user;
+              app.isLoggedIn = true;
+            }
+            callback(data);
+          },
+          error: function() {
+            callback({
+              msg: 'Сервер временно недоступен. Попробуйте позже.',
+              level: 'danger',
+              status: false,
+              user: undefined
+            });
+          }
+        });
       }
       else {
         app.user = {};
         app.isLoggedIn = false;
         delete localStorage.user_id;
+        callback(data);
       }
-      callback(data);
     },
     error: function() {
       callback({
