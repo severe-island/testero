@@ -1,14 +1,20 @@
 $("#form-login").submit(function() {
   $.ajax({
-    type: "POST",
-    url: "/users/login",
-    data: $("#form-login").serialize(),
-    success: function (data) {
+    type: 'GET',
+    url: '/users/users/?email=' + $('#email').val(),
+    success: function(data) {
+      var user = data.user;
       if (data.status) {
-        localStorage.user_id = data.user._id;
-        showAlert(data.msg, "info", 1000, function() {
-          getMe(function(data) {
-              if (data.status) {
+        $.ajax({
+          type: "POST",
+          url: "/users/users/" + user._id + "/auth",
+          data: $("#form-login").serialize(),
+          success: function (data) {
+            if (data.status) {
+              localStorage.user_id = user._id;
+              app.user = user;
+              app.isLoggedIn = true;
+              showAlert(data.msg, data.level, 1000, function() {
                 if (!(window.history && history.pushState)) {
                   loadPage('/main.json');
                 }
@@ -16,14 +22,34 @@ $("#form-login").submit(function() {
                   history.back();
                 }
                 $('*').trigger('users-login');
-              }
+              });
+            }
+            else {
+              $("#page-content #alert")
+                .html(data.msg)
+                .addClass("alert-" + data.level)
+                .slideDown("slow", function() {
+                  $(this)
+                    .delay(1000)
+                    .slideUp("slow");
+              });
+            }
+          },
+          error: function() {
+            $("#page-content #alert")
+              .html("Сервер недоступен. Повторите позже.")
+              .addClass("alert-danger")
+              .slideDown("slow", function() {
+                $(this).delay(1000)
+                  .slideUp("slow");
             });
-          });
+          }
+        });
       }
       else {
         $("#page-content #alert")
           .html(data.msg)
-          .addClass("alert-warning")
+          .addClass("alert-" + data.level)
           .slideDown("slow", function() {
             $(this)
               .delay(1000)
@@ -31,9 +57,9 @@ $("#form-login").submit(function() {
         });
       }
     },
-    error: function(data) {
+    error: function() {
       $("#page-content #alert")
-        .html("Сервер недоступен! Повторите позже.")
+        .html("Сервер временно недоступен. Повторите позже.")
         .addClass("alert-danger")
         .slideDown("slow", function() {
           $(this).delay(1000)
