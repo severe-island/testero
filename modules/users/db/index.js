@@ -81,6 +81,16 @@ module.exports.findUserByIdWithoutPassword = function(id, admin, callback) {
 };
 
 
+module.exports.findUserById = function (userId, callback) {
+  collection.findOne({ _id: userId }, function (err, foundUser) {
+    if (err && config.mode !== "testing") {
+      console.log("Ошибка при поиске пользователя ", userId, " :", err.message);
+    }
+    callback(err, foundUser);
+  }); 
+};
+
+
 module.exports.findUserByEmail = function (userEmail, callback) {
   collection.findOne({ email: userEmail }, function (err, foundUser) {
     if (err && config.mode !== "testing")

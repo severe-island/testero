@@ -2,6 +2,7 @@ var app = require('../../../app');
 var request = require('supertest')(app);
 var superagent = require('superagent');
 var agent = superagent.agent();
+var usersDB = require('../db/index');
 
 describe('Модуль users', function () {
   describe('Регистрация нового пользователя (POST /users/users)', function() {
@@ -128,38 +129,9 @@ describe('Модуль users', function () {
     });
     
     after(function(done) {
-      var req = request.post('/users/login');
-      agent.attachCookies(req);
-      req
-        .send({email: "admin1@testero", password: "admin1"})
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-
-          agent.saveCookies(res);
-
-          res.body.status.should.equal(true, res.body.msg);
-
-          var req = request.delete('/users/users');
-          agent.attachCookies(req);
-          req
-            .set('X-Requested-With', 'XMLHttpRequest')
-            .expect('Content-Type', /application\/json/)
-            .expect(200)
-            .end(function (err, res) {
-              if (err) {
-                throw err;
-              }
-
-              res.body.status.should.equal(true, res.body.msg);
-
-              done();
-            });
-        });
+      usersDB.clearUsers(function() {
+        done();
+      });
     });
   });
 });

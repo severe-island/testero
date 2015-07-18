@@ -14,18 +14,50 @@ router.get('/users/:id', function(req, res) {
     return;
   }
 
-  if (!req.session.login) {
-    findUserById(req.params.id, false, res);
-    return;
-  }
+  lib.checkSession(req, function(checkResult) {
+    if (checkResult.status) {
+      db.findUserById(req.params.id, function(err, data) {
+        if (err) {
+          var msg = 'Ошибка базы данных' 
+            + (conf.mode !== 'production' ? ': ' + err.message : '.');
+          res.json({
+            status: false,
+            level: "danger",
+            msg: msg
+          });
+          return;
+        }
+        
+        if (!data) {
+          res.json({
+            status: false,
+            level: 'info',
+            msg: 'Пользователь не найден.'
+          });
+          return;
+        }
+        
+        delete data.password;
+        res.json({
+          status: true,
+          level: 'success',
+          msg: 'Пользователь найден.',
+          user: data
+        });
+      });
+    }
+    else {
+      findUserById(req.params.id, false, res);
+    }
+  });
 
-  db.findUserByEmail(req.session.email, function(err, user) {
+  /*db.findUserByEmail(req.session.email, function(err, user) {
     if (err || !user || !user.isAdministrator) {
       findUserById(req.params.id, false, res);
     } else {
       findUserById(req.params.id, true, res);
     }
-  });
+  });*/
 });
 
 function findUserById(id, admin, res) {

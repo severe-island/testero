@@ -1,27 +1,38 @@
+var user;
+
 $.ajax({
   type: 'GET',
   url: '/users/users/' + localStorage.user_id + '/auth',
   success: function(data) {
     if (data.status) {
-      alert(true);
+      $.ajax({
+        type: 'GET',
+        url: '/users/users/' + localStorage.user_id,
+        success: function(data) {
+          user = data.user;
+          $("#user-profile-edit-form #email").append(user.email);
+          $("#user-profile-edit-form #email-input").val(user.email);
+          $("#user-profile-edit-form #familyName").val(user.familyName);
+          $("#user-profile-edit-form #familyName-save-button").hide();
+          $("#user-profile-edit-form #name").val(user.name);
+          $("#user-profile-edit-form #name-save-button").hide();
+          $("#user-profile-edit-form #patronymic").val(user.patronymic);
+          $("#user-profile-edit-form #patronymic-save-button").hide();
+        },
+        error: function() {
+          showAlert('Ошибка сервера.', 'danger');
+        }
+      });
     }
     else {
-      alert(false);
+      user = {};
+      showAlert(data.msg, data.level);
     }
   },
   error: function() {
     showAlert('Ошибка сервера.', 'danger');
   }
 });
-
-$("#user-profile-edit-form #email").append(app.user.email);
-$("#user-profile-edit-form #email-input").val(app.user.email);
-$("#user-profile-edit-form #familyName").val(app.user.familyName);
-$("#user-profile-edit-form #familyName-save-button").hide();
-$("#user-profile-edit-form #name").val(app.user.name);
-$("#user-profile-edit-form #name-save-button").hide();
-$("#user-profile-edit-form #patronymic").val(app.user.patronymic);
-$("#user-profile-edit-form #patronymic-save-button").hide();
 
 $("#familyName-edit-button").click(function() {
   $("#familyName").removeAttr("disabled").focus();
