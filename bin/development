@@ -1,2 +1,3 @@
 #!/bin/sh
-MODE=development DEBUG=testero ./www
+
+NODE_ENV=development MODE=development DEBUG=testero ./www.js

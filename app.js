@@ -29,21 +29,20 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 config.modules.forEach(function(moduleName){
-  var modulePath = './modules/'+moduleName+'/route';
-  if (fs.existsSync('.'+modulePath))
-  {
-    var files = fs.readdirSync('.'+modulePath)
+  var modulePath = './modules/' + moduleName + '/route';
+  if (fs.existsSync('.' + modulePath)) {
+    var files = fs.readdirSync('.'+modulePath);
     if (files) {
       files.forEach(function (file) {
-        var nextModule = require(modulePath+'/'+file);
-        app.use('/'+moduleName, nextModule);
-      })
+        var nextModule = require(modulePath + '/' + file);
+        app.use('/' + moduleName, nextModule);
+      });
     } 
   }
   if(config.mode !== "testing") {
-    console.log('Модуль '+moduleName+' подключен.')
+    console.log('Модуль ' + moduleName + ' подключен.');
   }
-})
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -61,19 +60,21 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500);
     res.json({
       msg: err.message,
-      status: 0
+      status: false
     });
   });
 }
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
+if (app.get('env') === 'production') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.json({
+      msg: err.message,
+      status: false
+    });
   });
-});
+}
 
 module.exports = app;

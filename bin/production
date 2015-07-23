@@ -1,2 +1,3 @@
 #!/bin/sh
-MODE=production ./www
+
+NODE_ENV=production MODE=production ./www.js

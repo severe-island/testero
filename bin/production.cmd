@@ -1,2 +1,3 @@
+set NODE_ENV=production
 set MODE=production
-node www
+node www.js

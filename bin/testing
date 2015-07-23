@@ -1,2 +1,3 @@
 #!/bin/sh
-MODE=testing DEBUG=testero node testing.js
+
+NODE_ENV=testing MODE=testing DEBUG=testero node testing.js
