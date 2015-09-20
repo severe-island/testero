@@ -2,6 +2,7 @@ var app = require('../../../app');
 var request = require('supertest')(app);
 var superagent = require('superagent');
 var agent = superagent.agent();
+var usersDB = require('../db/index');
 
 describe('Модуль users', function () {
   describe('Список всех пользователей (GET /users/users/)', function() {
@@ -112,16 +113,32 @@ describe('Модуль users', function () {
         });
       });
     });
+    
+    after(function(done) {
+      usersDB.clearUsers(function() {
+        done();
+      });
+    });
   });
   
-  after(function(done) {
-    var admin1 = {
-          email: "admin1@testero",
-          password: "admin1"
-        };
+  describe('Поиск пользователя по email (GET /users/users/?email=email)', function() {
+    var user = {
+      email: "user1@testero",
+      password: "user1",
+      passwordDuplicate: "user1",
+      showEmail: true
+    };
+    
+    before(function(done) {
+      usersDB.registerUser(user, function(err, newUser) {
+        done();
+      });
+    });
+    
+    context('Пользователь существует', function() {
+      it('Возвращается объект пользователя', function(done) {
         request
-          .post('/users/login')
-          .send(admin1)
+          .get('/users/users/?email=' + user.email)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -130,24 +147,39 @@ describe('Модуль users', function () {
               throw err;
             }
             
-            agent.saveCookies(res);
             res.body.status.should.equal(true, res.body.msg);
-    
-            var req = request.delete('/users/users');
-            agent.attachCookies(req);
-            req
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function(err, res) {
-                if (err) {
-                  throw err;
-                }
-
-                res.body.status.should.equal(true, res.body.msg);
-
-                done();
-            });
+            res.body.user.should.have.property('email');
+            res.body.user.email.should.equal(user.email);
+            
+            done();
           });
+      });
+    });
+    
+    context('Пользователь несуществует', function() {
+      it('Возвращается неуспех', function(done) {
+        request
+          .get('/users/users/?email=user2@testero')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .end(function(err, res) {
+            if (err) {
+              throw err;
+            }
+            
+            res.body.status.should.equal(false, res.body.msg);
+            res.body.should.not.have.property('user');
+            
+            done();
+          });
+      });
+    });
+  });
+  
+  after(function(done) {
+    usersDB.clearUsers(function() {
+      done();
+    });
   });
 });

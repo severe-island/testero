@@ -40,20 +40,21 @@ module.exports.findAllUsersWithoutPassword = function (admin, callback) {
 }
 
 module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, callback) {
-  if(admin) {
+  if (admin) {
     collection.findOne({ email: userEmail }, 
     { password: 0 },
     function (err, findedUser) {
       callback(err, findedUser);
     }); 
-  } else {
+  }
+  else {
     collection.findOne({$and: [ { email: userEmail } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
-                       { password: 0, isAdministrator : 0, editor: 0 }, function (err, findedUser) {
-                        if(!findedUser.showEmail) {
-                          delete findedUser.email;
-                        }
-                        callback(err, findedUser);
-                      }); 
+                       { password: 0, isAdministrator : 0, editor: 0 }, function (err, user) {
+      if (!!user && !user.showEmail) {
+        delete user.email;
+      }
+      callback(err, user);
+    });
   }
 };
 
@@ -122,7 +123,7 @@ module.exports.registerUser = function(data, callback) {
     email: data.email,
     password: data.password,
     isAdministrator: data.isAdministrator,
-    showEmail: false,
+    showEmail: data.showEmail || false,
     created_at: date,
     updated_at: null,
     registeredBy: data.registeredBy
