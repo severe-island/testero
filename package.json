@@ -7,7 +7,7 @@
     {
         "name": "Evgeniy A. Simonenko",
         "email": "easimonenko@mail.ru",
-        "url": "http://vk.com/easimonenko"
+        "url": "https://vk.com/easimonenko"
     },
     {
         "name": "Konstantin Baydin",
@@ -39,7 +39,7 @@
   "devDependencies": {
     "mocha": "2.2.x",
     "should": "7.0.x",
-    "supertest": "latest",
-    "superagent": "latest"
+    "supertest": "1.x",
+    "superagent": "1.x"
   }
 }
