@@ -28,7 +28,7 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-config.modules.forEach(function(moduleName){
+config.modules.forEach(function (moduleName) {
   var modulePath = './modules/' + moduleName + '/route';
   if (fs.existsSync('.' + modulePath)) {
     var files = fs.readdirSync('.'+modulePath);
@@ -39,7 +39,7 @@ config.modules.forEach(function(moduleName){
       });
     } 
   }
-  if(config.mode !== "testing") {
+  if (config.mode !== "testing") {
     console.log('Модуль ' + moduleName + ' подключен.');
   }
 });

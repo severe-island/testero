@@ -9,3 +9,5 @@ router.get('/teachers', function(req, res, next) {
         teachers: []
     });
 });
+
+module.exports = router;

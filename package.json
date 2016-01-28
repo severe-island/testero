@@ -20,7 +20,7 @@
     "url": "https://bitbucket.org/severeisland/testero"
   },
   "scripts": {
-    "start": "node ./bin/production"
+    "start": "node ./bin/www.js"
   },
   "dependencies": {
     "body-parser": "1.12.x",

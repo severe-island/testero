@@ -5,7 +5,7 @@
     },
   "modules":
     [
-      "users", "courses", "app"
+      "users", "courses"
     ],
   "mode": "testing"
 }

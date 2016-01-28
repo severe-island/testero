@@ -1,5 +1,7 @@
+/// <reference path="../../../typings/nedb/nedb.d.ts"/>
+
 var config = require('../../../config');
-var dataStore = require('nedb');
+var DataStore = require('nedb');
 
 function getConnectionOptions(nameCollection) {
   return  {
@@ -18,7 +20,7 @@ function getIndexOption(field, uniqueOption, sparseOption) {
   return option;
 }
 
-var collection = new dataStore(getConnectionOptions("users"));
+var collection = new DataStore(getConnectionOptions("users"));
 collection.ensureIndex(getIndexOption("email", true, false));
 
 module.exports.findAllUsersWithoutPassword = function (admin, callback) {
