@@ -5,13 +5,13 @@
   "license": "MIT",
   "contributors": [
     {
-        "name": "Evgeniy A. Simonenko",
-        "email": "easimonenko@mail.ru",
-        "url": "https://vk.com/easimonenko"
+      "name": "Evgeniy A. Simonenko",
+      "email": "easimonenko@mail.ru",
+      "url": "https://vk.com/easimonenko"
     },
     {
-        "name": "Konstantin Baydin",
-        "email": "sparhoks@mail.ru"
+      "name": "Konstantin Baydin",
+      "email": "sparhoks@mail.ru"
     }
   ],
   "homepage": "https://bitbucket.org/severeisland/testero",
@@ -39,7 +39,8 @@
   "devDependencies": {
     "mocha": "2.2.x",
     "should": "7.0.x",
+    "superagent": "1.x",
     "supertest": "1.x",
-    "superagent": "1.x"
+    "typescript": "^1.9.0-dev.20160211"
   }
 }
