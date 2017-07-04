@@ -1,7 +1,7 @@
 {
   "name": "testero",
   "description": "Testero -- system for conduct classes in the computer lab.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "license": "MIT",
   "contributors": [
     {
@@ -32,7 +32,7 @@
     "express-session": "^1.15.3",
     "jquery": "^2.2.4",
     "jquery.loadtemplate": "^1.5.10",
-    "morgan": "^1.8.1",
+    "morgan": "^1.8.2",
     "nedb": "^1.8.0",
     "serve-favicon": "^2.4.0"
   },
