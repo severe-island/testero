@@ -1,7 +1,7 @@
 {
   "name": "testero",
   "description": "Testero -- system for conduct classes in the computer lab.",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "license": "MIT",
   "contributors": [
     {
@@ -37,8 +37,8 @@
     "serve-favicon": "^2.4.3"
   },
   "devDependencies": {
-    "mocha": "^2.5.3",
-    "should": "^7.1.1",
+    "mocha": "^3.4.2",
+    "should": "^11.2.1",
     "superagent": "^3.5.2",
     "supertest": "^3.0.0"
   }
