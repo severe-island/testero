@@ -1,7 +1,11 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const superagent = require('superagent');
+const cookieParser = require('cookie-parser')
+
+app.use(cookieParser())
 
 describe('Модуль users', function() {
   describe('Вход (login)', function() {
@@ -11,9 +15,8 @@ describe('Модуль users', function() {
           password: "admin1",
           passwordDuplicate: "admin1"
         };
-        var req = request.post('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/users')
           .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -23,8 +26,6 @@ describe('Модуль users', function() {
               throw err;
             }
             
-            agent.saveCookies(res);
-            
             res.body.status.should.equal(true, res.body.msg);
             
             done();
@@ -33,9 +34,8 @@ describe('Модуль users', function() {
     
     context('Вход под администратором', function() {
       it('Возвращается успех. Администратор после регистрации уже в системе', function(done) {
-        var req = request.post('/users/login');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/login')
           .send({email: "admin1@testero", password: "admin1"})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -44,8 +44,6 @@ describe('Модуль users', function() {
             if (err) {
               throw err;
             }
-
-            agent.saveCookies(res);
 
             res.body.status.should.equal(true, res.body.msg);
 
@@ -56,9 +54,8 @@ describe('Модуль users', function() {
     
     context('Попытка входа до выхода из системы', function() {
       it('Возвращается отказ', function(done) {
-        var req = request.post('/users/login');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/login')
           .send({email: "user1@testero", password: "user1"})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -67,8 +64,6 @@ describe('Модуль users', function() {
             if (err) {
               throw err;
             }
-
-            agent.saveCookies(res);
 
             res.body.status.should.equal(false, res.body.msg);
 
@@ -82,9 +77,8 @@ describe('Модуль users', function() {
     });
     
     after(function(done) {
-      var req = request.delete('/users/users');
-      agent.attachCookies(req);
-      req
+      agent
+        .delete('/users/users')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -92,8 +86,6 @@ describe('Модуль users', function() {
           if (err) {
             throw err;
           }
-
-          agent.saveCookies(res);
           
           res.body.status.should.equal(true, res.body.msg);
 

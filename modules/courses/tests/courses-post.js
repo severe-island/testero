@@ -1,10 +1,15 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const superagent = require('superagent');
+const cookieParser = require('cookie-parser')
+
 var coursesDB = require('../db/courses');
 var usersDB = require('../../users/db');
 var rolesDB = require('../db/roles');
+
+app.use(cookieParser())
 
 describe('Модуль courses.', function () {
   describe('Добавление курсов (POST /courses/courses).', function() {
@@ -27,7 +32,7 @@ describe('Модуль courses.', function () {
 
     context('Попытка добавить курс не авторизованным пользователем.', function() {
       it('Возвращается неуспех.', function(done) {
-        request
+        agent
           .post('/courses/courses/')
           .send(course1)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -49,9 +54,8 @@ describe('Модуль courses.', function () {
 
     context('Попытка добавить курс не преподавателем.', function() {
       before(function(done) {
-        var req = request.post('/users/users/' + user1._id + '/auth');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/users/' + user1._id + '/auth')
           .send(user1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -61,8 +65,6 @@ describe('Модуль courses.', function () {
               throw err;
             }
 
-            agent.saveCookies(res);
-
             res.body.status.should.equal(true, res.body.msg);
 
             done();
@@ -70,7 +72,7 @@ describe('Модуль courses.', function () {
       });
 
       it('Возвращается неуспех.', function(done) {
-        request
+        agent
           .post('/courses/courses/')
           .send(course1)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -97,9 +99,8 @@ describe('Модуль courses.', function () {
       });
 
       it('Возвращается успех.', function(done) {
-        var req = request.post('/courses/courses/');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/courses/courses/')
           .send(course1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -126,9 +127,8 @@ describe('Модуль courses.', function () {
 
     context('Добавление ещё одного курса преподавателем', function() {
       it('Возвращается успех.', function(done) {
-        var req = request.post('/courses/courses/');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/courses/courses/')
           .send(course2)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)

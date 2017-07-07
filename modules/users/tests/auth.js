@@ -1,8 +1,13 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const superagent = require('superagent');
+const cookieParser = require('cookie-parser')
+
 var usersDB = require('../db/');
+
+app.use(cookieParser())
 
 describe('Модуль users::auth.', function() {
   var user1 = {email: 'user1@testero', password: 'user1', passwordDuplicate: 'user1'};
@@ -17,9 +22,8 @@ describe('Модуль users::auth.', function() {
   
   context('Проверка авторизованности пользователя.', function() {
     it('Пользователь не авторизован.', function(done) {
-      var req = request.get('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .get('/users/users/' + id1 + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -28,8 +32,6 @@ describe('Модуль users::auth.', function() {
             throw err;
           }
           
-          agent.saveCookies(res);
-          
           res.body.status.should.equal(false, res.body.msg);
           
           done();
@@ -37,9 +39,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Попытка авторизации без указания пароля.', function(done) {
-      var req = request.post('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .post('/users/users/' + id1 + '/auth')
         .send({})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -49,8 +50,6 @@ describe('Модуль users::auth.', function() {
             throw err;
           }
 
-          agent.saveCookies(res);
-
           res.body.status.should.equal(false, res.body.msg);
 
           done();
@@ -58,9 +57,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Пользователь авторизовался.', function(done) {
-      var req = request.post('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .post('/users/users/' + id1 + '/auth')
         .send({password: user1.password})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -70,8 +68,6 @@ describe('Модуль users::auth.', function() {
             throw err;
           }
 
-          agent.saveCookies(res);
-
           res.body.status.should.equal(true, res.body.msg);
 
           done();
@@ -79,9 +75,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Повторная авторизация.', function(done) {
-      var req = request.post('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .post('/users/users/' + id1 + '/auth')
         .send(user1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -91,8 +86,6 @@ describe('Модуль users::auth.', function() {
             throw err;
           }
 
-          agent.saveCookies(res);
-
           res.body.status.should.equal(true, res.body.msg);
 
           done();
@@ -100,9 +93,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Пользователь авторизован.', function(done) {
-      var req = request.get('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .get('/users/users/' + id1 + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -110,8 +102,6 @@ describe('Модуль users::auth.', function() {
           if (err) {
             throw err;
           }
-          
-          agent.saveCookies(res);
           
           res.body.status.should.equal(true, res.body.msg);
           
@@ -120,9 +110,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Прекращение авторизации.', function(done) {
-      var req = request.delete('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .delete('/users/users/' + id1 + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -130,8 +119,6 @@ describe('Модуль users::auth.', function() {
           if (err) {
             throw err;
           }
-          
-          agent.saveCookies(res);
           
           res.body.status.should.equal(true, res.body.msg);
           
@@ -140,9 +127,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Повторное прекращение авторизации.', function(done) {
-      var req = request.delete('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .delete('/users/users/' + id1 + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -150,8 +136,6 @@ describe('Модуль users::auth.', function() {
           if (err) {
             throw err;
           }
-          
-          agent.saveCookies(res);
           
           res.body.status.should.equal(true, res.body.msg);
           
@@ -160,9 +144,8 @@ describe('Модуль users::auth.', function() {
     });
     
     it('Пользователь не авторизован.', function(done) {
-      var req = request.get('/users/users/' + id1 + '/auth');
-      agent.attachCookies(req);
-      req
+      agent
+        .get('/users/users/' + id1 + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -170,8 +153,6 @@ describe('Модуль users::auth.', function() {
           if (err) {
             throw err;
           }
-          
-          agent.saveCookies(res);
           
           res.body.status.should.equal(false, res.body.msg);
           

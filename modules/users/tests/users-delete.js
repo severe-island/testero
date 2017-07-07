@@ -1,8 +1,13 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const superagent = require('superagent');
+const cookieParser = require('cookie-parser')
+
 var usersDB = require('../db/index');
+
+app.use(cookieParser())
 
 describe('Модуль users', function() {
   describe('Очистка коллекции пользователей (DELETE /users)', function() {
@@ -31,9 +36,8 @@ describe('Модуль users', function() {
     
     context('Попытка очистки не авторизованным пользователем', function() {
       it('Возвращается отказ', function(done) {
-        var req = request.delete('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .delete('/users/users')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -41,8 +45,6 @@ describe('Модуль users', function() {
             if (err) {
               throw err;
             }
-
-            agent.saveCookies(res);
             
             res.body.status.should.equal(false, res.body.msg);
 
@@ -53,9 +55,8 @@ describe('Модуль users', function() {
     
     context('Попытка очистки не администратором', function() {
       before(function(done) {
-        var req = request.post('/users/users/' + user1._id + '/auth');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/users/' + user1._id + '/auth')
           .send(user1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -65,8 +66,6 @@ describe('Модуль users', function() {
               throw err;
             }
 
-            agent.saveCookies(res);
-
             res.body.status.should.equal(true, res.body.msg);
 
             done();
@@ -74,9 +73,8 @@ describe('Модуль users', function() {
       });
       
       it('Возвращается отказ. Количество пользователей не изменилось.', function(done) {
-        var req = request.delete('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .delete('/users/users')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -84,12 +82,10 @@ describe('Модуль users', function() {
             if (err) {
               throw err;
             }
-
-            agent.saveCookies(res);
             
             res.body.status.should.equal(false, res.body.msg);
             
-            request
+            agent
               .get('/users/users')
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)
@@ -110,9 +106,8 @@ describe('Модуль users', function() {
     
     context('Очистка администратором', function() {
       before(function(done) {
-        var req = request.delete('/users/users/' + user1._id + '/auth');
-        agent.attachCookies(req);
-        req
+        agent
+          .delete('/users/users/' + user1._id + '/auth')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -121,13 +116,10 @@ describe('Модуль users', function() {
               throw err;
             }
 
-            agent.saveCookies(res);
-
             res.body.status.should.equal(true, res.body.msg);
             
-            var req = request.post('/users/users/' + admin1._id + '/auth');
-            agent.attachCookies(req);
-            req
+            agent
+              .post('/users/users/' + admin1._id + '/auth')
               .set('X-Requested-With', 'XMLHttpRequest')
               .send(admin1)
               .expect('Content-Type', /application\/json/)
@@ -137,8 +129,6 @@ describe('Модуль users', function() {
                   throw err;
                 }
 
-                agent.saveCookies(res);
-
                 res.body.status.should.equal(true, res.body.msg);
                 
                 done();
@@ -147,9 +137,8 @@ describe('Модуль users', function() {
       });
       
       it('Возвращается успех. В коллекции пользователей нуль', function(done) {
-        var req = request.delete('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .delete('/users/users')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -157,12 +146,10 @@ describe('Модуль users', function() {
             if (err) {
               throw err;
             }
-
-            agent.saveCookies(res);
             
             res.body.status.should.equal(true, res.body.msg);
             
-            request
+            agent
               .get('/users/users')
               .set('X-Requested-With', 'XMLHttpRequest')
               .expect('Content-Type', /application\/json/)

@@ -1,8 +1,13 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const superagent = require('superagent');
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const cookieParser = require('cookie-parser')
+
 var usersDB = require('../db/index');
+
+app.use(cookieParser())
 
 describe('Модуль users', function () {
   describe('Регистрация нового пользователя (POST /users/users)', function() {
@@ -14,7 +19,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "admin1",
           agreementAccepted: true
         };
-        request
+        agent
           .post('/users/users')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -41,7 +46,7 @@ describe('Модуль users', function () {
           passwordDuplicate: "admin1",
           agreementAccepted: true
         };
-        request
+        agent
           .post('/users/users')
           .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -51,8 +56,6 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
-            
-            agent.saveCookies(res);
             
             res.body.status.should.equal(false, res.body.msg);
                 
@@ -70,9 +73,8 @@ describe('Модуль users', function () {
           isAdministrator: false,
           agreementAccepted: true
         };
-        var req = request.post('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/users')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -88,7 +90,6 @@ describe('Модуль users', function () {
             res.body.level.should.equal("success");
             res.body.should.have.property('user');
             res.body.user.should.have.property('email');
-            //res.body.user.should.not.have.property('isAdministrator');
             res.body.user.isAdministrator.should.equal(false, res.body.msg);
             res.body.user.should.have.property('showEmail');
             res.body.user.should.have.property('created_at');
@@ -107,9 +108,8 @@ describe('Модуль users', function () {
           passwordDuplicate: "user2",
           agreementAccepted: true
         };
-        var req = request.post('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/users')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -118,8 +118,6 @@ describe('Модуль users', function () {
             if (err) {
               throw err;
             }
-            
-            agent.saveCookies(res);
             
             res.body.status.should.equal(false, res.body.msg);
             

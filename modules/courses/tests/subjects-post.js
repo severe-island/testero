@@ -1,10 +1,15 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const superagent = require('superagent');
+const cookieParser = require('cookie-parser')
+
 var coursesDB = require('../db/courses');
 var usersDB = require('../../users/db');
 var rolesDB = require('../db/roles');
+
+app.use(cookieParser())
 
 describe('Модуль courses::subjects', function () {
   var user1 = {
@@ -34,7 +39,7 @@ describe('Модуль courses::subjects', function () {
     });
     
     it('Пользователь не авторизован: отказ', function(done) {
-      request
+      agent
         .post('/courses/courses/' + course1._id + '/subjects')
         .send(subject1)
         .set('X-Requested-With', 'XMLHttpRequest')
@@ -53,9 +58,8 @@ describe('Модуль courses::subjects', function () {
     });
     
     it('Пользователь авторизован, но не преподаватель: отказ', function(done) {
-      var req = request.post('/users/login');
-      agent.attachCookies(req);
-      req
+      agent
+        .post('/users/login')
         .send(user1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -65,13 +69,10 @@ describe('Модуль courses::subjects', function () {
             throw err;
           }
 
-          agent.saveCookies(res);
-
           res.body.status.should.equal(true, res.body.msg);
           
-          var req = request.post('/courses/courses/' + course1._id + '/subjects');
-          agent.attachCookies(req);
-          req
+          agent
+            .post('/courses/courses/' + course1._id + '/subjects')
             .send(subject1)
             .set('X-Requested-With', 'XMLHttpRequest')
             .expect('Content-Type', /application\/json/)
@@ -80,8 +81,6 @@ describe('Модуль courses::subjects', function () {
               if (err) {
                 throw err;
               }
-
-              agent.saveCookies(res);
 
               res.body.status.should.equal(false, res.body.msg);
               res.body.should.not.have.property('subject');
@@ -93,9 +92,8 @@ describe('Модуль courses::subjects', function () {
     
     it('Пользователь авторизован и является преподавателем: успех.', function(done) {
       rolesDB.assignRole(user1.email, 'teacher', function() {
-        var req = request.post('/courses/courses/' + course1._id + '/subjects');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/courses/courses/' + course1._id + '/subjects')
           .send(subject1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -104,8 +102,6 @@ describe('Модуль courses::subjects', function () {
             if (err) {
               throw err;
             }
-            
-            agent.saveCookies(res);
 
             res.body.status.should.equal(true, res.body.msg);
             res.body.should.have.property('subject');
@@ -116,9 +112,8 @@ describe('Модуль courses::subjects', function () {
     });
     
     it('Не задана тема: отказ', function(done) {
-      var req = request.post('/courses/courses/' + course1._id + '/subjects');
-      agent.attachCookies(req);
-      req
+      agent
+        .post('/courses/courses/' + course1._id + '/subjects')
         .send({})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -127,8 +122,6 @@ describe('Модуль courses::subjects', function () {
           if (err) {
             throw err;
           }
-          
-          agent.saveCookies(res);
 
           res.body.status.should.equal(false, res.body.msg);
           res.body.should.not.have.property('subject');
@@ -146,9 +139,8 @@ describe('Модуль courses::subjects', function () {
     });
     
     it('Попытка добавить к несуществующему курсу тему', function(done) {
-      var req = request.post('/courses/courses/719825791875/subjects');
-      agent.attachCookies(req);
-      req
+      agent
+        .post('/courses/courses/719825791875/subjects')
         .send(subject1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -158,8 +150,6 @@ describe('Модуль courses::subjects', function () {
             throw err;
           }
           
-          agent.saveCookies(res);
-          
           res.body.status.should.equal(false, res.body.msg);
           res.body.should.not.have.property('subject');
           
@@ -167,7 +157,4 @@ describe('Модуль courses::subjects', function () {
         });
     });
   });
-  
-  
-  
 });

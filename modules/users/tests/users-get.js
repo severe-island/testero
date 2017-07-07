@@ -1,8 +1,13 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
+const app = require('../../../app');
+const request = require('supertest')(app);
+const superagent = require('superagent');
+const supertest = require('supertest')
+const agent = supertest.agent(app)
+const cookieParser = require('cookie-parser')
+
 var usersDB = require('../db/index');
+
+app.use(cookieParser())
 
 describe('Модуль users', function () {
   describe('Список всех пользователей (GET /users/users/)', function() {
@@ -33,7 +38,7 @@ describe('Модуль users', function () {
           password: "admin1",
           passwordDuplicate: "admin1"
         };
-        request
+        agent
           .post('/users/users')
           .send(admin1)
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -44,7 +49,6 @@ describe('Модуль users', function () {
               throw err;
             }
             
-            agent.saveCookies(res);
             res.body.status.should.equal(true, res.body.msg);
             
             done();
@@ -52,7 +56,7 @@ describe('Модуль users', function () {
       });
     
       it('Возвращается массив длиной единица', function(done) {
-        request
+        agent
           .get('/users/users/')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -77,9 +81,8 @@ describe('Модуль users', function () {
           password: "user1",
           passwordDuplicate: "user1"
         };
-        var req = request.post('/users/users');
-        agent.attachCookies(req);
-        req
+        agent
+          .post('/users/users')
           .send(user1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -96,7 +99,7 @@ describe('Модуль users', function () {
       });
 
       it('Возвращается массив длиной два', function(done) {
-        request
+        agent
           .get('/users/users/')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -137,7 +140,7 @@ describe('Модуль users', function () {
     
     context('Пользователь существует', function() {
       it('Возвращается объект пользователя', function(done) {
-        request
+        agent
           .get('/users/users/?email=' + user.email)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
