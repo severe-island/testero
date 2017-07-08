@@ -4,12 +4,25 @@
 
 ### Linux Debian/Ubuntu
 
-* `sudo apt-get install nodejs`
-* `git clone https://bitbucket.org/severeisland/testero.git`
+Install Node.js:
+
+`sudo apt-get install nodejs`
+
+Install Redis:
+
+`sudo apt install redis-server`
+
+Clone latest Testero:
+
+`git clone https://github.com/severe-island/testero.git`
 
 ## Запуск
 
-1. Из папки bin запустить development
+Из папки `bin` запустить:
+
+1. `production` для использования;
+1. `development` для разработки;
+1. `testing` для запуска тестов.
 
 ## Работа с базой данных
 
