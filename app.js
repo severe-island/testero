@@ -1,10 +1,12 @@
+"use strict";
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var NedbStore = require('connect-nedb-session')(session);
+const RedisStore = require('connect-redis')(session)
 var bodyParser = require('body-parser');
 var config = require('./config');
 var fs = require('fs');
@@ -19,10 +21,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
   secret: 'sksskjfsdfkn2131',
-  store: new NedbStore({
-    filename: '../db/'+config.mode+'/sessions',
-    autoload: true,
-    inMemoryOnly: false}),
+  store: new RedisStore({
+    prefix: 'testero:session:'
+  }),
   resave: true,
   saveUninitialized: false
 }));
