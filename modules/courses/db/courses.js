@@ -1,30 +1,17 @@
-var config = require('../../../config');
-var dataStore = require('nedb');
+"use strict"
 
-function getConnectionOptions(nameCollection) {
-  return  {
-    filename: '../db/' +config.db.name + '/'+nameCollection,
-    autoload: true,
-    inMemoryOnly: false
-  };
-};
+const mongodb = require('mongodb')
 
-/*
-function getIndexOption(field, uniqueOption, sparseOption) {
-  var option = {
-    fieldName: field
-    ,unique: uniqueOption
-    ,sparse: sparseOption
-  }
-  return option;
-}*/
+var collection;
 
-var collection = new dataStore(getConnectionOptions("courses"));
-//collection.ensureIndex(getIndexOption("email", true, false));
+module.exports.setup = function(db) {
+  collection = db.collection('courses')
+}
 
-exports.findAllCourses = function (callback) {
-  collection.find ({}, function (err, courses) { 
-    if(err) {
+
+exports.findAllCourses = function(callback) {
+  collection.find({}).toArray(function(err, courses) { 
+    if (err) {
       console.log("Ошибка получения курсов: ")
       console.log(err)
     }
@@ -34,7 +21,7 @@ exports.findAllCourses = function (callback) {
 
 
 exports.findCourses = function (filter, callback) {
-  collection.find (filter, function (err, courses) { 
+  collection.find(filter).toArray(function(err, courses) { 
     if (err) {
       console.log('Ошибка получения курсов: "' + err + '"');
     }
@@ -43,8 +30,17 @@ exports.findCourses = function (filter, callback) {
 };
 
 
-exports.findCourse = function (filter, callback) {
-  collection.findOne (filter, callback);
+exports.findCourse = function(filter, callback) {
+  collection.findOne(filter, (err, course) => {
+    callback(err, course)
+  })
+}
+
+
+exports.findCourseById = function(id, callback) {
+  collection.findOne({_id: new mongodb.ObjectID(id)}, (err, course) => {
+    callback(err, course)
+  })
 }
 
 
@@ -56,8 +52,8 @@ exports.add = function(course, callback) {
   course.created_at = new Date();
   course.updated_at = null;
   course.subjects = [ ];
-  collection.insert(course, function (err, newCourse) {
-    callback(err, newCourse);
+  collection.insert(course, function (err, result) {
+    callback(err, result.ops[0]);
   });
 };
 

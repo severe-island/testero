@@ -1,36 +1,22 @@
-/// <reference path="../../../typings/nedb/nedb.d.ts"/>
+"use strict"
 
-var config = require('../../../config');
-var DataStore = require('nedb');
+const mongodb = require('mongodb')
 
-function getConnectionOptions(nameCollection) {
-  return  {
-    filename: '../db/' +config.db.name + '/'+nameCollection,
-    autoload: true,
-    inMemoryOnly: false
-  };
-};
+var collection;
 
-function getIndexOption(field, uniqueOption, sparseOption) {
-  var option = {
-    fieldName: field
-    ,unique: uniqueOption
-    ,sparse: sparseOption
-  }
-  return option;
+module.exports.setup = function(db) {
+  collection = db.collection('users')
 }
 
-var collection = new DataStore(getConnectionOptions("users"));
-collection.ensureIndex(getIndexOption("email", true, false));
-
 module.exports.findAllUsersWithoutPassword = function (admin, callback) {
-  if(admin) {
-    collection.find({ }, { password: 0 }, function (err, users) {
+  if (admin) {
+    collection.find({ }, { password: 0 }).toArray(function (err, users) {
       callback(err, users);
     })
-  } else {
+  }
+  else {
     collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
-    { password: 0, isAdministrator : 0, editor: 0 }, function (err, users) {
+    { password: 0, isAdministrator : 0, editor: 0 }).toArray(function (err, users) {
       for(var i=0; i<users.length; i++) {
         if(!users[i].showEmail) {
           delete users[i].email;
@@ -85,8 +71,8 @@ module.exports.findUserByIdWithoutPassword = function(id, admin, callback) {
 
 
 module.exports.findUserById = function (userId, callback) {
-  collection.findOne({ _id: userId }, function (err, foundUser) {
-    if (err && config.mode !== "testing") {
+  collection.findOne({ _id: new mongodb.ObjectID(userId) }, function (err, foundUser) {
+    if (err && process.env.NODE_ENV !== "testing") {
       console.log("Ошибка при поиске пользователя ", userId, " :", err.message);
     }
     callback(err, foundUser);
@@ -94,15 +80,18 @@ module.exports.findUserById = function (userId, callback) {
 };
 
 
-module.exports.findUserByEmail = function (userEmail, callback) {
+function findUserByEmail(userEmail, callback) {
   collection.findOne({ email: userEmail }, function (err, foundUser) {
-    if (err && config.mode !== "testing")
+    if (err && process.env.NODE_ENV !== "testing")
     {
       console.log("Ошибка при поиске пользователя ", userEmail, " :", err.message);
     }
     callback(err, foundUser);
   }); 
 };
+
+module.exports.findUserByEmail = findUserByEmail
+
 
 module.exports.isAdminExists = function (callback) {
   collection.findOne({isAdministrator: true}, function (err, adminUser)
@@ -119,24 +108,36 @@ module.exports.isAdminExists = function (callback) {
 }
 
 
-module.exports.registerUser = function(data, callback) {
-  var date = new Date();
-  collection.insert({
-    email: data.email,
-    password: data.password,
-    isAdministrator: data.isAdministrator,
-    showEmail: data.showEmail || false,
-    created_at: date,
-    updated_at: null,
-    registeredBy: data.registeredBy
-  }, function (err, newUser) {
-    callback(err, newUser);
-  });
-};
+module.exports.registerUser = function(userData, callback) {
+  findUserByEmail(userData.email, (err, user) => {
+    if (err) {
+      callback(err, null)
+      return
+    }
+    if (user) {
+      callback(new Error('User exist'), null)
+      return
+    }
+    collection.insertOne({
+      email: userData.email,
+      password: userData.password,
+      isAdministrator: userData.isAdministrator,
+      showEmail: userData.showEmail || false,
+      created_at: new Date(),
+      updated_at: null,
+      registeredBy: userData.registeredBy
+    }, (err, result) => {
+      if (err) {
+        callback(err, null)
+      }
+      callback(null, result.ops[0])
+    })
+  })
+}
 
 // DEPRECATED:
 
-module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback) {
+/*module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback) {
   var date = new Date();
   collection.insert({
     email: userEmail,
@@ -148,7 +149,7 @@ module.exports.addNewUser = function (userEmail, userPass, isAdministrator, call
   }, function (err, newUser) {
     callback(err, newUser);
   });
-}
+}*/
 
 module.exports.removeUser = function(email, callback) {
   var date = new Date();

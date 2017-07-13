@@ -1,17 +1,45 @@
-const app = require('../../../app');
-const request = require('supertest')(app);
-const supertest = require('supertest')
-const agent = supertest.agent(app)
-const superagent = require('superagent');
-const cookieParser = require('cookie-parser')
+"use strict"
 
-var coursesDB = require('../db/courses');
-var usersDB = require('../../users/db');
-var rolesDB = require('../db/roles');
+const mongodb = require('mongodb')
 
-app.use(cookieParser())
+var agent
+var app
+var coursesDB
+var rolesDB
+var usersDB
 
 describe('Модуль courses.', function () {
+  before(function(done) {
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      app = require('../../../app')(connection)
+
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+
+      coursesDB = require('../db/courses')
+      coursesDB.setup(connection)
+      rolesDB = require('../db/roles')
+      rolesDB.setup(connection)
+      usersDB = require('../../users/db')
+      usersDB.setup(connection)
+
+      app.use(cookieParser())
+
+      done()
+    })
+  })
+
   describe('Добавление курсов (POST /courses/courses).', function() {
     var user1 = {
       email: 'user1@testero',
@@ -148,11 +176,13 @@ describe('Модуль courses.', function () {
           });
       });
     });
+  })
 
-    after(function(done) {
-      coursesDB.clearCourses(function() {
-        done();
-      });
-    });
-  });
-});
+  after(function(done) {
+    coursesDB.clearCourses(function() {
+      usersDB.clearUsers(function() {
+        done()
+      })
+    })
+  })
+})

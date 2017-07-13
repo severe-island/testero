@@ -1,15 +1,38 @@
-const app = require('../../../app');
-const request = require('supertest')(app);
-const supertest = require('supertest')
-const agent = supertest.agent(app)
-const superagent = require('superagent');
-const cookieParser = require('cookie-parser')
+"use strict"
 
-var usersDB = require('../db/index');
-
-app.use(cookieParser())
+var agent
+var app
+var usersDB
 
 describe('Модуль users', function() {
+  before('Connect to database.', function(done) {
+    const mongodb = require('mongodb')
+
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      usersDB = require('../db')
+      usersDB.setup(connection)
+
+      app = require('../../../app')(connection)
+      
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+      app.use(cookieParser())
+
+      done()
+    })
+  })
+
   describe('Очистка коллекции пользователей (DELETE /users)', function() {
     var admin1 = {
       email: "admin1@testero",
@@ -99,7 +122,7 @@ describe('Модуль users', function() {
                 res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
 
                 done();
-            });
+              });
           });
       });
     });
@@ -133,7 +156,7 @@ describe('Модуль users', function() {
                 
                 done();
               });
-            });
+          });
       });
       
       it('Возвращается успех. В коллекции пользователей нуль', function(done) {
@@ -163,15 +186,15 @@ describe('Модуль users', function() {
                 res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
 
                 done();
-            });
+              });
           });
       });
     });
-    
-    after(function(done) {
-      usersDB.clearUsers(function() {
-        done();
-      });
+  })
+
+  after(function(done) {
+    usersDB.clearUsers(function() {
+      done();
     });
   });
-});
+})

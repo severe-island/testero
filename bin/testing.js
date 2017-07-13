@@ -1,12 +1,15 @@
-var should = require('should');
-var fs = require("fs") ;
-var exec = require('child_process').exec;
-var conf = require('../config');
-var Mocha = require('mocha');
-var mocha = new Mocha({
+"use strict"
+
+const fs = require("fs")
+const exec = require('child_process').exec
+const Mocha = require('mocha')
+const should = require('should')
+const mocha = new Mocha({
   reporter: 'spec',
   require: 'should'
-});;
+})
+
+const conf = require('../config')
 
 function deleteFolderRecursive(path) {
   var files = [];

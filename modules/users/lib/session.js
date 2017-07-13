@@ -1,5 +1,16 @@
-var db = require('../db');
-var conf = require('../../../config');
+"use strict"
+
+const mongodb = require('mongodb')
+
+const db = require('../db')
+
+/**
+ * @param {mongodb.Db} connection
+ */
+module.exports.setup = function(connection) {
+  db.setup(connection)
+}
+
 
 module.exports.checkSession = function (req, callback) {
   if (!req.session.login || !req.session.email) {
@@ -19,7 +30,7 @@ module.exports.checkSession = function (req, callback) {
         status: false,
         level: "danger",
         msg: "Ошибка базы данных: " 
-          + (conf.mode !== 'production' ? ': ' + err.message : '.')
+          + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.')
       };
       callback(checkResult);
       return;
@@ -39,7 +50,7 @@ module.exports.checkSession = function (req, callback) {
     
     if (data.removed) {
       req.session.login = false;
-      res = {
+      checkResult = {
         msg: "Ваш аккаунт " + data.email + " был удалён. Сессия будет разорвана.",
         status: false,
         level: "danger"

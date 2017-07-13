@@ -1,33 +1,70 @@
 #!/usr/bin/env node
 
+"use strict"
+
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('testero:server');
-var http = require('http');
+const debug = require('debug')('testero:server')
+const http = require('http')
+const mongodb = require('mongodb')
 
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Connect to MongoDB server.
  */
 
-var server = http.createServer(app);
+const config = require('../config')
+const mongoHost = config.db.host || 'localhost'
+const mongoPort = config.db.port || '27017'
+const dbName = config.db.name || 'development'
+const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+    if (err) {
+      throw err
+    }
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+    /**
+     * Create HTTP server.
+     */
+    const app = require('../app')(connection)
+    app.set('port', port);
+
+    const server = http.createServer(app);
+
+    server.on('error', onError);
+    
+    server.on('listening', onListening);
+
+    server.on('close', () => {
+      console.log("Close connection to database.")
+      console.log("Close server.")
+      connection.close()
+    })
+
+    console.log('Server started...')
+    server.listen(port)
+
+    /**
+     * Event listener for HTTP server "listening" event.
+     */
+
+    function onListening() {
+      var addr = server.address();
+      var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+      debug('Listening on ' + bind);
+    }
+  }
+)
 
 /**
  * Normalize a port into a number, string, or false.
@@ -75,16 +112,4 @@ function onError(error) {
     default:
       throw error;
   }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
 }

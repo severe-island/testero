@@ -1,12 +1,45 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
-var rolesDB = require('../db/roles');
-var usersDB = require('../../users/db');
-var should = require('should');
+"use strict"
+
+const mongodb = require('mongodb')
+const should = require('should')
+
+var agent
+var app
+var coursesDB
+var rolesDB
+var usersDB
 
 describe('Модуль courses.', function() {
+  before(function(done) {
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      coursesDB = require('../db/courses')
+      coursesDB.setup(connection)
+      rolesDB = require('../db/roles')
+      rolesDB.setup(connection)
+      usersDB = require('../../users/db')
+      usersDB.setup(connection)
+
+      app = require('../../../app')(connection)
+
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+      app.use(cookieParser())
+
+      done()
+    })
+  })
+
   describe('Получение списка ролей по email (getRolesByEmail).', function() {
     before('Добавление тестового пользователя в БД.', function(done) {
       usersDB.registerUser({
@@ -15,14 +48,14 @@ describe('Модуль courses.', function() {
         isAdministrator: true,
         registeredBy: "admin@admin"
       }, function(err, newUser) {
-        should.not.exist(err);
+        should.not.exist(err)
         done()
       });
     });       
     
     context('Пользователь не имеет ролей.', function() {
       it('Получено null', function(done) {
-        request
+        agent
         .post('/courses/getRolesByEmail')
         .send({email: "admin@admin"})
         .set('X-Requested-With', 'XMLHttpRequest')
@@ -49,7 +82,7 @@ describe('Модуль courses.', function() {
       });
       
       it('Получен массив ["teacher", "student"]', function(done) {
-        request
+        agent
         .post('/courses/getRolesByEmail')
         .send({email: "admin@admin"})
         .set('X-Requested-With', 'XMLHttpRequest')
@@ -71,5 +104,11 @@ describe('Модуль courses.', function() {
         }); 
       });
     });
-  });
-});
+  })
+
+  after(function(done) {
+    usersDB.clearUsers(function() {
+      done()
+    })
+  })
+})

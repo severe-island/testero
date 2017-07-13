@@ -1,19 +1,42 @@
-const app = require('../../../app');
-const request = require('supertest')(app);
-const superagent = require('superagent');
-const supertest = require('supertest')
-const agent = supertest.agent(app)
-const cookieParser = require('cookie-parser')
+"use strict"
 
-var usersDB = require('../db/index');
-
-app.use(cookieParser())
+var agent
+var app
+var usersDB
 
 describe('Модуль users', function () {
+  before('Connect to database.', function(done) {
+    const mongodb = require('mongodb')
+
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      usersDB = require('../db')
+      usersDB.setup(connection)
+
+      app = require('../../../app')(connection)
+
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+      app.use(cookieParser())
+
+      done()
+    })
+  })
+
   describe('Список всех пользователей (GET /users/users/)', function() {
     context('Список пуст', function() {
-      it('Возвращается массив длины нуль', function (done) {
-      request
+      it('Возвращается массив длины нуль', function(done) {
+      agent
         .get('/users/users/')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -161,7 +184,7 @@ describe('Модуль users', function () {
     
     context('Пользователь несуществует', function() {
       it('Возвращается неуспех', function(done) {
-        request
+        agent
           .get('/users/users/?email=user2@testero')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -185,4 +208,4 @@ describe('Модуль users', function () {
       done();
     });
   });
-});
+})

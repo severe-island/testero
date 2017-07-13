@@ -1,20 +1,45 @@
-var app = require('../../../app');
-var request = require('supertest')(app);
-var superagent = require('superagent');
-var agent = superagent.agent();
-var coursesDB = require('../db/courses');
+"use strict"
+
+const mongodb = require('mongodb')
+
+var agent
+var app
+var coursesDB
 
 describe('Модуль courses', function () {
   before(function(done) {
-    coursesDB.clearCourses(function() {
-      done();
-    });
-  });
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      coursesDB = require('../db/courses')
+      coursesDB.setup(connection)
+
+      app = require('../../../app')(connection)
+
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+      
+      app.use(cookieParser())
+
+      coursesDB.clearCourses(function() {
+        done();
+      });
+    })
+  })
   
   describe('Список всех курсов (GET /courses/courses)', function() {
     context('Список пуст', function() {
-      it('Возвращается массив длины нуль', function (done) {
-        request
+      it('Возвращается массив длины нуль', function(done) {
+        agent
         .get('/courses/courses/')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -40,7 +65,7 @@ describe('Модуль courses', function () {
       });
       
       it('Возвращается массив длины единица', function (done) {
-        request
+        agent
         .get('/courses/courses/')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -67,7 +92,7 @@ describe('Модуль courses', function () {
       });
       
       it('Возвращается массив длины два', function (done) {
-        request
+        agent
         .get('/courses/courses/')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -95,8 +120,8 @@ describe('Модуль courses', function () {
   describe('Получение курса по ID', function() {
     context('Список курсов пуст', function() {
       it('Попытка получить курс по некоторому ID', function(done) {
-        request
-        .get('/courses/courses/09185912759182759')
+        agent
+        .get('/courses/courses/5963ce98fb28ee7d3fb4f6a0')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -117,16 +142,16 @@ describe('Модуль courses', function () {
       before(function(done) {
         coursesDB.add({title: 'Первый курс', author: null}, function(err, course) {
           ID1 = course._id;
-        });
-        coursesDB.add({title: 'Второй курс', author: null}, function(err, course) {
-          ID2 = course._id;
-        });
-        done();
-      });
+          coursesDB.add({title: 'Второй курс', author: null}, function(err, course) {
+            ID2 = course._id;
+            done();
+          });
+        })
+      })
     
       it('Попытка получить курс по недействительному ID', function(done) {
-        request
-        .get('/courses/courses/0')
+        agent
+        .get('/courses/courses/5963ce98fb28ee7d3fb4f6a0')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -142,7 +167,7 @@ describe('Модуль courses', function () {
       });
       
       it('Получение первого курса по его ID', function(done) {
-        request
+        agent
         .get('/courses/courses/' + ID1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -151,10 +176,10 @@ describe('Модуль courses', function () {
           if (err) {
             throw err;
           }
-          
+
           res.body.status.should.equal(true, res.body.msg);
           res.body.course.should.not.equal(undefined);
-          res.body.course._id.should.equal(ID1);
+          res.body.course._id.should.equal(ID1.toString());
           res.body.course.should.have.property('title');
           
           done();
@@ -162,7 +187,7 @@ describe('Модуль courses', function () {
       });
       
       it('Получение второго курса по его ID', function(done) {
-        request
+        agent
         .get('/courses/courses/' + ID2)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -174,7 +199,7 @@ describe('Модуль courses', function () {
           
           res.body.status.should.equal(true, res.body.msg);
           res.body.course.should.not.equal(undefined);
-          res.body.course._id.should.equal(ID2);
+          res.body.course._id.should.equal(ID2.toString());
           res.body.course.should.have.property('title');
           
           done();
@@ -192,7 +217,7 @@ describe('Модуль courses', function () {
       });
       
       it('Курс не найден', function(done) {
-        request
+        agent
         .get('/courses/courses/?title=Any')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -218,7 +243,7 @@ describe('Модуль courses', function () {
       });
       
       it('Курс не найден', function(done) {
-        request
+        agent
         .get('/courses/courses/?title=Second')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -238,7 +263,7 @@ describe('Модуль courses', function () {
     
     context('Есть один курс, ищем именно его', function() {
       it('Курс найден', function(done) {
-        request
+        agent
         .get('/courses/courses/?title=First')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -262,9 +287,10 @@ describe('Модуль courses', function () {
         coursesDB.add({title: 'Second', author: null}, function() {
           done();
         });
-      });
+      })
+
       it('Курс найден', function(done) {
-        request
+        agent
         .get('/courses/courses/?title=Second')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -287,9 +313,10 @@ describe('Модуль courses', function () {
         coursesDB.add({title: 'First', author: null}, function() {
           done();
         });
-      });
+      })
+      
       it('Найдено два курса', function(done) {
-        request
+        agent
         .get('/courses/courses/?title=First')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)

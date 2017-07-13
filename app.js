@@ -1,82 +1,88 @@
-"use strict";
+"use strict"
 
-var express = require('express');
-var path = require('path');
+const express = require('express')
+const fs = require('fs')
+const path = require('path')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const favicon = require('serve-favicon')
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
+const logger = require('morgan')
+const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
-var bodyParser = require('body-parser');
-var config = require('./config');
-var fs = require('fs');
 
-var app = express();
+const config = require('./config')
 
-if(config.mode !== "testing") {
-  app.use(logger('dev'));
-}
-app.use(favicon(__dirname + '/public/favicon.ico'))
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(session({
-  secret: 'sksskjfsdfkn2131',
-  store: new RedisStore({
-    prefix: 'testero:session:'
-  }),
-  resave: true,
-  saveUninitialized: false
-}));
-app.use(express.static(path.join(__dirname, 'public')));
+module.exports = function(connection) {
 
-config.modules.forEach(function (moduleName) {
-  var modulePath = './modules/' + moduleName + '/route';
-  if (fs.existsSync('.' + modulePath)) {
-    var files = fs.readdirSync('.'+modulePath);
-    if (files) {
-      files.forEach(function (file) {
-        var nextModule = require(modulePath + '/' + file);
-        app.use('/' + moduleName, nextModule);
-      });
-    } 
-  }
+  var app = express();
+
   if (config.mode !== "testing") {
-    console.log('Модуль ' + moduleName + ' подключен.');
+    app.use(logger('dev'));
   }
-});
+  app.use(favicon(__dirname + '/public/favicon.ico'))
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(cookieParser());
+  app.use(session({
+    secret: 'sksskjfsdfkn2131',
+    store: new RedisStore({
+      prefix: 'testero:session:'
+    }),
+    resave: true,
+    saveUninitialized: false
+  }));
+  app.use(express.static(path.join(__dirname, 'public')));
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+  config.modules.forEach(function (moduleName) {
+    var modulePath = './modules/' + moduleName + '/route';
+    
+    if (fs.existsSync('.' + modulePath)) {
+      var files = fs.readdirSync('.' + modulePath);
+      if (files) {
+        files.forEach(function (file) {
+          const nextModule = require(modulePath + '/' + file)(connection)
+          app.use('/' + moduleName, nextModule)
+        });
+      }
+    }
 
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.json({
-      msg: err.message,
-      status: false
-    });
+    if (config.mode !== "testing") {
+      console.log('Модуль ' + moduleName + ' подключен.');
+    }
   });
-}
 
-// production error handler
-// no stacktraces leaked to user
-if (app.get('env') === 'production') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.json({
-      msg: err.message,
-      status: false
-    });
+  // catch 404 and forward to error handler
+  app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
   });
-}
 
-module.exports = app;
+  // error handlers
+
+  // development error handler
+  // will print stacktrace
+  if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+      res.status(err.status || 500);
+      res.json({
+        msg: err.message,
+        status: false
+      });
+    });
+  }
+
+  // production error handler
+  // no stacktraces leaked to user
+  if (app.get('env') === 'production') {
+    app.use(function(err, req, res, next) {
+      res.status(err.status || 500);
+      res.json({
+        msg: err.message,
+        status: false
+      });
+    });
+  }
+
+  return app
+}

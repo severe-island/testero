@@ -1,24 +1,52 @@
-const app = require('../../../app');
-const request = require('supertest')(app);
-const supertest = require('supertest')
-const superagent = require('superagent');
-const agent = supertest.agent(app)
-const cookieParser = require('cookie-parser')
+"use strict"
 
-var rolesDB = require('../db/roles');
-var usersDB = require('../../users/db');
-var should = require('should');
+const mongodb = require('mongodb')
+const should = require('should')
 
-app.use(cookieParser())
+var agent
+var app
+var coursesDB
+var rolesDB
+var usersDB
 
 describe('Модуль courses.', function() {
+  before(function(done) {
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      coursesDB = require('../db/courses')
+      coursesDB.setup(connection)
+      rolesDB = require('../db/roles')
+      rolesDB.setup(connection)
+      usersDB = require('../../users/db')
+      usersDB.setup(connection)
+
+      app = require('../../../app')(connection)
+
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+      app.use(cookieParser())
+
+      done()
+    })
+  })
+
   describe('Назначение роли (assignRole).', function() {
     let adminId;
     let user1Id;
     before('Добавление необходимых пользователей в БД.', function(done) {
       usersDB.registerUser({
         email: "admin@admin",
-        password: "1234",
+        password: "admin",
         isAdministrator: true,
         registeredBy: "admin@admin"
       }, function(err, admin) {
@@ -26,7 +54,7 @@ describe('Модуль courses.', function() {
         should.not.exist(err);
         usersDB.registerUser({
           email: "user1@user1",
-          password: "1234",
+          password: "user1",
           isAdministrator: false,
           registeredBy: "admin@admin"
         }, function(err, user1) {
@@ -34,7 +62,7 @@ describe('Модуль courses.', function() {
           should.not.exist(err);
           usersDB.registerUser({
             email: "user2@user2",
-            password: "1234",
+            password: "user2",
             isAdministrator: false,
             registeredBy: "admin@admin"
           }, function(err, newUser) { 
@@ -49,7 +77,7 @@ describe('Модуль courses.', function() {
       before('Заход под именем администратора.', function(done) {
         agent
         .post('/users/login')
-        .send({email: "admin@admin", password: "1234"})
+        .send({email: "admin@admin", password: "admin"})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -69,29 +97,27 @@ describe('Модуль courses.', function() {
         .expect(200)
         .end(function (err, res) {
           should.not.exist(err);
-          res.body.status.should.equal(true, res.body.msg);  
+          res.body.status.should.equal(true, res.body.msg)
           rolesDB.getRolesByEmail("user1@user1", function(err, roles) {
             should.not.exist(err);
             roles.should.containEql('teacher');
+
             done();
           });
         });
       });
 
-      after((done) => {
+      after(function(done) {
         agent
-        .delete('/users/users/' + user1Id + '/auth')
+        .delete('/users/users/' + adminId + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end((err, res) => {
-          if (err) {
-            throw err
-          }
+        .end(function(err, res) {
+          should.not.exist(err)
 
-          if (!res.status) {
-            throw 'Not logged out user1.'
-          }
+          res.body.status.should.equal(true, res.body.msg)
+
           done()
         })
       })
@@ -101,9 +127,10 @@ describe('Модуль courses.', function() {
       before('Назначение на user1 роли teacher. Вход под именем user1.', function(done) {
         rolesDB.assignRole("user1@user1", "teacher", function(err) {
           should.not.exist(err);
+
           agent
           .post('/users/login')
-          .send({email: "user1@user1", password: "1234"})
+          .send({email: "user1@user1", password: "user1"})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -203,20 +230,17 @@ describe('Модуль courses.', function() {
         });
       });
 
-      after((done) => {
+      after(function(done) {
         agent
         .delete('/users/users/' + adminId + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end((err, res) => {
-          if (err) {
-            throw err
-          }
+        .end(function(err, res) {
+          should.not.exist(err)
 
-          if (!res.status) {
-            throw 'Not logged out admin.'
-          }
+          res.body.status.should.equal(true, res.body.msg);
+
           done()
         })
       })
@@ -226,7 +250,7 @@ describe('Модуль courses.', function() {
       before('Вход под именем администратора.', function(done) {
         agent
         .post('/users/login')
-        .send({email: "admin@admin", password: "1234"})
+        .send({email: "admin@admin", password: "admin"})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -255,30 +279,25 @@ describe('Модуль courses.', function() {
         });
       });
 
-      after((done) => {
+      after(function(done) {
         agent
         .delete('/users/users/' + adminId + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end((err, res) => {
-          if (err) {
-            throw err
-          }
-
-          if (!res.status) {
-            throw 'Not logged out admin.'
-          }
+        .end(function(err, res) {
+          should.not.exist(err)
+          res.body.status.should.equal(true, res.body.msg)
           done()
         })
       })
-    });
+    })
     
     context('Назначение роли student другим пользователем.', function() {
       before('Вход под именем user1.', function(done) {
         agent
         .post('/users/login')
-        .send({email: "user1@user1", password: "1234"})
+        .send({email: "user1@user1", password: "user1"})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -367,13 +386,13 @@ describe('Модуль courses.', function() {
         should.not.exist(err);
         done();
       });      
-    });
-    
-    after('Очистка пользователей', function(done) {
-      usersDB.clearUsers(function(err) {
-        should.not.exist(err);
-        done();
-      });
-    });
-  });
-});
+    })
+  })
+
+  after('Очистка пользователей', function(done) {
+    usersDB.clearUsers(function(err) {
+      should.not.exist(err);
+      done();
+    })
+  })
+})

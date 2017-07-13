@@ -1,24 +1,49 @@
-const app = require('../../../app');
-const request = require('supertest')(app);
-const supertest = require('supertest')
-const agent = supertest.agent(app)
-const superagent = require('superagent');
-const cookieParser = require('cookie-parser')
+"use strict"
 
-var usersDB = require('../db/');
-
-app.use(cookieParser())
+var agent
+var app
+var usersDB
 
 describe('Модуль users::auth.', function() {
   var user1 = {email: 'user1@testero', password: 'user1', passwordDuplicate: 'user1'};
   var id1;
   
   before(function(done) {
-    usersDB.registerUser(user1, function(err, data) {
-      id1 = data._id;
-      done();
-    });
-  });
+    const mongodb = require('mongodb')
+
+    const config = require('../../../config')
+    const mongoHost = config.db.host || 'localhost'
+    const mongoPort = config.db.port || '27017'
+    const dbName = config.db.name || 'development'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+
+    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+      if (err) {
+        throw err
+      }
+
+      usersDB = require('../db')
+      usersDB.setup(connection)
+
+      app = require('../../../app')(connection)
+
+      const supertest = require('supertest')
+      agent = supertest.agent(app)
+      const cookieParser = require('cookie-parser')
+      
+      app.use(cookieParser())
+
+      usersDB.registerUser(user1, function(err, data) {
+        if (err) {
+          throw err
+        }
+
+        id1 = data._id;
+        
+        done();
+      })
+    })
+  })
   
   context('Проверка авторизованности пользователя.', function() {
     it('Пользователь не авторизован.', function(done) {
@@ -159,5 +184,11 @@ describe('Модуль users::auth.', function() {
           done();
         });
     });
-  });
-});
+  })
+
+  after(function(done) {
+    usersDB.clearUsers(function() {
+      done()
+    })
+  })
+})
