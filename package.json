@@ -20,11 +20,13 @@
     "url": "https://github.com/severe-island/testero"
   },
   "scripts": {
-    "start": "node ./bin/www.js"
+    "start": "NODE_ENV=development MODE=development DEBUG=testero node ./bin/www.js",
+    "test": "NODE_ENV=testing MODE=testing DEBUG=testero node ./bin/testing.js"
   },
   "dependencies": {
     "body-parser": "^1.17.2",
     "bootstrap": "^3.3.7",
+    "config": "^1.28.1",
     "connect-redis": "^3.3.0",
     "cookie-parser": "^1.4.3",
     "debug": "^2.6.8",

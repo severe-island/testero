@@ -8,7 +8,7 @@ describe('Модуль users', function () {
   before('Connect to database.', function(done) {
     const mongodb = require('mongodb')
 
-    const config = require('../../../config')
+    const config = require('config')
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'development'

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-NODE_ENV=testing MODE=testing DEBUG=testero node testing.js

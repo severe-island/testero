@@ -9,7 +9,7 @@ const mocha = new Mocha({
   require: 'should'
 })
 
-const conf = require('../config')
+const config = require('config')
 
 function deleteFolderRecursive(path) {
   var files = [];
@@ -29,15 +29,15 @@ function deleteFolderRecursive(path) {
 
 deleteFolderRecursive("../db/testing");
 
-for(var i = 0; i < conf.modules.length; i++) {
-  var testsPath = "../modules/" + conf.modules[i] + "/tests";
+for(var i = 0; i < config.modules.length; i++) {
+  var testsPath = "modules/" + config.modules[i] + "/tests";
   if(!fs.existsSync(testsPath)) {
-    console.log("В модуле " + conf.modules[i] + " не найдена директория tests");
+    console.log("В модуле " + config.modules[i] + " не найдена директория tests");
     continue;
   }
   var files = fs.readdirSync(testsPath)
   if(!files) {
-    console.log("В модуле " + conf.modules[i] + " не найдены тесты");
+    console.log("В модуле " + config.modules[i] + " не найдены тесты");
     continue;
   }
   files.forEach(function(filename){

@@ -1,6 +1,6 @@
 # testero
 
-## Установка
+## Installing
 
 ### Linux Debian/Ubuntu
 
@@ -28,24 +28,25 @@ Clone latest Testero:
 
 `git clone https://github.com/severe-island/testero.git`
 
-## Запуск
+## Running
 
 Run MongoDB
 
-`sudo service mongod start`
+``` sh
+sudo service mongod start
+```
 
-Из папки `bin` запустить:
+Then
 
-1. `production` для использования;
-1. `development` для разработки;
-1. `testing` для запуска тестов.
+``` sh
+npm start
+```
 
-## Работа с базой данных
+## Code testing
 
-Пока не сделана очистка БД. Если нужно очистить, удалите:
-
-1. `db/sessions`
-1. `db/testerodb_development`
+``` sh
+npm test
+```
 
 ---
 

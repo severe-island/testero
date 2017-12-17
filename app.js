@@ -10,7 +10,7 @@ const logger = require('morgan')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 
-const config = require('./config')
+const config = require('config')
 
 module.exports = function(connection) {
 
@@ -34,10 +34,10 @@ module.exports = function(connection) {
   app.use(express.static(path.join(__dirname, 'public')));
 
   config.modules.forEach(function (moduleName) {
-    var modulePath = './modules/' + moduleName + '/route';
+    const modulePath = './modules/' + moduleName + '/route'
     
-    if (fs.existsSync('.' + modulePath)) {
-      var files = fs.readdirSync('.' + modulePath);
+    if (fs.existsSync(modulePath)) {
+      const files = fs.readdirSync(modulePath)
       if (files) {
         files.forEach(function (file) {
           const nextModule = require(modulePath + '/' + file)(connection)
@@ -45,9 +45,12 @@ module.exports = function(connection) {
         });
       }
     }
+    else {
+      console.log('Module ' + moduleName + ' does not contain routes.')
+    }
 
     if (config.mode !== "testing") {
-      console.log('Модуль ' + moduleName + ' подключен.');
+      console.log('Module ' + moduleName + ' enabled.');
     }
   });
 
