@@ -3,7 +3,6 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const favicon = require('serve-favicon')
 const logger = require('morgan')
@@ -20,8 +19,8 @@ module.exports = function(connection) {
     app.use(logger('dev'));
   }
   app.use(favicon(__dirname + '/public/favicon.ico'))
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(express.json())
+  app.use(express.urlencoded({extended: false}))
   app.use(cookieParser());
   app.use(session({
     secret: 'sksskjfsdfkn2131',
