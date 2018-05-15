@@ -14,15 +14,17 @@ describe('Модуль courses', function () {
     const dbName = config.db.name || 'development'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
       if (err) {
         throw err
       }
 
-      coursesDB = require('../db/courses')
-      coursesDB.setup(connection)
+      const db = client.db(dbName)
 
-      app = require('../../../app')(connection)
+      coursesDB = require('../db/courses')
+      coursesDB.setup(db)
+
+      app = require('../../../app')(db)
 
       const supertest = require('supertest')
       agent = supertest.agent(app)

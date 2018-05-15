@@ -17,15 +17,17 @@ describe('Модуль users::auth.', function() {
     const dbName = config.db.name || 'development'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
       if (err) {
         throw err
       }
 
-      usersDB = require('../db')
-      usersDB.setup(connection)
+      const db = client.db(dbName)
 
-      app = require('../../../app')(connection)
+      usersDB = require('../db')
+      usersDB.setup(db)
+
+      app = require('../../../app')(db)
 
       const supertest = require('supertest')
       agent = supertest.agent(app)

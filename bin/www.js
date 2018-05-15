@@ -26,15 +26,17 @@ const mongoPort = config.db.port || '27017'
 const dbName = config.db.name || 'development'
 const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
     if (err) {
       throw err
     }
 
+    const db = client.db(dbName)
+
     /**
      * Create HTTP server.
      */
-    const app = require('../app')(connection)
+    const app = require('../app')(db)
     app.set('port', port);
 
     const server = http.createServer(app);
@@ -46,7 +48,7 @@ mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
     server.on('close', () => {
       console.log("Close connection to database.")
       console.log("Close server.")
-      connection.close()
+      client.close()
     })
 
     console.log('Server started...')

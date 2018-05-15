@@ -16,24 +16,25 @@ describe('Модуль courses.', function () {
     const dbName = config.db.name || 'development'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, (err, connection) => {
+    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
       if (err) {
         throw err
       }
 
-      app = require('../../../app')(connection)
+      const db = client.db(dbName)
+
+      coursesDB = require('../db/courses')
+      coursesDB.setup(db)
+      rolesDB = require('../db/roles')
+      rolesDB.setup(db)
+      usersDB = require('../../users/db')
+      usersDB.setup(db)
+
+      app = require('../../../app')(db)
 
       const supertest = require('supertest')
       agent = supertest.agent(app)
       const cookieParser = require('cookie-parser')
-
-      coursesDB = require('../db/courses')
-      coursesDB.setup(connection)
-      rolesDB = require('../db/roles')
-      rolesDB.setup(connection)
-      usersDB = require('../../users/db')
-      usersDB.setup(connection)
-
       app.use(cookieParser())
 
       done()
