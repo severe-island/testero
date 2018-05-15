@@ -25,22 +25,22 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "config": "^1.28.1",
-    "connect-redis": "^3.3.2",
+    "config": "^1.30.0",
+    "connect-redis": "^3.3.3",
     "cookie-parser": "^1.4.3",
     "debug": "^3.1.0",
-    "express": "^4.16.2",
+    "express": "^4.16.3",
     "express-session": "^1.15.6",
     "jquery": "^2.2.4",
     "jquery.loadtemplate": "^1.5.10",
     "mongodb": "^2.2.30",
     "morgan": "^1.9.0",
-    "serve-favicon": "^2.4.5"
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
-    "mocha": "^4.0.1",
-    "should": "^13.1.3",
-    "superagent": "^3.8.2",
-    "supertest": "^3.0.0"
+    "mocha": "^4.1.0",
+    "should": "^13.2.1",
+    "superagent": "^3.8.3",
+    "supertest": "^3.1.0"
   }
 }
