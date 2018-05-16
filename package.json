@@ -21,7 +21,8 @@
   },
   "scripts": {
     "start": "NODE_ENV=development MODE=development DEBUG=testero node ./bin/www.js",
-    "test": "NODE_ENV=testing MODE=testing DEBUG=testero node ./bin/testing.js"
+    "test": "NODE_ENV=testing MODE=testing DEBUG=testero node ./bin/testing.js",
+    "postinstall": "sh postinstall.sh"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
@@ -31,7 +32,7 @@
     "debug": "^3.1.0",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
-    "jquery": "^2.2.4",
+    "jquery": "^3.3.1",
     "jquery.loadtemplate": "^1.5.10",
     "mongodb": "^3.1.0-beta4",
     "morgan": "^1.9.0",
