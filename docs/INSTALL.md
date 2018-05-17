@@ -4,15 +4,23 @@
 
 ### Linux Debian/Ubuntu
 
-Install Node.js:
+Install Node.js and NPM from Ubuntu 18.04 repository:
 
-`sudo apt-get install nodejs`
+`sudo apt install nodejs npm`
+
+For Ubuntu before 18.04 see original instruction from <https://nodejs.org>.
 
 Install Redis:
 
 `sudo apt install redis-server`
 
-Install MongoDB:
+Install MongoDB from Ubuntu 18.04 repository:
+
+``` sh
+sudo apt install mongodb
+```
+
+Install MongoDB (before 18.04):
 
 Full instructions see on
 [official site](https://docs.mongodb.com/master/tutorial/install-mongodb-on-ubuntu/).
@@ -28,6 +36,12 @@ Clone latest Testero:
 
 `git clone https://github.com/severe-island/testero.git`
 
+Install packages:
+
+``` sh
+npm install
+```
+
 ## Running
 
 Run MongoDB
@@ -42,12 +56,18 @@ Then
 npm start
 ```
 
+Goto <http://localhost:3000>.
+
 ## Code testing
 
 ``` sh
 npm test
 ```
 
+``` sh
+npm run coverage
+```
+
 ---
 
-(c) 2015 -- 2017, Severe Island Team
+(c) 2015 -- 2018, Severe Island Team

@@ -16,7 +16,7 @@ Bootstrap, jQuery, NoSQL.
 
 ## Документация
 
-Документация располагается в каталоге проекта `docs`.
+Документация располагается в каталоге проекта [docs](./docs).
 
 - [Руководство по установке и запуску](./docs/INSTALL.md)
 
@@ -39,4 +39,4 @@ Bootstrap, jQuery, NoSQL.
 
 ---
 
-(c) 2015 -- 2017, Severe Island Team
+(c) 2015 -- 2018, Severe Island Team
