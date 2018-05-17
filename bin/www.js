@@ -23,7 +23,7 @@ var port = normalizePort(process.env.PORT || '3000');
 const config = require('config')
 const mongoHost = config.db.host || 'localhost'
 const mongoPort = config.db.port || '27017'
-const dbName = config.db.name || 'development'
+const dbName = config.db.name || 'production'
 const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
 mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
