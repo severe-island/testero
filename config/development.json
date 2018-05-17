@@ -1,11 +1,11 @@
 {
   "db":
     {
-      "name": "development"
+      "name": "testero-development"
     },
   "modules":
     [
-      "users", "courses", "app"
+      "users", "courses"
     ],
   "mode": "development"
 }

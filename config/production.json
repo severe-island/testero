@@ -1,11 +1,11 @@
 {
   "db":
     {
-      "name": "production"
+      "name": "testero-production"
     },
   "modules":
     [
-      "users", "courses", "app"
+      "users", "courses"
     ],
   "mode": "production"
 }
