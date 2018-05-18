@@ -20,7 +20,7 @@ describe('Модуль courses::subjects', function () {
     const config = require('config')
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'development'
+    const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
     mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
@@ -30,14 +30,14 @@ describe('Модуль courses::subjects', function () {
 
       const db = client.db(dbName)
 
-      coursesDB = require('../db/courses')
+      coursesDB = require('../../db/courses')
       coursesDB.setup(db)
-      rolesDB = require('../db/roles')
+      rolesDB = require('../../db/roles')
       rolesDB.setup(db)
-      usersDB = require('../../users/db')
+      usersDB = require('../../../users/db')
       usersDB.setup(db)
 
-      app = require('../../../app')(db)
+      app = require('../../../../app')(db)
 
       const supertest = require('supertest')
       agent = supertest.agent(app)

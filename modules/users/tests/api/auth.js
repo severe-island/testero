@@ -14,7 +14,7 @@ describe('Модуль users::auth.', function() {
     const config = require('config')
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'development'
+    const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
     mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
@@ -24,10 +24,10 @@ describe('Модуль users::auth.', function() {
 
       const db = client.db(dbName)
 
-      usersDB = require('../db')
+      usersDB = require('../../db')
       usersDB.setup(db)
 
-      app = require('../../../app')(db)
+      app = require('../../../../app')(db)
 
       const supertest = require('supertest')
       agent = supertest.agent(app)

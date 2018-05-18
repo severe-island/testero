@@ -1,5 +1,8 @@
 "use strict"
 
+const cookieParser = require('cookie-parser')
+const supertest = require('supertest')
+
 var agent
 var app
 var usersDB
@@ -11,7 +14,7 @@ describe('Модуль users', function() {
     const config = require('config')
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'development'
+    const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
     mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
@@ -21,16 +24,13 @@ describe('Модуль users', function() {
 
       const db = client.db(dbName)
 
-      usersDB = require('../db')
+      usersDB = require('../../db')
       usersDB.setup(db)
 
-      app = require('../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
+      app = require('../../../../app')(db)
       app.use(cookieParser())
-
+      agent = supertest.agent(app)
+      
       done()
     })
   })
@@ -97,13 +97,9 @@ describe('Модуль users', function() {
             done();
           });
       });
-    });
+    })
     
-    context('Пользователь существует и не авторизован', function() {
-      
-    });
-    
-    after(function(done) {
+    /* after(function(done) {
       agent
         .delete('/users/users')
         .set('X-Requested-With', 'XMLHttpRequest')
@@ -118,7 +114,7 @@ describe('Модуль users', function() {
 
           done();
         });
-    });
+    }); */
   })
 
   after(function(done) {
