@@ -68,3 +68,5 @@ typings/
 public/lib/bootstrap
 public/lib/jquery
 public/lib/jquery.loadtemplate
+
+.stryker-tmp
