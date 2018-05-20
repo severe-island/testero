@@ -6,9 +6,16 @@ module.exports = function(config) {
     reporter: ["html", "clear-text", "progress"],
     testFramework: "mocha",
     coverageAnalysis: "perTest",
-    mutate: ["modules/**/*.js", "!modules/**/tests/**/*.js"],
+    mutate: [
+      "modules/**/*.js",
+      "!modules/**/tests/api/*.js",
+      "!modules/**/tests/unit/*.js"
+    ],
     mochaOptions: {
-      files: [ 'modules/**/tests/**/*.js' ],
+      files: [
+        'modules/**/tests/unit/*.js',
+        'modules/**/tests/api/*.js'
+      ],
       ui: 'bdd',
       timeout: 3000,
       require: [ "should" ],

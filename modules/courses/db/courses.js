@@ -2,7 +2,9 @@
 
 const mongodb = require('mongodb')
 
-var collection;
+let collection
+
+/** @param {mongodb.Db} db */
 
 module.exports.setup = function(db) {
   collection = db.collection('courses')

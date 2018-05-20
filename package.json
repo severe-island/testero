@@ -23,11 +23,11 @@
     "testero": "./bin/www.js"
   },
   "scripts": {
-    "coverage": "NODE_ENV=testing MODE=testing DEBUG=testero istanbul cover _mocha modules/*/tests/*/*.js -- --require should -R spec --exit",
+    "coverage": "NODE_ENV=testing MODE=testing DEBUG=testero istanbul cover _mocha modules/*/tests/unit/*.js modules/*/tests/api/*.js -- --require should -R spec --exit",
     "mutate": "NODE_ENV=testing MODE=testing DEBUG=testero stryker run",
     "postinstall": "sh postinstall.sh",
     "start": "NODE_ENV=development MODE=development DEBUG=testero node ./bin/www.js",
-    "test": "NODE_ENV=testing MODE=testing DEBUG=testero mocha --require should -R spec --exit --check-leaks modules/*/tests/*/"
+    "test": "NODE_ENV=testing MODE=testing DEBUG=testero mocha --require should -R spec --exit --check-leaks modules/*/tests/unit/ modules/*/tests/api/"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
