@@ -64,6 +64,7 @@ typings/
 .metadata
 /db/*
 .kateproject*
+.vscode
 
 public/lib/bootstrap
 public/lib/jquery
