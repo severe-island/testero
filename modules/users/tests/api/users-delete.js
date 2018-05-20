@@ -1,14 +1,16 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
+const mongodb = require('mongodb')
+const supertest = require('supertest')
+
 var agent
 var app
 var usersDB
 
-describe('Модуль users', function() {
-  before('Connect to database.', function(done) {
-    const mongodb = require('mongodb')
-
-    const config = require('config')
+describe('/users/users', function() {
+  before('Connect to database', function(done) {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
@@ -26,9 +28,7 @@ describe('Модуль users', function() {
 
       app = require('../../../../app')(db)
       
-      const supertest = require('supertest')
       agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
       app.use(cookieParser())
 
       done()

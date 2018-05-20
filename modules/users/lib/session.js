@@ -1,5 +1,6 @@
 "use strict"
 
+const express = require('express')
 const mongodb = require('mongodb')
 
 const db = require('../db')
@@ -12,25 +13,30 @@ module.exports.setup = function(connection) {
 }
 
 
+/**
+ * @param {express.Request} req 
+ */
 module.exports.checkSession = function (req, callback) {
   if (!req.session.login || !req.session.email) {
-    var checkResult = {
+    let checkResult = {
       status: false,
       level: 'info',
-      msg: 'Вы не авторизованы.'
+      msg: 'You are not authorized.'
     };
     callback(checkResult);
     return;
   }
 
   db.findUserByEmail(req.session.email, function(err, data) {
-    var checkResult;
+    let checkResult
     if (err) {
       checkResult = {
         status: false,
         level: "danger",
-        msg: "Ошибка базы данных: " 
-          + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.')
+        msg:
+          process.env.NODE_ENV !== 'production'
+          ? 'Database error: "' + err.message + '".'
+          : 'Internal server error.'
       };
       callback(checkResult);
       return;
@@ -41,8 +47,10 @@ module.exports.checkSession = function (req, callback) {
       checkResult = {
         status: false,
         level: "danger",
-        msg: "Ваша сессия не найдена. Возможно ошибка с сессией или базой данных. \n\
-        Войдите в систему заново."
+        msg:
+          "Your session was not found."
+          + "There may be an error with the session or the database."
+          + " Please log in again."
       };
       callback(checkResult);
       return;
@@ -51,7 +59,7 @@ module.exports.checkSession = function (req, callback) {
     if (data.removed) {
       req.session.login = false;
       checkResult = {
-        msg: "Ваш аккаунт " + data.email + " был удалён. Сессия будет разорвана.",
+        msg: "Your account " + data.email + "was removed. The session will be broken.",
         status: false,
         level: "danger"
       };
@@ -62,7 +70,7 @@ module.exports.checkSession = function (req, callback) {
     checkResult = {
       status: true,
       level: "success",
-      msg: 'Вы авторизованы.',
+      msg: 'The user is authorized.',
       user: data
     };
     callback(checkResult);

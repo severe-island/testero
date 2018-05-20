@@ -2,27 +2,28 @@
 
 const mongodb = require('mongodb')
 
-var collection;
+/** @type {mongodb.Collection<any>} */
+let collection
+
+/** @param {mongodb.Db} db */
 
 module.exports.setup = function(db) {
   collection = db.collection('users')
 }
 
-module.exports.findAllUsersWithoutPassword = function (admin, callback) {
+module.exports.findAllUsersWithoutPassword = function (admin) {
   if (admin) {
-    collection.find({ }, { password: 0 }).toArray(function (err, users) {
-      callback(err, users);
-    })
+    return collection.find({ }, { password: 0 }).toArray()
   }
   else {
-    collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
-    { password: 0, isAdministrator : 0, editor: 0 }).toArray(function (err, users) {
-      for(var i=0; i<users.length; i++) {
-        if(!users[i].showEmail) {
-          delete users[i].email;
+    return collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
+    { password: 0, isAdministrator : 0, editor: 0 }).toArray().then(users => {
+      for (var i = 0; i < users.length; i++) {
+        if (!users[i].showEmail) {
+          delete users[i].email
         }
       }
-      callback(err, users);
+      return users
     })
   }
 }

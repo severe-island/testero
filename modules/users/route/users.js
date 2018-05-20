@@ -124,25 +124,25 @@ module.exports = function(connection) {
   });
 
   function findAllUsers(admin, res) {
-    db.findAllUsersWithoutPassword(admin, function(err, users) {
-      if (err) {
-        var msg = 'Ошибка базы данных' 
-          + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
-        res.json({
-          status: false,
-          level: "danger",
-          msg: msg
-        });
-        return;
-      }
-
+    db.findAllUsersWithoutPassword(admin).then(users => {
       res.json({
         status: true,
         level: "success",
-        msg: "Список всех пользователей получен.",
+        msg: "List of all users received.",
         users: users
-      });
-    });
+      })
+    })
+    .catch(err => {
+      res.status(500)
+      res.json({
+        status: false,
+        level: "danger",
+        msg:
+          process.env.NODE_ENV !== 'production'
+          ? 'Database error: "' + err.message + '".'
+          : 'Internal server error'
+      })
+    })
   }
 
   function findUserByEmail(email, admin, res) {

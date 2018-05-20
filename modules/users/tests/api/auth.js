@@ -1,17 +1,33 @@
 "use strict"
 
-var agent
-var app
-var usersDB
+const config = require('config')
+const cookieParser = require('cookie-parser')
+const express = require('express')
+const mongodb = require('mongodb')
+const supertest = require('supertest')
 
-describe('Модуль users::auth.', function() {
-  var user1 = {email: 'user1@testero', password: 'user1', passwordDuplicate: 'user1'};
-  var id1;
+const usersDB = require('../../db')
+
+/** @type {supertest.SuperTest<supertest.Test>} */
+let agent
+/** @type {express.Express} */
+let app
+
+describe('/users/users/:id/auth', function() {
+  let user1 = {
+    email: 'user1@testero',
+    password: 'user1',
+    passwordDuplicate: 'user1'
+  }
+  let userId1
+  let user2 = {
+    email: 'user2@testero',
+    password: 'user2',
+    passwordDuplicate: 'user2'
+  }
+  let userId2
   
-  before(function(done) {
-    const mongodb = require('mongodb')
-
-    const config = require('config')
+  before('Connect to database', function(done) {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
@@ -24,168 +40,226 @@ describe('Модуль users::auth.', function() {
 
       const db = client.db(dbName)
 
-      usersDB = require('../../db')
-      usersDB.setup(db)
-
       app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      
       app.use(cookieParser())
 
+      agent = supertest.agent(app)
+
+      usersDB.setup(db)
+      usersDB.clearUsers(function() {
+        done()
+      })
+    })
+  })
+  
+  context('There are no registered users', function () {
+    it('Authorization check', function() {
+      return agent
+        .get('/users/users/424242424242424242424242/auth')
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+        })
+    })
+
+    it('Authorization check with incorrect id', function() {
+      return agent
+        .get('/users/users/42/auth')
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(500)
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+        })
+    })
+
+    it('Attempt of authorization', function() {
+      return agent
+        .post('/users/users/424242424242424242424242/auth')
+        .send({password: user1.password})
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+        })
+    })
+
+    it('Attempt of authorization with incorrect id', function() {
+      return agent
+        .post('/users/users/42/auth')
+        .send({password: user1.password})
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(500)
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+        })
+    })
+
+    it('Unauthorize', function() {
+      return agent
+        .delete('/users/users/424242424242424242424242/auth')
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
+
+    it('Unauthorize with incorrect id', function() {
+      return agent
+        .delete('/users/users/42/auth')
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
+  })
+
+  context('There are several users', function() {
+    before(function(done) {
       usersDB.registerUser(user1, function(err, data) {
         if (err) {
           throw err
         }
 
-        id1 = data._id;
-        
-        done();
+        userId1 = data._id
+
+        usersDB.registerUser(user2, function(err, data) {
+          if (err) {
+            throw err
+          }
+  
+          userId2 = data._id
+
+          done()
+        })
       })
     })
-  })
-  
-  context('Проверка авторизованности пользователя.', function() {
-    it('Пользователь не авторизован.', function(done) {
-      agent
-        .get('/users/users/' + id1 + '/auth')
+
+    it('User is not authorized. Authorization check', function() {
+      return agent
+        .get('/users/users/' + userId1 + '/auth')
+        .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
+        .then(res => {
           res.body.status.should.equal(false, res.body.msg);
-          
-          done();
-        });
-    });
+        })
+    })
     
-    it('Попытка авторизации без указания пароля.', function(done) {
-      agent
-        .post('/users/users/' + id1 + '/auth')
+    it('An attempt to authorize without specifying a password', function() {
+      return agent
+        .post('/users/users/' + userId1 + '/auth')
         .send({})
+        .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function(err, res) {
-          if (err) {
-            throw err;
-          }
-
-          res.body.status.should.equal(false, res.body.msg);
-
-          done();
-        });
-    });
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+        })
+    })
     
-    it('Пользователь авторизовался.', function(done) {
-      agent
-        .post('/users/users/' + id1 + '/auth')
+    it('Successful authorization', function() {
+      return agent
+        .post('/users/users/' + userId1 + '/auth')
         .send({password: user1.password})
+        .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function(err, res) {
-          if (err) {
-            throw err;
-          }
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
+    
+    it('User is authorized. Authorization check', function() {
+      return agent
+        .get('/users/users/' + userId1 + '/auth')
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
 
-          res.body.status.should.equal(true, res.body.msg);
+    it('Reauthorization', function() {
+      return agent
+        .post('/users/users/' + userId1 + '/auth')
+        .send({password: user1.password})
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
 
-          done();
-        });
-    });
-    
-    it('Повторная авторизация.', function(done) {
-      agent
-        .post('/users/users/' + id1 + '/auth')
-        .send(user1)
+    it('Authorization under one more user', function() {
+      return agent
+        .post('/users/users/' + userId2 + '/auth')
+        .send({password: user2.password})
+        .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function(err, res) {
-          if (err) {
-            throw err;
-          }
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
+    
+    it('Unauthorize', function() {
+      return agent
+        .delete('/users/users/' + userId1 + '/auth')
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
 
-          res.body.status.should.equal(true, res.body.msg);
-
-          done();
-        });
-    });
-    
-    it('Пользователь авторизован.', function(done) {
-      agent
-        .get('/users/users/' + id1 + '/auth')
+    it('User is not authorized. Authorization check', function() {
+      return agent
+        .get('/users/users/' + userId1 + '/auth')
+        .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(true, res.body.msg);
-          
-          done();
-        });
-    });
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+        })
+    })
     
-    it('Прекращение авторизации.', function(done) {
-      agent
-        .delete('/users/users/' + id1 + '/auth')
+    it('Re-termination of authorization.', function() {
+      return agent
+        .delete('/users/users/' + userId1 + '/auth')
+        .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(true, res.body.msg);
-          
-          done();
-        });
-    });
-    
-    it('Повторное прекращение авторизации.', function(done) {
-      agent
-        .delete('/users/users/' + id1 + '/auth')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(true, res.body.msg);
-          
-          done();
-        });
-    });
-    
-    it('Пользователь не авторизован.', function(done) {
-      agent
-        .get('/users/users/' + id1 + '/auth')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(false, res.body.msg);
-          
-          done();
-        });
-    });
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg)
+        })
+    })
   })
 
   after(function(done) {
