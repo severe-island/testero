@@ -64,13 +64,14 @@ module.exports = function(connection) {
 
   // development error handler
   // will print stacktrace
-  if (app.get('env') === 'development') {
+  if (app.get('env') === 'development' || app.get('env') === 'testing') {
     app.use(function(err, req, res, next) {
       res.status(err.status || 500);
       res.json({
         msg: err.message,
         status: false
       });
+      next(err);
     });
   }
 
@@ -80,9 +81,10 @@ module.exports = function(connection) {
     app.use(function(err, req, res, next) {
       res.status(err.status || 500);
       res.json({
-        msg: err.message,
+        msg: 'Internal server error.',
         status: false
       });
+      next(err);
     });
   }
 
