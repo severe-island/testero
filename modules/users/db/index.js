@@ -30,44 +30,37 @@ module.exports.findAllUsersWithoutPassword = function (admin) {
   }
 }
 
-module.exports.findUserByEmailWithoutPassword = function (userEmail, admin, callback) {
+module.exports.findUserByEmailWithoutPassword = function (userEmail, admin) {
   if (admin) {
-    collection.findOne({ email: userEmail }, 
-    { password: 0 },
-    function (err, findedUser) {
-      callback(err, findedUser);
-    }); 
+    return collection.findOne({ email: userEmail }, { projection: { password: 0 } })
   }
   else {
-    collection.findOne({$and: [ { email: userEmail } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
-                       { password: 0, isAdministrator : 0, editor: 0 }, function (err, user) {
-      if (!!user && !user.showEmail) {
-        delete user.email;
-      }
-      callback(err, user);
-    });
+    return collection.findOne({$and: [ { email: userEmail },
+      { $or: [ { removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
+      { projection: { password: 0, isAdministrator : 0, editor: 0 } })
+      .then(user => {
+        if (!!user && !user.showEmail) {
+          delete user.email;
+        }
+        return user
+      })
   }
 };
 
 
-module.exports.findUserByIdWithoutPassword = function(id, admin, callback) {
+module.exports.findUserByIdWithoutPassword = function(id, admin) {
   if (admin) {
-    collection.findOne(
-      { _id: id },
-      { password: 0 },
-      function(err, foundUser) {
-        callback(err, foundUser);
-      }); 
+    return collection.findOne({ _id: id }, { projection: { password: 0 } })
   }
   else {
-    collection.findOne(
+    return collection.findOne(
       { $and: [ { _id: id } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ] },
-      { password: 0, isAdministrator : 0, editor: 0 },
-      function(err, foundUser) {
-        if(!!foundUser && !foundUser.showEmail) {
+      { projection: { password: 0, isAdministrator : 0, editor: 0 } })
+      .then(foundUser => {
+        if (!!foundUser && !foundUser.showEmail) {
           delete foundUser.email;
         }
-        callback(err, foundUser);
+        return foundUser
       });
   }
 };
@@ -121,22 +114,27 @@ module.exports.registerUser = function(userData) {
     })
 }
 
-module.exports.removeUser = function(email, callback) {
-  var date = new Date();
- collection.update({ email: email }, { $set: {removed: true, updated_at: date} }, { }, callback) 
+module.exports.removeUser = function(email) {
+  let date = new Date()
+
+  return collection.updateOne({ email: email }, { $set: {removed: true, updated_at: date} }) 
 }
 
-module.exports.setAsAdministrator = function(email, callback) {
-  var date = new Date();
-  collection.update({ email: email }, { $set: {isAdministrator: true, updated_at: date} }, { }, callback) 
+module.exports.setAsAdministrator = function(email, editor) {
+  let date = new Date();
+
+  return collection.updateOne(
+    { email: email },
+    { $set: { editor: editor, isAdministrator: true, updated_at: date } }) 
 }
 
-module.exports.updateUser = function(email, updater, editor, callback) {
+module.exports.updateUser = function(email, updater, editor) {
   updater.editor = editor;
   updater.updated_at = new Date();
-  collection.update({ email: email }, { $set: updater }, { }, callback);
+
+  return collection.updateOne({ email: email }, { $set: updater });
 }
 
 module.exports.clearUsers = function() {
-  return collection.deleteMany({ })//, {multi: true}
+  return collection.deleteMany({ })
 }

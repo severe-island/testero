@@ -11,51 +11,43 @@ module.exports = function(connection) {
   lib.setup(connection)
 
   router.get('/users/:id', function(req, res) {
-    if (!req.params.id) {
-      res.json({
-        status: false,
-        level: "danger",
-        msg: "Не задан идентификатор пользователя."
-      });
-      return;
-    }
-
-    lib.checkSession(req, function(checkResult) {
-      if (checkResult.status) {
-        db.findUserById(req.params.id, function(err, data) {
-          if (err) {
-            var msg = 'Ошибка базы данных' 
-              + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
+    return lib.checkSession(req)
+      .then(checkResult => {
+        if (checkResult.status) {
+          db.findUserById(req.params.id, function(err, data) {
+            if (err) {
+              var msg = 'Ошибка базы данных' 
+                + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
+              res.json({
+                status: false,
+                level: "danger",
+                msg: msg
+              });
+              return;
+            }
+            
+            if (!data) {
+              res.json({
+                status: false,
+                level: 'info',
+                msg: 'Пользователь не найден.'
+              });
+              return;
+            }
+            
+            delete data.password;
             res.json({
-              status: false,
-              level: "danger",
-              msg: msg
+              status: true,
+              level: 'success',
+              msg: 'Пользователь найден.',
+              user: data
             });
-            return;
-          }
-          
-          if (!data) {
-            res.json({
-              status: false,
-              level: 'info',
-              msg: 'Пользователь не найден.'
-            });
-            return;
-          }
-          
-          delete data.password;
-          res.json({
-            status: true,
-            level: 'success',
-            msg: 'Пользователь найден.',
-            user: data
           });
-        });
-      }
-      else {
-        findUserById(req.params.id, false, res);
-      }
-    });
+        }
+        else {
+          findUserById(req.params.id, false, res);
+        }
+      });
   });
 
   function findUserById(id, admin, res) {
@@ -148,34 +140,24 @@ module.exports = function(connection) {
   }
 
   function findUserByEmail(email, admin, res) {
-    db.findUserByEmailWithoutPassword(email, admin, function(err, user) {
-      if (err) {
-        var msg = 'Ошибка базы данных' 
-          + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
+    return db.findUserByEmailWithoutPassword(email, admin)
+      .then(user => {
+        if (!user) {
+          res.json({
+            status: false,
+            level: "info",
+            msg: "Пользователь не найден."
+          });
+          return;
+        }
+        
         res.json({
-          status: false,
-          level: "danger",
-          msg: msg
+          status: true,
+          level: "success",
+          msg: "Пользователь найден.",
+          user: user
         });
-        return;
-      }
-      
-      if (!user) {
-        res.json({
-          status: false,
-          level: "info",
-          msg: "Пользователь не найден."
-        });
-        return;
-      }
-      
-      res.json({
-        status: true,
-        level: "success",
-        msg: "Пользователь найден.",
-        user: user
       });
-    });
   }
 
 

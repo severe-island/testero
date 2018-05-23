@@ -15,6 +15,7 @@ describe('users::db', function() {
   let userId1
   let user2 = {
     email: 'user2@testero',
+    showEmail: true,
     password: 'user2',
     passwordDuplicate: 'user2'
   }
@@ -62,9 +63,10 @@ describe('users::db', function() {
     })
 
     it('Getting the list of users. The length of the list is 1', function() {
-      usersDB.findAllUsersWithoutPassword(null)
+      usersDB.findAllUsersWithoutPassword(false)
       .then(users => {
         users.should.be.an.instanceOf(Array).and.have.lengthOf(1)
+        users[0].should.have.not.properties(['password', 'isAdministrator', 'editor'])
       })
     })
 
@@ -82,6 +84,147 @@ describe('users::db', function() {
         user.should.have.property('_id')
         user._id.toString().should.be.equal(userId1.toString())
       })
+    })
+
+    it('Getting the user by id without password', function() {
+      return usersDB.findUserByIdWithoutPassword(userId1, false)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.not.property('editor')
+          user.should.have.not.property('email')
+          user.should.have.not.property('isAdministrator')
+          user.should.have.not.property('password')
+          user.should.have.not.property('removed')
+        })
+    })
+
+    it('Getting the user by email without password', function() {
+      return usersDB.findUserByEmailWithoutPassword(user1.email, false)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.not.property('editor')
+          user.should.have.not.property('email')
+          user.should.have.not.property('isAdministrator')
+          user.should.have.not.property('password')
+          user.should.have.not.property('removed')
+        })
+    })
+
+    it('Getting the user by id without password by administrator', function() {
+      return usersDB.findUserByIdWithoutPassword(userId1, true)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.property('isAdministrator')
+          user.should.have.not.property('password')
+        })
+    })
+
+    it('Adding the second user', function() {
+      return usersDB.registerUser(user2)
+        .then((user) => {
+          should(user).not.be.null()
+          userId2 = user._id
+        })
+    })
+
+    it('Getting the list of users. The length of the list is 1', function() {
+      usersDB.findAllUsersWithoutPassword(true)
+      .then(users => {
+        users.should.be.an.instanceOf(Array).and.have.lengthOf(2)
+        users.forEach(user => {
+          user.should.have.properties(['password', 'isAdministrator', 'editor'])
+        });
+      })
+    })
+
+    it('Getting the user by id without password with email', function() {
+      return usersDB.findUserByIdWithoutPassword(userId2, false)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.property('email')
+        })
+    })
+
+    it('Secondary adding the second user', function() {
+      return usersDB.registerUser(user2)
+        .then((user) => {
+          should(user).not.be.null()
+        })
+        .catch(err => {
+          err.should.have.property('message')
+        })
+    })
+  })
+
+  context('Editing user', function() {
+    it('Set user as administrator', function() {
+      return usersDB.setAsAdministrator(user2.email, user1.email)
+        .then((result) => {
+          should(result).not.be.null()
+          result.should.have.value('matchedCount', 1)
+          result.should.have.value('modifiedCount', 1)
+
+          return usersDB.findUserByEmail(user2.email)
+        })
+        .then((user) => {
+          user.should.have.value('isAdministrator', true)
+          user.should.have.properties(['editor', 'updated_at'])
+        })
+    })
+
+    it('Update field "isAdminstrator"', function() {
+      return usersDB.updateUser(user2.email, { isAdministrator: false }, user1.email)
+        .then(result => {
+          should(result).not.be.null()
+          result.should.have.value('matchedCount', 1)
+          result.should.have.value('modifiedCount', 1)
+
+          return usersDB.findUserByEmail(user2.email)
+        })
+        .then((user) => {
+          user.should.have.value('isAdministrator', false)
+          user.should.have.properties(['editor', 'updated_at'])
+        })
+    })
+  })
+
+  context('Deleting users', function() {
+    it('Delete the second user', function() {
+      return usersDB.removeUser(user2.email)
+        .then((result) => {
+          should(result).not.be.null()
+          result.should.have.value('matchedCount', 1)
+          result.should.have.value('modifiedCount', 1)
+          
+          return usersDB.findUserByEmail(user2.email)
+        })
+        .then((user) => {
+          user.should.have.property('removed')
+        })
+    })
+
+    it('Getting the second user by id without password by administrator', function() {
+      return usersDB.findUserByIdWithoutPassword(userId2, true)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.not.property('password')
+          user.should.have.property('removed')
+        })
+    })
+
+    it('Getting the second user by email without password', function() {
+      return usersDB.findUserByEmailWithoutPassword(user2.email, false)
+        .then(user => {
+          should(user).be.null()
+        })
+    })
+
+    it('Getting the second user by email without password by administrator', function() {
+      return usersDB.findUserByEmailWithoutPassword(user2.email, true)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.value('removed', true)
+        })
     })
   })
   
