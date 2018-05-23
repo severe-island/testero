@@ -1,14 +1,16 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
+const mongodb = require('mongodb')
+const supertest = require('supertest')
+
 var agent
 var app
 var usersDB
 
-describe('Модуль users', function () {
+describe('GET /users/users', function () {
   before('Connect to database.', function(done) {
-    const mongodb = require('mongodb')
-
-    const config = require('config')
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
@@ -25,59 +27,38 @@ describe('Модуль users', function () {
       usersDB.setup(db)
 
       app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
       app.use(cookieParser())
+
+      agent = supertest.agent(app)
 
       done()
     })
   })
 
-  describe('Список всех пользователей (GET /users/users/)', function() {
-    context('Список пуст', function() {
-      it('Возвращается массив длины нуль', function(done) {
-      agent
+  describe('The list of all users', function() {
+    context('The list is empty', function() {
+      it('Возвращается массив длины нуль', function() {
+      return agent
         .get('/users/users/')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
+        .then(res => {
           res.body.status.should.equal(true);
           res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
-          
-          done();
         });
       });
     });
 
-    context('Один пользователь', function() {
-      before(function(done) {
-        var admin1 = {
+    context('One user', function() {
+      before(function() {
+        let admin1 = {
           email: "admin1@testero",
           password: "admin1",
           passwordDuplicate: "admin1"
-        };
-        agent
-          .post('/users/users')
-          .send(admin1)
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
-            
-            res.body.status.should.equal(true, res.body.msg);
-            
-            done();
-          });
+        }
+
+        return usersDB.registerUser(admin1)
       });
     
       it('Возвращается массив длиной единица', function(done) {
@@ -142,44 +123,34 @@ describe('Модуль users', function () {
       });
     });
     
-    after(function(done) {
-      usersDB.clearUsers(function() {
-        done();
-      });
-    });
+    after(function() {
+      return usersDB.clearUsers()
+    })
   });
   
   describe('Поиск пользователя по email (GET /users/users/?email=email)', function() {
-    var user = {
+    let user = {
       email: "user1@testero",
       password: "user1",
       passwordDuplicate: "user1",
       showEmail: true
-    };
+    }
     
-    before(function(done) {
-      usersDB.registerUser(user, function(err, newUser) {
-        done();
-      });
-    });
+    before(function() {
+      return usersDB.registerUser(user)
+    })
     
     context('Пользователь существует', function() {
-      it('Возвращается объект пользователя', function(done) {
-        agent
+      it('Возвращается объект пользователя', function() {
+        return agent
           .get('/users/users/?email=' + user.email)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
-            
+          .then(res => {
             res.body.status.should.equal(true, res.body.msg);
             res.body.user.should.have.property('email');
             res.body.user.email.should.equal(user.email);
-            
-            done();
           });
       });
     });
@@ -205,9 +176,7 @@ describe('Модуль users', function () {
     });
   });
   
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done();
-    });
+  after(function() {
+    return usersDB.clearUsers()
   });
 })

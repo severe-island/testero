@@ -99,8 +99,9 @@ module.exports = function(connection) {
         return;
       }
       
-      db.findUserByEmail(req.session.email, function(err, user) {
-        if (err || !user || !user.isAdministrator) {
+      return db.findUserByEmail(req.session.email)
+        .then(user => {
+        if (!user || !user.isAdministrator) {
           findUserByEmail(req.query['email'], false, res);
         } else {
           findUserByEmail(req.query['email'], true, res);
@@ -113,8 +114,9 @@ module.exports = function(connection) {
         return;
       }
 
-      db.findUserByEmail(req.session.email, function(err, user) {
-        if (err || !user || !user.isAdministrator) {
+      return db.findUserByEmail(req.session.email)
+        .then(user => {
+        if (!user || !user.isAdministrator) {
           findAllUsers(false, res);
         } else {
           findAllUsers(true, res);
@@ -227,109 +229,89 @@ module.exports = function(connection) {
       return;
     }
 
-    lib.checkSession(req, function(checkResult) {
-      var initiator = checkResult.status ? checkResult.user : undefined;
-      var registeredBy = initiator ? initiator.email : undefined;
-
-      db.findUserByEmail(email, function(err, user) {
-        if (err) {
-          var msg = 'Ошибка базы данных' 
-            + (process.env.NODE_ENV !== 'production' || initiator.isAdministrator ? ': ' + err.message : '.');
-          res.json({
-            status: false,
-            level: "danger",
-            msg: msg
-          });
-          return;
+    return lib.checkSession(req)
+      .then(checkResult => {
+        let initiator = checkResult.status ? checkResult.user : undefined
+        return {
+          initiator: initiator,
+          registeredBy: initiator ? initiator.email : undefined
         }
-
-        if (user) {
-          res.json({
-            status: false,
-            level: "danger",
-            msg: "Пользователь " + email + " уже существует."
-          });
-          return;
-        }
-
-        db.isAdminExists(function(adminExists) {
-          var user = {
-            email: email,
-            password: password,
-            isAdministrator: !adminExists,
-            registeredBy: registeredBy
-          };
-          db.registerUser(user, function(err, newUser) {
-            if (err) {
-              var msg = 'Ошибка базы данных' 
-                + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
+      })
+      .then(data => {
+        return db.findUserByEmail(email)
+          .then(user => {
+            if (user) {
               res.json({
                 status: false,
                 level: "danger",
-                msg: msg
+                msg: "Пользователь " + email + " уже существует."
               });
               return;
             }
 
-            delete newUser.password;
+            db.isAdminExists(function(adminExists) {
+              let user = {
+                email: email,
+                password: password,
+                isAdministrator: !adminExists,
+                registeredBy: data.registeredBy
+              }
 
-            var msg = adminExists 
-              ? "Пользователь (" + email + ") успешно зарегистрирован."
-              : "Первый пользователь (" + email + ") успешно зарегистрирован и назначен администратором.";
-            res.json({
-              status: true,
-              level: "success",
-              msg: msg,
-              user: newUser
+              return db.registerUser(user)
+                .then(newUser => {
+                  delete newUser.password;
+
+                  let msg = adminExists 
+                    ? "Пользователь (" + email + ") успешно зарегистрирован."
+                    : "Первый пользователь (" + email + ") успешно зарегистрирован и назначен администратором."
+
+                  res.json({
+                    status: true,
+                    level: "success",
+                    msg: msg,
+                    user: newUser
+                  });
+                });
             });
-          });
         });
-      });
     });
   });
 
 
   router.delete('/users', function(req, res, next) {
-    lib.checkSession(req, function(checkResult) {
-      if (!checkResult.status) {
-        res.json(checkResult);
-        return;
-      }
-      
-      if (!checkResult.user) {
-        res.json({
-          status: false,
-          level: "danger",
-          msg: "Сначала войдите в систему."
-        });
-        return;
-      }
-      
-      if (!checkResult.user.isAdministrator) {
-        res.json({
-          msg: "Очистить базу пользователей может только администратор.",
-          status: false,
-          level: "danger"
-        });
-        return;
-      }
-      
-      db.clearUsers(function(err) {
-        if (err) {
+    return lib.checkSession(req)
+      .then(checkResult => {
+        if (!checkResult.status) {
+          res.json(checkResult);
+          return;
+        }
+        
+        if (!checkResult.user) {
           res.json({
-            msg: "Ошибка БД: " + err.message,
+            status: false,
+            level: "danger",
+            msg: "Сначала войдите в систему."
+          });
+          return;
+        }
+        
+        if (!checkResult.user.isAdministrator) {
+          res.json({
+            msg: "Очистить базу пользователей может только администратор.",
             status: false,
             level: "danger"
           });
           return;
         }
         
-        res.json({
-          msg: "Все пользователи были удалены!",
-          status: true,
-          level: "success"
-        });
-      });
+        return db.clearUsers()
+          .then(() => {
+            res.json({
+              msg: "Все пользователи были удалены!",
+              status: true,
+              level: "success"
+            });
+          })
     });
   });
 

@@ -25,11 +25,12 @@ module.exports = function(connection) {
     }
     var email = req.body.email;
     var role = req.body.role;
-    usersDB.findUserByEmail(email, function(err, user){
-      if(err || !user) {
+    return usersDB.findUserByEmail(email)
+    .then(user => {
+      if(!user) {
         res.json({
           status: false,
-          msg: "Пользователь "+email+" не найден!",
+          msg: "The users " + email + " is not found",
           level: "danger"
         })
         return;
@@ -64,33 +65,34 @@ module.exports = function(connection) {
   });
 
   function checkRoles(userEmail, targetEmail, targetRole, callback) {
-    usersDB.findUserByEmail(userEmail, function(err, user) {
-      if(err || !user) {
-        callback(false);
-        return;
-      }
-      if(user.isAdministrator) {
-        callback(true);
-        return;
-      }
-      rolesDB.getRolesByEmail(userEmail, function(err, userRoles) {
-        if(err) {
+    return usersDB.findUserByEmail(userEmail)
+      .then(user => {
+        if(!user) {
           callback(false);
           return;
         }
-        if(!userRoles) {
-          callback(targetRole=="student" && userEmail == targetEmail); 
+        if(user.isAdministrator) {
+          callback(true);
           return;
         }
-        if(userRoles.indexOf("teacher")>-1) {
-          callback(targetRole=="teacher");
-          return;
-        }
-        if(userRoles.indexOf("student")>-1) {
-          callback(targetRole=="student" && userEmail == targetEmail); 
-          return;
-        }
-      })
+        rolesDB.getRolesByEmail(userEmail, function(err, userRoles) {
+          if(err) {
+            callback(false);
+            return;
+          }
+          if(!userRoles) {
+            callback(targetRole=="student" && userEmail == targetEmail); 
+            return;
+          }
+          if(userRoles.indexOf("teacher")>-1) {
+            callback(targetRole=="teacher");
+            return;
+          }
+          if(userRoles.indexOf("student")>-1) {
+            callback(targetRole=="student" && userEmail == targetEmail); 
+            return;
+          }
+        })
     });
   }
 

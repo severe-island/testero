@@ -1,41 +1,36 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
+const mongodb = require('mongodb')
+const supertest = require('supertest')
+
 var agent
 var app
 var usersDB
 
-describe('Модуль users', function () {
-  before('Connect to database', function(done) {
-    const mongodb = require('mongodb')
-
-    const config = require('config')
+describe('POST /users/users', function () {
+  before('Connect to database', function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
 
-      const db = client.db(dbName)
+        usersDB = require('../../db')
+        usersDB.setup(db)
 
-      usersDB = require('../../db')
-      usersDB.setup(db)
-
-      app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      app.use(cookieParser())
-
-      done()
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
+        
+        agent = supertest.agent(app)
     })
   })
 
-  describe('Регистрация нового пользователя (POST /users/users)', function() {
+  describe('Регистрация нового пользователя', function() {
     context('Пользователей ещё нет', function() {
       it('Возвращается успех, пользователь зарегистрирован администратором', function (done) {
         var data = {
@@ -90,25 +85,22 @@ describe('Модуль users', function () {
     });
 
     context('Регистрация ещё одного пользователя', function() {
-      it('Возвращается успех и объект простого пользователя', function (done) {
-        var data = {
+      it('Возвращается успех и объект простого пользователя', function () {
+        let data = {
           email: "user1@testero",
           password: "user1",
           passwordDuplicate: "user1",
           isAdministrator: false,
           agreementAccepted: true
-        };
-        agent
+        }
+
+        return agent
           .post('/users/users')
           .send(data)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-            
+          .then(res => {
             res.body.should.have.property('status');
             res.body.status.should.equal(true, res.body.msg);
             res.body.should.have.property('level');
@@ -119,8 +111,6 @@ describe('Модуль users', function () {
             res.body.user.should.have.property('showEmail');
             res.body.user.should.have.property('created_at');
             res.body.user.should.have.property('updated_at');
-            
-            done();
           });
       });
     });
@@ -152,9 +142,7 @@ describe('Модуль users', function () {
     })
   })
 
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done();
-    });
+  after(function() {
+    return usersDB.clearUsers()
   })
 })

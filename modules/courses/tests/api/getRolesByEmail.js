@@ -1,57 +1,55 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
 const should = require('should')
+const supertest = require('supertest')
 
-var agent
-var app
-var coursesDB
-var rolesDB
-var usersDB
+const coursesDB = require('../../db/courses')
+const rolesDB = require('../../db/roles')
+const usersDB = require('../../../users/db')
 
-describe('Модуль courses.', function() {
-  before(function(done) {
-    const config = require('config')
+describe('/courses/getRolesByEmail', function() {
+  let agent
+  let app
+
+  before(function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
+    
+        coursesDB.setup(db)
+        rolesDB.setup(db)
+        usersDB.setup(db)
 
-      const db = client.db(dbName)
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
 
-      coursesDB = require('../../db/courses')
-      coursesDB.setup(db)
-      rolesDB = require('../../db/roles')
-      rolesDB.setup(db)
-      usersDB = require('../../../users/db')
-      usersDB.setup(db)
+        agent = supertest.agent(app)
 
-      app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      app.use(cookieParser())
-
-      done()
-    })
+        return coursesDB.clearCourses()
+          .then(() => {
+            rolesDB.clearRoles()
+          })
+          .then(() => {
+            usersDB.clearUsers()
+          })
+      })
   })
 
   describe('Получение списка ролей по email (getRolesByEmail).', function() {
-    before('Добавление тестового пользователя в БД.', function(done) {
-      usersDB.registerUser({
+    before('Добавление тестового пользователя в БД.', function() {
+      return usersDB.registerUser({
         email: "admin@admin",
         password: "1234",
         isAdministrator: true,
         registeredBy: "admin@admin"
-      }, function(err, newUser) {
-        should.not.exist(err)
-        done()
       });
     });       
     
@@ -99,18 +97,13 @@ describe('Модуль courses.', function() {
         });
       });
       
-      after('Очистка ролей после теста', function(done) {
-        rolesDB.clearRoles(function(err) {
-          should.not.exist(err);
-          done();
-        }); 
+      after('Очистка ролей после теста', function() {
+        return rolesDB.clearRoles()
       });
     });
   })
 
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done()
-    })
+  after(function() {
+    return usersDB.clearUsers()
   })
 })

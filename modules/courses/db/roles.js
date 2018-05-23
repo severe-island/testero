@@ -2,8 +2,10 @@
 
 const mongodb = require('mongodb')
 
-var collection;
+/** @type {mongodb.Collection<any>} */
+let collection
 
+/** @param {mongodb.Db} db */
 module.exports.setup = function(db) {
   collection = db.collection('roles')
 }
@@ -42,6 +44,6 @@ exports.getRolesByEmail = function(email, callback) {
   })
 }
 
-exports.clearRoles = function(callback) {
-  collection.remove({ }, { multi: true }, callback);
+exports.clearRoles = function() {
+  return collection.deleteMany({ })
 }

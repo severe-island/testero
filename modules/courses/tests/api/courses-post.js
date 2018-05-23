@@ -1,43 +1,36 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
+const supertest = require('supertest')
 
-var agent
-var app
-var coursesDB
-var rolesDB
-var usersDB
+const coursesDB = require('../../db/courses')
+const rolesDB = require('../../db/roles')
+const usersDB = require('../../../users/db')
 
-describe('Модуль courses.', function () {
-  before(function(done) {
-    const config = require('config')
+describe('POST /courses/courses', function () {
+  let agent
+  let app
+
+  before(function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'tester-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
 
-      const db = client.db(dbName)
+        coursesDB.setup(db)
+        rolesDB.setup(db)
+        usersDB.setup(db)
 
-      coursesDB = require('../../db/courses')
-      coursesDB.setup(db)
-      rolesDB = require('../../db/roles')
-      rolesDB.setup(db)
-      usersDB = require('../../../users/db')
-      usersDB.setup(db)
-
-      app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      app.use(cookieParser())
-
-      done()
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
+        
+        agent = supertest.agent(app)
     })
   })
 
@@ -48,13 +41,14 @@ describe('Модуль courses.', function () {
       passwordDuplicate: 'user1'
     };
 
-    before(function(done) {
-      coursesDB.clearCourses(function() {
-        usersDB.registerUser(user1, function(err, data) {
+    before(function() {
+      return coursesDB.clearCourses()
+        .then(() => {
+          return usersDB.registerUser(user1)
+        })
+        .then(data => {
           user1._id = data._id;
-          done();
-        });
-      });
+        })
     });
 
     var course1 = {title: 'Course1', 'i-am-author': true};
@@ -179,11 +173,10 @@ describe('Модуль courses.', function () {
     });
   })
 
-  after(function(done) {
-    coursesDB.clearCourses(function() {
-      usersDB.clearUsers(function() {
-        done()
+  after(function() {
+    return coursesDB.clearCourses()
+      .then(() => {
+        return usersDB.clearUsers()
       })
     })
-  })
 })

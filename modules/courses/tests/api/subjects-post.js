@@ -1,55 +1,48 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
 const should = require('should')
+const supertest = require('supertest')
 
-var app
-var agent
-var coursesDB
-var rolesDB
-var usersDB
+const coursesDB = require('../../db/courses')
+const rolesDB = require('../../db/roles')
+const usersDB = require('../../../users/db')
 
-describe('Модуль courses::subjects', function () {
-  var user1 = {
+describe('/courses/courses/:id/subjects', function () {
+  let app
+  let agent
+  let user1 = {
     email: 'user1@user1',
     password: 'user1',
     passwordDuplicate: 'user1'
   }
 
-  before(function(done) {
-    const config = require('config')
+  before(function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
+        
+        coursesDB.setup(db)
+        rolesDB.setup(db)
+        usersDB.setup(db)
 
-      const db = client.db(dbName)
-
-      coursesDB = require('../../db/courses')
-      coursesDB.setup(db)
-      rolesDB = require('../../db/roles')
-      rolesDB.setup(db)
-      usersDB = require('../../../users/db')
-      usersDB.setup(db)
-
-      app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      app.use(cookieParser())
-
-      coursesDB.clearCourses(function() {
-        usersDB.registerUser(user1, function() {
-          done();
-        });
-      });
-    })
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
+        
+        agent = supertest.agent(app)
+      
+        return coursesDB.clearCourses()
+          .then(() => {
+            usersDB.registerUser(user1)
+          })
+      })
   })
   
   var course1;
@@ -159,11 +152,9 @@ describe('Модуль courses::subjects', function () {
   });
   
   context('Нет ни одного курса', function() {
-    before(function(done) {
-      coursesDB.clearCourses(function() {
-        done();
-      });
-    });
+    before(function() {
+      return coursesDB.clearCourses()
+    })
     
     it('Попытка добавить к несуществующему курсу тему', function(done) {
       agent
@@ -185,9 +176,7 @@ describe('Модуль courses::subjects', function () {
     });
   })
 
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done()
-    })
+  after(function() {
+    return usersDB.clearUsers()
   })
 })

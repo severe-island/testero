@@ -27,29 +27,24 @@ describe('/users/users/:id/auth', function() {
   }
   let userId2
   
-  before('Connect to database', function(done) {
+  before('Connect to database', function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
 
-      const db = client.db(dbName)
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
 
-      app = require('../../../../app')(db)
-      app.use(cookieParser())
+        agent = supertest.agent(app)
 
-      agent = supertest.agent(app)
-
-      usersDB.setup(db)
-      usersDB.clearUsers(function() {
-        done()
+        usersDB.setup(db)
+        return usersDB.clearUsers()
       })
-    })
   })
   
   context('There are no registered users', function () {
@@ -129,24 +124,17 @@ describe('/users/users/:id/auth', function() {
   })
 
   context('There are several users', function() {
-    before(function(done) {
-      usersDB.registerUser(user1, function(err, data) {
-        if (err) {
-          throw err
-        }
-
-        userId1 = data._id
-
-        usersDB.registerUser(user2, function(err, data) {
-          if (err) {
-            throw err
-          }
-  
+    before(function() {
+      return Promise.all([
+        usersDB.registerUser(user1)
+        .then(data => {
+          userId1 = data._id
+        }),
+        usersDB.registerUser(user2)
+        .then(data => {
           userId2 = data._id
-
-          done()
         })
-      })
+      ])
     })
 
     it('User is not authorized. Authorization check', function() {
@@ -262,9 +250,7 @@ describe('/users/users/:id/auth', function() {
     })
   })
 
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done()
-    })
+  after(function() {
+    return usersDB.clearUsers()
   })
 })

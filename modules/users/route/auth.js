@@ -11,43 +11,31 @@ module.exports = function(connection) {
   lib.setup(connection)
 
   router.get('/users/:id/auth', function(req, res) {
-    try {
-      db.findUserById(req.params.id, function(err, data) {
-        if (err) {
-          res.status(500)
-          res.json({
-            status: false,
-            level: 'danger',
-            msg:
-              process.env.NODE_ENV !== 'production'
-              ? 'Database error: "' + err.message + '".'
-              : 'Internal server error.'
-          })
-          return
-        }
-        
+    return db.findUserById(req.params.id)
+      .then(data => {
         if (!!data) {
-          lib.checkSession(req, function(checkResult) {
-            if (checkResult.status) {
-              if (data.email === checkResult.user.email) {
-                res.json({
-                  status: true,
-                  level: 'success',
-                  msg: 'The user is authorized.'
-                })
+          return lib.checkSession(req)
+            .then(checkResult => {
+              if (checkResult.status) {
+                if (data.email === checkResult.user.email) {
+                  res.json({
+                    status: true,
+                    level: 'success',
+                    msg: 'The user is authorized.'
+                  })
+                }
+                else {
+                  res.json({
+                    status: false,
+                    level: 'warning',
+                    msg: 'Authorization request is allowed only by the user.'
+                  })
+                }
               }
               else {
-                res.json({
-                  status: false,
-                  level: 'warning',
-                  msg: 'Authorization request is allowed only by the user.'
-                })
+                res.json(checkResult);
               }
-            }
-            else {
-              res.json(checkResult);
-            }
-          })
+            })
         }
         else {
           res.json({
@@ -57,18 +45,17 @@ module.exports = function(connection) {
           })
         }
       })
-    }
-    catch(err) {
-      res.status(500)
-      res.json({
-        status: false,
-        level: 'danger',
-        msg:
-          process.env.NODE_ENV !== 'production'
-          ? 'Database error: "' + err.message + '".'
-          : 'Internal server error.'
+      .catch(err => {
+        res.status(500)
+        res.json({
+          status: false,
+          level: 'danger',
+          msg:
+            process.env.NODE_ENV !== 'production'
+            ? 'Database error: "' + err.message + '".'
+            : 'Internal server error.'
+        })
       })
-    }
   })
 
 
@@ -94,34 +81,11 @@ module.exports = function(connection) {
     let password = req.body.password
     let remember = !!req.body.remember
 
-    try {
-      db.findUserById(req.params.id, function(err, data) {
-        if (err) {
-          res.json({
-            status: false,
-            level: 'danger',
-            msg:
-              process.env.NODE_ENV !== 'production'
-              ? 'Database error: "' + err.message + '".'
-              : 'Internal server error.'
-          })
-          return
-        }
-
+    return db.findUserById(req.params.id)
+      .then(data => {
         if (!!data) {
-          db.findUserByEmail(data.email, function(err, data){
-            if (err) {
-              res.json({
-                status: false,
-                level: 'danger',
-                msg:
-                  process.env.NODE_ENV !== 'production'
-                  ? 'Database error: "' + err.message + '".'
-                  : 'Internal server error.'
-              })
-              return
-            }
-            
+          return db.findUserByEmail(data.email)
+          .then(data => {
             if (!data) {
               res.json({
                 msg: "User is not found.",
@@ -130,7 +94,7 @@ module.exports = function(connection) {
               })
               return
             }
-
+    
             if (data.removed) {
               res.json({
                 status: false,
@@ -139,7 +103,7 @@ module.exports = function(connection) {
               })
               return
             }
-
+    
             if (data.password !== password) {
               res.json({
                 msg: "Incorrect password.",
@@ -148,7 +112,7 @@ module.exports = function(connection) {
               })
               return
             }
-
+    
             let msg = "You are authorized."
             if (!!remember) {
               msg += " I will try to remember you."
@@ -176,24 +140,23 @@ module.exports = function(connection) {
           });
         }
       })
-    }
-    catch (err) {
-      res.status(500)
-      res.json({
-        status: false,
-        level: 'danger',
-        msg:
-          process.env.NODE_ENV !== 'production'
-          ? 'Database error: "' + err.message + '".'
-          : 'Internal server error.'
+      .catch(err => {
+        res.status(500)
+        res.json({
+          status: false,
+          level: 'danger',
+          msg:
+            process.env.NODE_ENV !== 'production'
+            ? 'Database error: "' + err.message + '".'
+            : 'Internal server error.'
+        })
       })
-    }
   })
 
 
   router.delete('/users/:id/auth', function(req, res, next) {
-    try {
-      lib.checkSession(req, function(checkResult) {
+    return lib.checkSession(req)
+      .then(checkResult => {
         if (checkResult.status) {
           req.session.login = false;
           let email = req.session.email;
@@ -208,18 +171,17 @@ module.exports = function(connection) {
           res.json(checkResult);
         }
       })
-    }
-    catch (err) {
-      res.status(500)
-      res.json({
-        status: false,
-        level: 'danger',
-        msg:
-          process.env.NODE_ENV !== 'production'
-          ? 'Database error: "' + err.message + '".'
-          : 'Internal server error.'
+      .catch(err => {
+        res.status(500)
+        res.json({
+          status: false,
+          level: 'danger',
+          msg:
+            process.env.NODE_ENV !== 'production'
+            ? 'Database error: "' + err.message + '".'
+            : 'Internal server error.'
+        })
       })
-    }
   })
 
   return router

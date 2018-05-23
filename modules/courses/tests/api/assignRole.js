@@ -1,79 +1,87 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
 const should = require('should')
+const supertest = require('supertest')
 
-var agent
-var app
-var coursesDB
-var rolesDB
-var usersDB
+const coursesDB = require('../../db/courses')
+const rolesDB = require('../../db/roles')
+const usersDB = require('../../../users/db')
 
-describe('Модуль courses.', function() {
-  before(function(done) {
-    const config = require('config')
+describe('/courses/assignRole', function() {
+  /** @type {supertest.SuperTest<supertest.Test>} */
+  let agent
+  /** @type {express.Express} */
+  let app
+
+  before(function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        return client.db(dbName)
+      })
+      .then(db => {
+        coursesDB.setup(db)
+        rolesDB.setup(db)
+        usersDB.setup(db)
+  
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
+        
+        agent = supertest.agent(app)
 
-      const db = client.db(dbName)
-
-      coursesDB = require('../../db/courses')
-      coursesDB.setup(db)
-      rolesDB = require('../../db/roles')
-      rolesDB.setup(db)
-      usersDB = require('../../../users/db')
-      usersDB.setup(db)
-
-      app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      app.use(cookieParser())
-
-      done()
-    })
+        return coursesDB.clearCourses()
+          .then(() => {
+            rolesDB.clearRoles()
+          })
+          .then(() => {
+            usersDB.clearUsers()
+          })
+      })
   })
 
   describe('Назначение роли (assignRole).', function() {
-    let adminId;
-    let user1Id;
-    before('Добавление необходимых пользователей в БД.', function(done) {
-      usersDB.registerUser({
+    let adminId
+    let userId1
+    let userId2
+
+    before('Добавление необходимых пользователей в БД.', function() {
+      return usersDB.registerUser({
         email: "admin@admin",
         password: "admin",
         isAdministrator: true,
         registeredBy: "admin@admin"
-      }, function(err, admin) {
+      })
+      .then(admin => {
         adminId = admin._id
-        should.not.exist(err);
-        usersDB.registerUser({
+
+        return usersDB.registerUser({
           email: "user1@user1",
           password: "user1",
           isAdministrator: false,
           registeredBy: "admin@admin"
-        }, function(err, user1) {
-          user1Id = user1._id
-          should.not.exist(err);
-          usersDB.registerUser({
-            email: "user2@user2",
-            password: "user2",
-            isAdministrator: false,
-            registeredBy: "admin@admin"
-          }, function(err, newUser) { 
-            should.not.exist(err);
-            done()
-          });
-        });
-      });
-    });       
+        })
+      })
+      .then(user1 => {
+        userId1 = user1._id
+
+        return usersDB.registerUser({
+          email: "user2@user2",
+          password: "user2",
+          isAdministrator: false,
+          registeredBy: "admin@admin"
+        })
+      })
+      .then(user2 => {
+        userId2 = user2._id
+      })
+    })      
     
     context('Назначение роли teacher администратором.', function() {
       before('Заход под именем администратора.', function(done) {
@@ -361,6 +369,18 @@ describe('Модуль courses.', function() {
           }); 
         });
       });
+
+      after(function() {
+        return agent
+          .delete('/users/users/' + userId1 + '/auth')
+          .set('Accept', 'application/json')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(true, res.body.msg)
+          })
+      })
     });
     
     context('Назначение роли без входа в систему.', function() {
@@ -368,33 +388,33 @@ describe('Модуль courses.', function() {
         agent
           .post('/courses/assignRole')
           .send({email: "user1@user1", role: 'student'})
+          .set('Accept', 'application/json')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
           .end(function (err, res) {
             should.not.exist(err);
-            res.body.status.should.equal(true, res.body.msg);
+
+            res.body.status.should.equal(false, res.body.msg);
+            
             rolesDB.getRolesByEmail("user1@user1", function(err, roles) {
-              should.not.exist(err);
-              roles.should.containEql("student");
+              should.not.exist(err)
+              if (!!roles) {
+                roles.should.not.containEql("student");
+              }
+              
               done();
-            }); 
+            });
           });
       });
     });
     
-    afterEach('Очистка всех ролей после теста.', function(done) {
-      rolesDB.clearRoles(function(err) {
-        should.not.exist(err);
-        done();
-      });      
+    afterEach('Очистка всех ролей после теста.', function() {
+      return rolesDB.clearRoles()
     })
   })
 
-  after('Очистка пользователей', function(done) {
-    usersDB.clearUsers(function(err) {
-      should.not.exist(err);
-      done();
-    })
+  after('Очистка пользователей', function() {
+    return usersDB.clearUsers()
   })
 })

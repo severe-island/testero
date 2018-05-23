@@ -1,41 +1,36 @@
 "use strict"
 
+const config = require('config')
+const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
+const supertest = require('supertest')
 
-var agent
-var app
-var coursesDB
+const coursesDB = require('../../db/courses')
 
-describe('Модуль courses', function () {
-  before(function(done) {
-    const config = require('config')
+describe('GET /courses/courses', function () {
+  let agent
+  let app
+
+  before(function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
 
-      const db = client.db(dbName)
+        coursesDB.setup(db)
 
-      coursesDB = require('../../db/courses')
-      coursesDB.setup(db)
-
-      app = require('../../../../app')(db)
-
-      const supertest = require('supertest')
-      agent = supertest.agent(app)
-      const cookieParser = require('cookie-parser')
-      
-      app.use(cookieParser())
-
-      coursesDB.clearCourses(function() {
-        done();
-      });
-    })
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
+        
+        agent = supertest.agent(app)
+      })
+      .then(() => {
+        return coursesDB.clearCourses()
+      })
   })
   
   describe('Список всех курсов (GET /courses/courses)', function() {
@@ -111,13 +106,11 @@ describe('Модуль courses', function () {
         });
       });
       
-      after(function(done) {
-        coursesDB.clearCourses(function() {
-          done();
-        });
-      });
-    });
-  });
+      after(function() {
+        return coursesDB.clearCourses()
+      })
+    })
+  })
   
   describe('Получение курса по ID', function() {
     context('Список курсов пуст', function() {
@@ -212,10 +205,8 @@ describe('Модуль courses', function () {
   
   describe('Поиск курсов по названию (GET /courses/courses/?title=title', function() {
     context('Нет ни одного курса', function() {
-      before(function(done) {
-        coursesDB.clearCourses(function() {
-          done();
-        });
+      before(function() {
+        return coursesDB.clearCourses();
       });
       
       it('Курс не найден', function(done) {
@@ -339,9 +330,7 @@ describe('Модуль courses', function () {
     });
   });
   
-  after(function(done) {
-    coursesDB.clearCourses(function() {
-      done();
-    });
-  });
-});
+  after(function() {
+    return coursesDB.clearCourses()
+  })
+})

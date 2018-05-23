@@ -2,10 +2,10 @@
 
 const mongodb = require('mongodb')
 
+/** @type {mongodb.Collection<any>} */
 let collection
 
 /** @param {mongodb.Db} db */
-
 module.exports.setup = function(db) {
   collection = db.collection('courses')
 }
@@ -87,6 +87,6 @@ exports.updateCourse = function(course, callback) {
   collection.update({ _id: course._id }, course, { }, callback);
 };
 
-module.exports.clearCourses = function(callback) {
-  collection.remove({ }, {multi: true}, callback);
-};
+module.exports.clearCourses = function() {
+  return collection.deleteMany({ }) //, {multi: true}
+}

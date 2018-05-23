@@ -117,9 +117,7 @@ describe('Модуль users', function() {
     }); */
   })
 
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done()
-    })
+  after(function() {
+    return usersDB.clearUsers()
   })
 })

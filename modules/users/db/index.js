@@ -17,14 +17,16 @@ module.exports.findAllUsersWithoutPassword = function (admin) {
   }
   else {
     return collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
-    { password: 0, isAdministrator : 0, editor: 0 }).toArray().then(users => {
-      for (var i = 0; i < users.length; i++) {
-        if (!users[i].showEmail) {
-          delete users[i].email
+      { password: 0, isAdministrator : 0, editor: 0 })
+      .toArray()
+      .then(users => {
+        for (var i = 0; i < users.length; i++) {
+          if (!users[i].showEmail) {
+            delete users[i].email
+          }
         }
-      }
-      return users
-    })
+        return users
+      })
   }
 }
 
@@ -71,25 +73,14 @@ module.exports.findUserByIdWithoutPassword = function(id, admin, callback) {
 };
 
 
-module.exports.findUserById = function (userId, callback) {
-  collection.findOne({ _id: new mongodb.ObjectID(userId) }, function (err, foundUser) {
-    if (err && process.env.NODE_ENV !== "testing") {
-      console.log("Ошибка при поиске пользователя ", userId, " :", err.message);
-    }
-    callback(err, foundUser);
-  }); 
-};
+module.exports.findUserById = function (userId) {
+  return collection.findOne({ _id: new mongodb.ObjectID(userId) })
+}
 
 
-function findUserByEmail(userEmail, callback) {
-  collection.findOne({ email: userEmail }, function (err, foundUser) {
-    if (err && process.env.NODE_ENV !== "testing")
-    {
-      console.log("Ошибка при поиске пользователя ", userEmail, " :", err.message);
-    }
-    callback(err, foundUser);
-  }); 
-};
+function findUserByEmail(userEmail) {
+  return collection.findOne({ email: userEmail })
+}
 
 module.exports.findUserByEmail = findUserByEmail
 
@@ -109,48 +100,26 @@ module.exports.isAdminExists = function (callback) {
 }
 
 
-module.exports.registerUser = function(userData, callback) {
-  findUserByEmail(userData.email, (err, user) => {
-    if (err) {
-      callback(err, null)
-      return
-    }
-    if (user) {
-      callback(new Error('User exist'), null)
-      return
-    }
-    collection.insertOne({
-      email: userData.email,
-      password: userData.password,
-      isAdministrator: userData.isAdministrator,
-      showEmail: userData.showEmail || false,
-      created_at: new Date(),
-      updated_at: null,
-      registeredBy: userData.registeredBy
-    }, (err, result) => {
-      if (err) {
-        callback(err, null)
+module.exports.registerUser = function(userData) {
+  return findUserByEmail(userData.email)
+    .then(user => {
+      if (user) {
+        throw new Error('Unable register user. User already exist')
       }
-      callback(null, result.ops[0])
+      return collection.insertOne({
+        email: userData.email,
+        password: userData.password,
+        isAdministrator: userData.isAdministrator,
+        showEmail: userData.showEmail || false,
+        created_at: new Date(),
+        updated_at: null,
+        registeredBy: userData.registeredBy
+      })
     })
-  })
+    .then(result => {
+      return result.ops[0]
+    })
 }
-
-// DEPRECATED:
-
-/*module.exports.addNewUser = function (userEmail, userPass, isAdministrator, callback) {
-  var date = new Date();
-  collection.insert({
-    email: userEmail,
-    password: userPass,
-    isAdministrator: isAdministrator,
-    showEmail: false,
-    created_at: date,
-    updated_at: null
-  }, function (err, newUser) {
-    callback(err, newUser);
-  });
-}*/
 
 module.exports.removeUser = function(email, callback) {
   var date = new Date();
@@ -168,6 +137,6 @@ module.exports.updateUser = function(email, updater, editor, callback) {
   collection.update({ email: email }, { $set: updater }, { }, callback);
 }
 
-module.exports.clearUsers = function(callback) {
-  collection.remove({ }, {multi: true}, callback);
+module.exports.clearUsers = function() {
+  return collection.deleteMany({ })//, {multi: true}
 }

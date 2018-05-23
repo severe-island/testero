@@ -5,11 +5,12 @@ const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
 const supertest = require('supertest')
 
+const usersDB = require('../../db')
+
 var agent
 var app
-var usersDB
 
-describe('/users/users', function() {
+describe('DELETE /users/users', function() {
   before('Connect to database', function(done) {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
@@ -22,181 +23,162 @@ describe('/users/users', function() {
       }
 
       const db = client.db(dbName)
-
-      usersDB = require('../../db')
+      
       usersDB.setup(db)
 
       app = require('../../../../app')(db)
+      app.use(cookieParser())
       
       agent = supertest.agent(app)
-      app.use(cookieParser())
-
       done()
     })
   })
 
-  describe('Очистка коллекции пользователей (DELETE /users)', function() {
-    var admin1 = {
-      email: "admin1@testero",
-      password: "admin1",
-      passwordDuplicate: "admin1",
-      isAdministrator: true
-    };
-    var user1 = {
-      email: "user1@testero",
-      password: "user1",
-      passwordDuplicate: "user1"
-    };
-    before(function(done) {
-      usersDB.clearUsers(function() {
-        usersDB.registerUser(admin1, function(err, user) {
-          admin1._id = user._id;
-          usersDB.registerUser(user1, function(err, user) {
-            user1._id = user._id;
-            done();
-          });
+  let admin1 = {
+    email: "admin1@testero",
+    password: "admin1",
+    passwordDuplicate: "admin1",
+    isAdministrator: true
+  }
+
+  let user1 = {
+    email: "user1@testero",
+    password: "user1",
+    passwordDuplicate: "user1"
+  }
+  
+  
+  context('Попытка очистки не авторизованным пользователем', function() {
+    before(function() {
+      return usersDB.clearUsers()
+        .then(function() {
+          return usersDB.registerUser(admin1)
+            .then(user => {
+              admin1._id = user._id;
+            })
+            .then(() => {
+              return usersDB.registerUser(user1)
+            })
+            .then(user => {
+              user1._id = user._id;
+            })
+        })
+    })
+
+    it('Возвращается отказ', function(done) {
+      agent
+        .delete('/users/users')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          
+          res.body.status.should.equal(false, res.body.msg);
+
+          done();
         });
-      });
+    });
+  });
+  
+  context('Попытка очистки не администратором', function() {
+    before(function(done) {
+      agent
+        .post('/users/users/' + user1._id + '/auth')
+        .send(user1)
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+
+          res.body.status.should.equal(true, res.body.msg);
+
+          done();
+        });
     });
     
-    context('Попытка очистки не авторизованным пользователем', function() {
-      it('Возвращается отказ', function(done) {
-        agent
-          .delete('/users/users')
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-            
-            res.body.status.should.equal(false, res.body.msg);
+    it('Возвращается отказ. Количество пользователей не изменилось.', function(done) {
+      agent
+        .delete('/users/users')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          
+          res.body.status.should.equal(false, res.body.msg);
+          
+          agent
+            .get('/users/users')
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .end(function(err, res) {
+              if (err) {
+                throw err;
+              }
 
-            done();
-          });
-      });
+              res.body.status.should.equal(true, res.body.msg);
+              res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
+
+              done();
+            });
+        });
+    });
+  });
+  
+  context('Зарегистрировано несколько пользователей', function() {
+    before(function() {
+      return agent
+        .delete('/users/users/' + user1._id + '/auth')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg);
+          
+          return agent
+            .post('/users/users/' + admin1._id + '/auth')
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .send(admin1)
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then(res => {
+              res.body.status.should.equal(true, res.body.msg);
+            });
+        });
     });
     
-    context('Попытка очистки не администратором', function() {
-      before(function(done) {
-        agent
-          .post('/users/users/' + user1._id + '/auth')
-          .send(user1)
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-
-            res.body.status.should.equal(true, res.body.msg);
-
-            done();
-          });
-      });
-      
-      it('Возвращается отказ. Количество пользователей не изменилось.', function(done) {
-        agent
-          .delete('/users/users')
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-            
-            res.body.status.should.equal(false, res.body.msg);
-            
-            agent
-              .get('/users/users')
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function(err, res) {
-                if (err) {
-                  throw err;
-                }
-
-                res.body.status.should.equal(true, res.body.msg);
-                res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(2);
-
-                done();
-              });
-          });
-      });
-    });
-    
-    context('Очистка администратором', function() {
-      before(function(done) {
-        agent
-          .delete('/users/users/' + user1._id + '/auth')
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-
-            res.body.status.should.equal(true, res.body.msg);
-            
-            agent
-              .post('/users/users/' + admin1._id + '/auth')
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .send(admin1)
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function (err, res) {
-                if (err) {
-                  throw err;
-                }
-
-                res.body.status.should.equal(true, res.body.msg);
-                
-                done();
-              });
-          });
-      });
-      
-      it('Возвращается успех. В коллекции пользователей нуль', function(done) {
-        agent
-          .delete('/users/users')
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-            
-            res.body.status.should.equal(true, res.body.msg);
-            
-            agent
-              .get('/users/users')
-              .set('X-Requested-With', 'XMLHttpRequest')
-              .expect('Content-Type', /application\/json/)
-              .expect(200)
-              .end(function(err, res) {
-                if (err) {
-                  throw err;
-                }
-
-                res.body.status.should.equal(true, res.body.msg);
-                res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
-
-                done();
-              });
-          });
-      });
+    it('Deleting all users by an administrator', function() {
+      return agent
+        .delete('/users/users')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg);
+          
+          return agent
+            .get('/users/users')
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then(res => {
+              res.body.status.should.equal(true, res.body.msg);
+              res.body.users.should.be.an.instanceOf(Array).and.have.lengthOf(0);
+            });
+        });
     });
   })
 
-  after(function(done) {
-    usersDB.clearUsers(function() {
-      done();
-    });
+  after(function() {
+    return usersDB.clearUsers()
   });
 })

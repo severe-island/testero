@@ -114,7 +114,8 @@ module.exports = function(connection) {
 
 
   router.post('/courses', function(req, res, next) {
-    sessions.checkSession(req, function(checkResult){
+    return sessions.checkSession(req)
+      .then(checkResult => {
       if (!checkResult.status) {
         res.json(checkResult);
         return;

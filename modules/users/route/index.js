@@ -11,73 +11,76 @@ module.exports = function(connection) {
   lib.setup(connection)
 
   router.post('/login', function(req, res, next) {
-    lib.checkSession(req, function(checkResult) {
-      if (checkResult.status) {
-        var status, level;
-        if (req.session.email === req.body.email) {
-          status = true;
-          level = "info";
+    return lib.checkSession(req)
+      .then(checkResult => {
+        if (checkResult.status) {
+          var status, level;
+          if (req.session.email === req.body.email) {
+            status = true;
+            level = "info";
+          }
+          else {
+            status = false;
+            level = "warning";
+          }
+          res.json({
+            msg: "Вы уже зашли с почтой " + req.session.email + ".",
+            status: status,
+            level: level,
+            user: checkResult.user
+          });
+          return;
         }
-        else {
-          status = false;
-          level = "warning";
-        }
-        res.json({
-          msg: "Вы уже зашли с почтой " + req.session.email + ".",
-          status: status,
-          level: level,
-          user: checkResult.user
-        });
-        return;
-      }
       
-      var email = req.body.email;
-      var password = req.body.password;
-      var remember = (req.body.remember !== undefined);
-      db.findUserByEmail(email, function(err, data){
-        if (err || !data) {
-          res.json({
-            msg: "Пользователь не найден.",
-            status: false, 
-            level: "info"
-          });
-          return;
-        }
-        if (data.removed) {
-          res.json({
-            status: false,
-            level: "info",
-            msg: "Ваш аккаунт удалён."
-          });
-          return;
-        }
-        if (data.password !== password) {
-          res.json({
-            msg: "Неверный пароль.",
-            status: false,
-            level: "warning"
-          });
-          return;
-        }
-        var msg = "Вы вошли.";
-        if (!!remember) {
-          msg += " Я постараюсь вас запомнить.";
-          req.session.cookie.originalMaxAge = 1000*60*60;
-        }
-        else {
-          req.session.cookie.originalMaxAge = null;
-          req.session.cookie.expires = false;
-        }
-        req.session.login = true;
-        req.session.email = email;
-        delete data.password;
-        req.session.user_id = data._id;
-        res.json({
-          msg: msg,
-          status: true,
-          level: "success",
-          user: data
-        });
+        var email = req.body.email;
+        var password = req.body.password;
+        var remember = (req.body.remember !== undefined);
+        
+        return db.findUserByEmail(email)
+          .then(data => {
+            if (!data) {
+              res.json({
+                msg: "User is not found",
+                status: false, 
+                level: "info"
+              });
+              return;
+            }
+            if (data.removed) {
+              res.json({
+                status: false,
+                level: "info",
+                msg: "The account is deleted"
+              });
+              return;
+            }
+            if (data.password !== password) {
+              res.json({
+                msg: "Incorrect password",
+                status: false,
+                level: "warning"
+              });
+              return;
+            }
+            let msg = "You entered.";
+            if (!!remember) {
+              msg += " I will try to remember you.";
+              req.session.cookie.originalMaxAge = 1000*60*60;
+            }
+            else {
+              req.session.cookie.originalMaxAge = null;
+              req.session.cookie.expires = false;
+            }
+            req.session.login = true;
+            req.session.email = email;
+            delete data.password;
+            req.session.user_id = data._id;
+            res.json({
+              msg: msg,
+              status: true,
+              level: "success",
+              user: data
+            });
       });
     });
   });
