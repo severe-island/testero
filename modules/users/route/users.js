@@ -14,72 +14,53 @@ module.exports = function(connection) {
     return lib.checkSession(req)
       .then(checkResult => {
         if (checkResult.status) {
-          db.findUserById(req.params.id, function(err, data) {
-            if (err) {
-              var msg = 'Ошибка базы данных' 
-                + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
+          return db.findUserById(req.params.id)
+            .then(data => {
+              if (!data) {
+                res.json({
+                  status: false,
+                  level: 'info',
+                  msg: 'Пользователь не найден.'
+                });
+                return;
+              }
+              
+              delete data.password;
+
               res.json({
-                status: false,
-                level: "danger",
-                msg: msg
+                status: true,
+                level: 'success',
+                msg: 'Пользователь найден.',
+                user: data
               });
-              return;
-            }
-            
-            if (!data) {
-              res.json({
-                status: false,
-                level: 'info',
-                msg: 'Пользователь не найден.'
-              });
-              return;
-            }
-            
-            delete data.password;
-            res.json({
-              status: true,
-              level: 'success',
-              msg: 'Пользователь найден.',
-              user: data
-            });
           });
         }
         else {
-          findUserById(req.params.id, false, res);
+          return findUserById(req.params.id, false, res);
         }
       });
   });
 
   function findUserById(id, admin, res) {
-    db.findUserByIdWithoutPassword(id, admin, function(err, user) {
-      if (err) {
-        var msg = 'Ошибка базы данных' 
-          + (process.env.NODE_ENV !== 'production' ? ': ' + err.message : '.');
+    return db.findUserByIdWithoutPassword(id, admin)
+      .then(user => {
+        if (!user) {
+          res.json({
+            status: false,
+            level: "info",
+            msg: "Пользователь не найден."
+          });
+          return;
+        }
+        
+        user.id = user._id;
+        
         res.json({
-          status: false,
-          level: "danger",
-          msg: msg
+          status: true,
+          level: "success",
+          msg: "Пользователь найден.",
+          user: user
         });
-        return;
-      }
-      
-      if (!user) {
-        res.json({
-          status: false,
-          level: "info",
-          msg: "Пользователь не найден."
-        });
-        return;
-      }
-      
-      user.id = user._id;
-      
-      res.json({
-        status: true,
-        level: "success",
-        msg: "Пользователь найден.",
-        user: user
-      });
     });
   }
 

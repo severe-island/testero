@@ -10,28 +10,25 @@ var app
 var usersDB
 
 describe('GET /users/users', function () {
-  before('Connect to database.', function(done) {
+  before('Connect to database.', function() {
     const mongoHost = config.db.host || 'localhost'
     const mongoPort = config.db.port || '27017'
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-      if (err) {
-        throw err
-      }
+    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+      .then(client => {
+        const db = client.db(dbName)
 
-      const db = client.db(dbName)
+        usersDB = require('../../db')
+        usersDB.setup(db)
 
-      usersDB = require('../../db')
-      usersDB.setup(db)
+        app = require('../../../../app')(db)
+        app.use(cookieParser())
 
-      app = require('../../../../app')(db)
-      app.use(cookieParser())
+        agent = supertest.agent(app)
 
-      agent = supertest.agent(app)
-
-      done()
+        return usersDB.clearUsers()
     })
   })
 
@@ -128,6 +125,44 @@ describe('GET /users/users', function () {
     })
   });
   
+  describe('Find user by id (GET /users/users/:id)', function() {
+    context('There is one user', function() {
+      let userData = {
+        email: "user1@testero",
+        password: "user1",
+        passwordDuplicate: "user1",
+        showEmail: true
+      }
+      let userId
+      
+      before(function() {
+        return usersDB.registerUser(userData)
+          .then(user => {
+            userId = user._id
+          })
+      })
+
+      it('User found. Registration data match', function() {
+        return agent
+            .get('/users/users/' + userId)
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then(res => {
+              res.body.status.should.equal(true, res.body.msg);
+              res.body.user.should.have.property('email');
+              res.body.user.email.should.equal(userData.email);
+              res.body.user.should.have.property('showEmail');
+              res.body.user.showEmail.should.equal(userData.showEmail);
+            })
+      })
+    })
+
+    after('Cleaning the collection users', function() {
+      return usersDB.clearUsers()
+    })
+  })
+
   describe('Поиск пользователя по email (GET /users/users/?email=email)', function() {
     let user = {
       email: "user1@testero",
