@@ -43,8 +43,8 @@ $("#familyName-edit-button").click(function() {
 $("#familyName-save-button").click(function() {
   $("#familyName-save-button").attr("disabled", "disabled");
   $.ajax({
-    type: "POST",
-    url: "/users/updateProfile",
+    type: "PATCH",
+    url: "/users/users/" + localStorage.user_id,
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
@@ -95,8 +95,8 @@ $("#name-edit-button").click(function() {
 $("#name-save-button").click(function() {
   $("#name-save-button").attr("disabled", "disabled");
   $.ajax({
-    type: "POST",
-    url: "/users/updateProfile",
+    type: "PATCH",
+    url: "/users/users/" + localStorage.user_id,
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
@@ -141,8 +141,8 @@ $("#patronymic-edit-button").click(function() {
 $("#patronymic-save-button").click(function() {
   $("#patronymic-save-button").attr("disabled", "disabled");
   $.ajax({
-    type: "POST",
-    url: "/users/updateProfile",
+    type: "PATCH",
+    url: "/users/users/" + localStorage.user_id,
     data: $("#user-profile-edit-form").serialize(),
     success: function (data) {
       if (app.mode !== "production") {
@@ -181,8 +181,8 @@ $("#patronymic-save-button").click(function() {
 $("#user-password-edit-dialog #save-button").click(function() {
   $("#user-edit-password-form #email").val(app.user.email);
   $.ajax({
-    type: "POST",
-    url: "/users/updatePassword",
+    type: "PATCH",
+    url: "/users/users/" + localStorage.user_id,
     data: $("#user-edit-password-form").serialize(),
     success: function (data) {
       $("#user-password-edit-dialog #alert-password")

@@ -50,11 +50,17 @@ module.exports.findUserByEmailWithoutPassword = function (userEmail, admin) {
 
 module.exports.findUserByIdWithoutPassword = function(id, admin) {
   if (admin) {
-    return collection.findOne({ _id: id }, { projection: { password: 0 } })
+    return collection.findOne(
+      { _id: new mongodb.ObjectID(id) },
+      { projection: { password: 0 } })
   }
   else {
     return collection.findOne(
-      { $and: [ { _id: id } , {$or: [ {removed: { $exists: false } }, { not: { removed: true } } ]} ] },
+      { $and: [
+          { _id: new mongodb.ObjectID(id) },
+          {$or: [
+            {removed: { $exists: false } },
+            { not: { removed: true } } ]} ] },
       { projection: { password: 0, isAdministrator : 0, editor: 0 } })
       .then(foundUser => {
         if (!!foundUser && !foundUser.showEmail) {
