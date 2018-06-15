@@ -37,7 +37,7 @@ module.exports.checkSession = function (req) {
           level: "danger",
           msg:
             "Your session was not found."
-            + "There may be an error with the session or the database."
+            + " There may be an error with the session or the database."
             + " Please log in again."
         }
 
@@ -48,7 +48,7 @@ module.exports.checkSession = function (req) {
         req.session.login = false;
         
         let checkResult = {
-          msg: "Your account " + data.email + "was removed. The session will be broken.",
+          msg: "Your account " + data.email + " was removed. The session will be broken.",
           status: false,
           level: "danger"
         }
