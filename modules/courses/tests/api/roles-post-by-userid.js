@@ -111,7 +111,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается успех: user1 имеет роль teacher', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId1, role: 'teacher'})
+          .send({user_id: userId1, role: 'teacher'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -155,7 +155,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается успех: user2 имеет роль teacher', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId2, role: 'teacher'})
+          .send({user_id: userId2, role: 'teacher'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -186,7 +186,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается отказ: user2 не получает роль teacher', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId2, role: 'teacher'})
+          .send({user_id: userId2, role: 'teacher'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -219,7 +219,7 @@ describe('/courses/assignRole', function() {
       
       it('Возвращается отказ: user2 не получает роль teacher', function() {
         return agent.post('/courses/assignRole')
-          .send({userId: userId1, role: 'teacher'})
+          .send({user_id: userId1, role: 'teacher'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -261,7 +261,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается успех: user2 получил роль student', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId2, role: 'student'})
+          .send({user_id: userId2, role: 'student'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -303,7 +303,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается отказ: user2 не получил роль student', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId2, role: 'student'})
+          .send({user_id: userId2, role: 'student'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -334,7 +334,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается успех: user1 получил роль student', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId1, role: 'student'})
+          .send({user_id: userId1, role: 'student'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
@@ -365,7 +365,7 @@ describe('/courses/assignRole', function() {
       it('Возвращается отказ. user1 не получил роль student', function() {
         return agent
           .post('/courses/assignRole')
-          .send({userId: userId1, role: 'student'})
+          .send({user_id: userId1, role: 'student'})
           .set('Accept', 'application/json')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)

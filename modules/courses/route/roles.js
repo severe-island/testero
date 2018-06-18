@@ -26,7 +26,7 @@ module.exports = function(connection) {
           return;
         }
 
-        let targetUserId = req.body.userId;
+        let targetUserId = req.body.user_id;
         let role = req.body.role;
 
         return usersDB.findUserById(targetUserId)
@@ -94,7 +94,8 @@ module.exports = function(connection) {
 
   router.get('/roles/', function(req, res) {
     let email = req.query['email']
-    let userId = req.query['userId']
+    let userId = req.query['user_id']
+    let role = req.query['role']
     
     if (email) {
       rolesDB.getRolesByEmail(email)
@@ -106,6 +107,7 @@ module.exports = function(connection) {
             roles: userRoles
           });
         });
+      return
     }
     
     if (userId) {
@@ -118,7 +120,27 @@ module.exports = function(connection) {
             roles: userRoles
           });
         });
+      return
     }
+
+    if (role) {
+      rolesDB.findUsersByRole(role)
+        .then(users => {
+          res.json({
+            status: true,
+            level: 'success',
+            msg: 'Список пользователей с указанной ролью успешно получен',
+            users: users
+          })
+        })
+      return
+    }
+
+    res.json({
+      status: false,
+      level: 'warning',
+      msg: 'Неизвестный параметр запроса'
+    })
   });
 
   return router

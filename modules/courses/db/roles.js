@@ -19,24 +19,24 @@ module.exports.setup = function(db) {
  */
 exports.assignRole = function(userId, role) {
   var date = new Date();
-  return collection.findOne({userId: userId, created_at: {$exists: true}})
+  return collection.findOne({user_id: userId, created_at: {$exists: true}})
     .then(foundedRoles => {
       if (foundedRoles) {
         return collection.updateOne(
-          { userId: userId },
+          { user_id: userId },
           { $addToSet: { roles: role }, $set: { updated_at: date } },
           { upsert: true })
       }
       else {
         return collection.insertOne(
-          {userId: userId, roles: [role], created_at: date, update_at: date})
+          {user_id: userId, roles: [role], created_at: date, update_at: null})
       }
   })
 }
 
 /** @param {string} userId */
 exports.getRolesByUserId = function(userId) {
-  return collection.findOne({ userId: userId })
+  return collection.findOne({ user_id: userId })
     .then(result => {
       if (result) {
         return result.roles
@@ -51,7 +51,7 @@ exports.getRolesByUserId = function(userId) {
 exports.getRolesByEmail = function(email) {
   return usersDB.findUserByEmail(email)
     .then(user => {
-      return collection.findOne({ userId: user.id })
+      return collection.findOne({ user_id: user.id })
         .then(result => {
           if (result) {
             return result.roles
@@ -63,6 +63,23 @@ exports.getRolesByEmail = function(email) {
     })
 }
 
+/**
+ * 
+ * @param {string} role 
+ * @returns {Promise<string[]>}
+ */
+exports.findUsersByRole = function(role) {
+  return collection.find().toArray()
+    .then(records => {
+      let users = []
+      records.forEach(item => {
+        if (item.roles.indexOf(role) >= 0) {
+          users.push(item.user_id.toString())
+        }
+      })
+      return users
+    })
+}
 
 exports.clearRoles = function() {
   return collection.deleteMany({ })
