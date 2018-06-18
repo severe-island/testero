@@ -63,7 +63,7 @@ describe('GET /courses/roles/?email=email', function() {
     })
     
     context('Пользователь не имеет ролей', function() {
-      it('Получено null', function() {
+      it('Получен пустой список', function() {
         return agent
           .get('/courses/roles/?email=' + admin.email)
           .set('X-Requested-With', 'XMLHttpRequest')
