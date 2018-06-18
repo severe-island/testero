@@ -1,0 +1,11 @@
+{
+    "title": "Добавление преподавателя",
+    "url": "/#!courses/add-teacher",
+    "id": "courses-add-teacher",
+    "layout": "/app/html/form-layout.html",
+    "content": "/courses/html/form-add-teacher.html",
+    "script": "/courses/js/add-teacher.js",
+    "breadcrumb": [
+      {"page": "/main.json"}, {"page": "/courses.json"}, {}
+    ]
+}

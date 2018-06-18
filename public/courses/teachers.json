@@ -1,5 +1,10 @@
 {
   "title": "Все преподаватели",
   "url": "/#!courses/teachers",
-  "id": "courses-teachers"
+  "id": "courses-teachers",
+  "layout": "/app/html/generic-layout.html",
+  "script": "/courses/js/teachers.js",
+  "breadcrumb": [
+    {"page": "/main.json"}, {"page": "/courses.json"}, {}
+  ]
 }
