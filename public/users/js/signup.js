@@ -48,7 +48,7 @@ $("#users-form-signup").submit(function() {
                     app.isLoggedIn = true;
                     delete user.password;
                     app.user = user;
-                    localStorage.user_id = user._id;
+                    localStorage.user_id = user.id;
                     $('*').trigger('users-login');
                     if (window.history && history.pushState) {
                       history.pushState(null, null, '/#!main');

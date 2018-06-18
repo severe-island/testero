@@ -25,21 +25,22 @@ $.ajax({
         {
           success: function() {
             for (var i = 0; i < data.users.length; i++) {
+              let user = data.users[i]
               $("#users-list table tbody")
                 .loadTemplate(
                   '/users/html/users-list-item.html',
                   {
                     number: i + 1,
-                    familyName: data.users[i].familyName,
-                    name: data.users[i].name,
-                    patronymic: data.users[i].patronymic,
-                    email: data.users[i].email || '<em>Пользователь скрыл свой email.</em>',
+                    familyName: user.familyName,
+                    name: user.name,
+                    patronymic: user.patronymic,
+                    email: user.email || '<em>Пользователь скрыл свой email.</em>',
                     isAdministrator:
-                      data.users[i].isAdministrator
+                      user.isAdministrator
                       ? '<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>'
                       : "",
-                    id: data.users[i]._id,
-                    href: "/#!users/profile?id=" + data.users[i]._id
+                    id: user.id,
+                    href: "/#!users/profile?id=" + user.id
                   },
                   {
                     append: true

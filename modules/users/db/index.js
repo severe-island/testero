@@ -13,7 +13,15 @@ module.exports.setup = function(db) {
 
 module.exports.findAllUsersWithoutPassword = function (admin) {
   if (admin) {
-    return collection.find({ }, { password: 0 }).toArray()
+    return collection.find({ }, { password: 0 })
+      .toArray()
+      .then(users => {
+        for (var i = 0; i < users.length; i++) {
+          users[i].id = users[i]._id.toString()
+          delete users[i]._id
+        }
+        return users
+      })
   }
   else {
     return collection.find({ $or: [ {removed: { $exists: false } }, { not: { removed: true } } ] }, 
@@ -21,6 +29,8 @@ module.exports.findAllUsersWithoutPassword = function (admin) {
       .toArray()
       .then(users => {
         for (var i = 0; i < users.length; i++) {
+          users[i].id = users[i]._id.toString()
+          delete users[i]._id
           if (!users[i].showEmail) {
             delete users[i].email
           }
@@ -33,14 +43,25 @@ module.exports.findAllUsersWithoutPassword = function (admin) {
 module.exports.findUserByEmailWithoutPassword = function (userEmail, admin) {
   if (admin) {
     return collection.findOne({ email: userEmail }, { projection: { password: 0 } })
+      .then(user => {
+        if (user) {
+          user.id = user._id.toString()
+          delete user._id
+        }
+        return user
+      })
   }
   else {
     return collection.findOne({$and: [ { email: userEmail },
       { $or: [ { removed: { $exists: false } }, { not: { removed: true } } ]} ]}, 
       { projection: { password: 0, isAdministrator : 0, editor: 0 } })
       .then(user => {
-        if (!!user && !user.showEmail) {
-          delete user.email;
+        if (user) {
+          user.id = user._id.toString()
+          delete user._id
+          if (!user.showEmail) {
+            delete user.email;
+          }
         }
         return user
       })

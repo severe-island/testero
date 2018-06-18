@@ -12,7 +12,15 @@ module.exports.setup = function(db) {
 
 
 exports.findAllCourses = function() {
-  return collection.find({}).toArray()
+  return collection.find({})
+    .toArray()
+    .then(courses => {
+      for (let i = 0; i < courses.length; i++) {
+        courses[i].id = courses[i]._id.toString()
+        delete courses[i]._id
+      }
+      return courses
+    })
 }
 
 

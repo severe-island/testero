@@ -7,11 +7,11 @@ $("#form-login").submit(function() {
       if (data.status) {
         $.ajax({
           type: "POST",
-          url: "/users/users/" + user._id + "/auth",
+          url: "/users/users/" + user.id + "/auth",
           data: $("#form-login").serialize(),
           success: function (data) {
             if (data.status) {
-              localStorage.user_id = user._id;
+              localStorage.user_id = user.id;
               app.user = user;
               app.isLoggedIn = true;
               showAlert(data.msg, data.level, 1000, function() {
