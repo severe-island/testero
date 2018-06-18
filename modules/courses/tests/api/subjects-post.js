@@ -10,7 +10,7 @@ const coursesDB = require('../../db/courses')
 const rolesDB = require('../../db/roles')
 const usersDB = require('../../../users/db')
 
-describe('/courses/courses/:id/subjects', function () {
+describe('POST /courses/courses/:id/subjects', function () {
   let app
   let agent
   let user1 = {
@@ -18,6 +18,7 @@ describe('/courses/courses/:id/subjects', function () {
     password: 'user1',
     passwordDuplicate: 'user1'
   }
+  let userId1
 
   before(function() {
     const mongoHost = config.db.host || 'localhost'
@@ -40,7 +41,10 @@ describe('/courses/courses/:id/subjects', function () {
       
         return coursesDB.clearCourses()
           .then(() => {
-            usersDB.registerUser(user1)
+            return usersDB.registerUser(user1)
+            .then(data => {
+              userId1 = data.id
+            })
           })
       })
   })
@@ -49,18 +53,17 @@ describe('/courses/courses/:id/subjects', function () {
   var subject1 = {title: 'Subject1'};
   
   context('Зарегистрирован некий курс', function() {
-    before(function(done) {
-      coursesDB.add({title: 'Course1', 'i-am-author': true, author: user1.email}, function(err, data) {
-        should.not.exist(err);
-        course1 = data;
-        subject1.course_id = data._id;
-        done();
+    before(function() {
+      return coursesDB.add({title: 'Course1', 'i-am-author': true, author: user1.email})
+        .then(data => {
+          course1 = data;
+          subject1.course_id = data.id;
       });
     });
-    
+
     it('Пользователь не авторизован: отказ', function(done) {
       agent
-        .post('/courses/courses/' + course1._id + '/subjects')
+        .post('/courses/courses/' + course1.id + '/subjects')
         .send(subject1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -92,7 +95,7 @@ describe('/courses/courses/:id/subjects', function () {
           res.body.status.should.equal(true, res.body.msg);
           
           agent
-            .post('/courses/courses/' + course1._id + '/subjects')
+            .post('/courses/courses/' + course1.id + '/subjects')
             .send(subject1)
             .set('X-Requested-With', 'XMLHttpRequest')
             .expect('Content-Type', /application\/json/)
@@ -110,43 +113,32 @@ describe('/courses/courses/:id/subjects', function () {
         });
     });
     
-    it('Пользователь авторизован и является преподавателем: успех.', function(done) {
-      rolesDB.assignRole(user1.email, 'teacher', function() {
-        agent
-          .post('/courses/courses/' + course1._id + '/subjects')
-          .send(subject1)
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .expect('Content-Type', /application\/json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) {
-              throw err;
-            }
-
-            res.body.status.should.equal(true, res.body.msg);
-            res.body.should.have.property('subject');
-
-            done();
-          });
-      });
-    });
+    it('Пользователь авторизован и является преподавателем: успех.', function() {
+      return rolesDB.assignRole(userId1, 'teacher')
+        .then(() => {
+          return agent
+            .post('/courses/courses/' + course1.id + '/subjects')
+            .send(subject1)
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then(res => {
+              res.body.status.should.equal(true, res.body.msg);
+              res.body.should.have.property('subject');
+            })
+        })
+    })
     
-    it('Не задана тема: отказ', function(done) {
-      agent
-        .post('/courses/courses/' + course1._id + '/subjects')
+    it('Не задана тема: отказ', function() {
+      return agent
+        .post('/courses/courses/' + course1.id + '/subjects')
         .send({})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-
-          res.body.status.should.equal(false, res.body.msg);
-          res.body.should.not.have.property('subject');
-
-          done();
+        .then(res => {
+          res.body.status.should.equal(false, res.body.msg)
+          res.body.should.not.have.property('subject')
         });
     });
   });
@@ -156,22 +148,16 @@ describe('/courses/courses/:id/subjects', function () {
       return coursesDB.clearCourses()
     })
     
-    it('Попытка добавить к несуществующему курсу тему', function(done) {
-      agent
+    it('Попытка добавить к несуществующему курсу тему', function() {
+      return agent
         .post('/courses/courses/719825791875/subjects')
         .send(subject1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
+        .then(res => {
           res.body.status.should.equal(false, res.body.msg);
           res.body.should.not.have.property('subject');
-          
-          done();
         });
     });
   })

@@ -124,7 +124,7 @@ module.exports = function(connection) {
             }
             req.session.login = true
             req.session.email = data.email
-            req.session.user_id = data._id
+            req.session.user_id = data.id
             res.json({
               msg: msg,
               status: true,

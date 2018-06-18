@@ -55,10 +55,8 @@ describe('GET /courses/courses', function () {
     });
     
     context('В списке один курс', function() {
-      before(function(done) {
-        coursesDB.add({title: 'Первый курс', author: null}, function() {
-          done();
-        });
+      before(function() {
+        return coursesDB.add({title: 'Первый курс', author: null})
       });
       
       it('Возвращается массив длины единица', function (done) {
@@ -82,10 +80,8 @@ describe('GET /courses/courses', function () {
     });
     
     context('В списке два курса', function() {
-      before(function(done) {
-        coursesDB.add({title: 'Второй курс', author: null}, function() {
-          done();
-        });
+      before(function() {
+        return coursesDB.add({title: 'Второй курс', author: null})
       });
       
       it('Возвращается массив длины два', function (done) {
@@ -114,91 +110,68 @@ describe('GET /courses/courses', function () {
   
   describe('Получение курса по ID', function() {
     context('Список курсов пуст', function() {
-      it('Попытка получить курс по некоторому ID', function(done) {
-        agent
-        .get('/courses/courses/5963ce98fb28ee7d3fb4f6a0')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(false, res.body.msg);
-          
-          done();
-        });
+      it('Попытка получить курс по некоторому ID', function() {
+        return agent
+          .get('/courses/courses/5963ce98fb28ee7d3fb4f6a0')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(false, res.body.msg);
+          });
       });
     });
     
     context('Есть два курса', function() {
       var ID1, ID2;
-      before(function(done) {
-        coursesDB.add({title: 'Первый курс', author: null}, function(err, course) {
-          ID1 = course._id;
-          coursesDB.add({title: 'Второй курс', author: null}, function(err, course) {
-            ID2 = course._id;
-            done();
-          });
-        })
+      before(function() {
+        return coursesDB.add({title: 'Первый курс', author: null})
+          .then(course => {
+            ID1 = course.id;
+            return coursesDB.add({title: 'Второй курс', author: null})
+          })
+          .then(course => {
+            ID2 = course.id;
+          })
       })
     
-      it('Попытка получить курс по недействительному ID', function(done) {
-        agent
-        .get('/courses/courses/5963ce98fb28ee7d3fb4f6a0')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(false, res.body.msg);
-          
-          done();
-        });
+      it('Попытка получить курс по недействительному ID', function() {
+        return agent
+          .get('/courses/courses/5963ce98fb28ee7d3fb4f6a0')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(false, res.body.msg);
+          });
       });
       
-      it('Получение первого курса по его ID', function(done) {
-        agent
-        .get('/courses/courses/' + ID1)
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-
-          res.body.status.should.equal(true, res.body.msg);
-          res.body.course.should.not.equal(undefined);
-          res.body.course._id.should.equal(ID1.toString());
-          res.body.course.should.have.property('title');
-          
-          done();
-        });
+      it('Получение первого курса по его ID', function() {
+        return agent
+          .get('/courses/courses/' + ID1)
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(true, res.body.msg);
+            res.body.course.should.not.equal(undefined);
+            res.body.course.id.should.equal(ID1);
+            res.body.course.should.have.property('title');
+          });
       });
       
-      it('Получение второго курса по его ID', function(done) {
-        agent
-        .get('/courses/courses/' + ID2)
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
-          res.body.status.should.equal(true, res.body.msg);
-          res.body.course.should.not.equal(undefined);
-          res.body.course._id.should.equal(ID2.toString());
-          res.body.course.should.have.property('title');
-          
-          done();
-        });
+      it('Получение второго курса по его ID', function() {
+        return agent
+          .get('/courses/courses/' + ID2)
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(true, res.body.msg);
+            res.body.course.should.not.equal(undefined);
+            res.body.course.id.should.equal(ID2);
+            res.body.course.should.have.property('title');
+          });
       });
     });
   });
@@ -229,10 +202,8 @@ describe('GET /courses/courses', function () {
     });
     
     context('Есть один курс, но ищем другой', function() {
-      before(function(done) {
-        coursesDB.add({title: 'First', author: null}, function() {
-          done();
-        });
+      before(function() {
+        return coursesDB.add({title: 'First', author: null})
       });
       
       it('Курс не найден', function(done) {
@@ -276,10 +247,8 @@ describe('GET /courses/courses', function () {
     });
     
     context('Есть два курса с разными названиями', function() {
-      before(function(done) {
-        coursesDB.add({title: 'Second', author: null}, function() {
-          done();
-        });
+      before(function() {
+        return coursesDB.add({title: 'Second', author: null})
       })
 
       it('Курс найден', function(done) {
@@ -302,10 +271,8 @@ describe('GET /courses/courses', function () {
     });
     
     context('Есть два курса с одинаковыми названиями', function() {
-      before(function(done) {
-        coursesDB.add({title: 'First', author: null}, function() {
-          done();
-        });
+      before(function() {
+        return coursesDB.add({title: 'First', author: null})
       })
       
       it('Найдено два курса', function(done) {

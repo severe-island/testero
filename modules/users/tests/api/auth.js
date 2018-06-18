@@ -128,11 +128,11 @@ describe('/users/users/:id/auth', function() {
       return Promise.all([
         usersDB.registerUser(user1)
         .then(data => {
-          userId1 = data._id
+          userId1 = data.id
         }),
         usersDB.registerUser(user2)
         .then(data => {
-          userId2 = data._id
+          userId2 = data.id
         })
       ])
     })

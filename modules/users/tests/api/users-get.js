@@ -138,7 +138,7 @@ describe('GET /users/users', function () {
       before(function() {
         return usersDB.registerUser(userData)
           .then(user => {
-            userId = user._id
+            userId = user.id
           })
       })
 

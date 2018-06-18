@@ -47,12 +47,23 @@ module.exports.findUserByEmailWithoutPassword = function (userEmail, admin) {
   }
 };
 
-
+/**
+ * 
+ * @param {string} id 
+ * @param {boolean} admin 
+ */
 module.exports.findUserByIdWithoutPassword = function(id, admin) {
   if (admin) {
     return collection.findOne(
       { _id: new mongodb.ObjectID(id) },
       { projection: { password: 0 } })
+      .then(user => {
+        if (user) {
+          user.id = user._id.toString()
+          delete user._id
+        }
+        return user
+      })
   }
   else {
     return collection.findOne(
@@ -62,23 +73,43 @@ module.exports.findUserByIdWithoutPassword = function(id, admin) {
             {removed: { $exists: false } },
             { not: { removed: true } } ]} ] },
       { projection: { password: 0, isAdministrator : 0, editor: 0 } })
-      .then(foundUser => {
-        if (!!foundUser && !foundUser.showEmail) {
-          delete foundUser.email;
+      .then(user => {
+        if (user) {
+          if (!user.showEmail) {
+            delete user.email;
+          }
+          user.id = user._id.toString()
+          delete user._id
         }
-        return foundUser
+        return user
       });
   }
 };
 
 
+/** @param {string} userId */
 module.exports.findUserById = function (userId) {
   return collection.findOne({ _id: new mongodb.ObjectID(userId) })
+    .then(user => {
+      if (user) {
+        user.id = user._id.toString()
+        delete user._id
+      }
+      return user
+    })
 }
 
 
+/** @param {string} userEmail */
 function findUserByEmail(userEmail) {
   return collection.findOne({ email: userEmail })
+    .then(user => {
+      if (user) {
+        user.id = user._id.toString()
+        delete user._id
+      }
+      return user
+    })
 }
 
 module.exports.findUserByEmail = findUserByEmail
@@ -116,7 +147,10 @@ module.exports.registerUser = function(userData) {
       })
     })
     .then(result => {
-      return result.ops[0]
+      let user = result.ops[0]
+      user.id = user._id.toString()
+      delete user.password
+      return user
     })
 }
 

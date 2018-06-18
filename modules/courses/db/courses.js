@@ -11,15 +11,9 @@ module.exports.setup = function(db) {
 }
 
 
-exports.findAllCourses = function(callback) {
-  collection.find({}).toArray(function(err, courses) { 
-    if (err) {
-      console.log("Ошибка получения курсов: ")
-      console.log(err)
-    }
-    callback(err, courses)
-  })
-};
+exports.findAllCourses = function() {
+  return collection.find({}).toArray()
+}
 
 
 exports.findCourses = function (filter, callback) {
@@ -38,15 +32,23 @@ exports.findCourse = function(filter, callback) {
   })
 }
 
-
-exports.findCourseById = function(id, callback) {
-  collection.findOne({_id: new mongodb.ObjectID(id)}, (err, course) => {
-    callback(err, course)
-  })
+/**
+ * 
+ * @param {string} id 
+ */
+exports.findCourseById = function(id) {
+  return collection.findOne({_id: new mongodb.ObjectID(id)})
+    .then(course => {
+      if (course) {
+        course.id = course._id.toString()
+        delete course._id
+      }
+      return course
+    })
 }
 
 
-exports.add = function(course, callback) {
+exports.add = function(course) {
   if (course.author) {
     course.authors = [course.author];
     delete course.author;
@@ -54,9 +56,13 @@ exports.add = function(course, callback) {
   course.created_at = new Date();
   course.updated_at = null;
   course.subjects = [ ];
-  collection.insert(course, function (err, result) {
-    callback(err, result.ops[0]);
-  });
+  return collection.insertOne(course)
+    .then(result => {
+      let course = result.ops[0]
+      course.id = course._id.toString()
+      delete course._id
+      return course
+    });
 };
 
 
@@ -84,9 +90,9 @@ exports.addSubject = function(subject, callback) {
 
 exports.updateCourse = function(course, callback) {
   course.updated_at = new Date();
-  collection.update({ _id: course._id }, course, { }, callback);
+  collection.update({ _id: new mongodb.ObjectID(course.id) }, course, { }, callback);
 };
 
 module.exports.clearCourses = function() {
-  return collection.deleteMany({ }) //, {multi: true}
+  return collection.deleteMany({ })
 }

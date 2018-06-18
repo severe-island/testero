@@ -39,51 +39,53 @@ describe('users::db', function() {
   
   context('The user list is empty', function() {
     it('Getting the list of users. The length of the list is 0', function() {
-      usersDB.findAllUsersWithoutPassword(null)
-      .then(users => {
-        users.should.be.an.instanceOf(Array).and.have.lengthOf(0)
-      })
+      return usersDB.findAllUsersWithoutPassword(null)
+        .then(users => {
+          users.should.be.an.instanceOf(Array).and.have.lengthOf(0)
+        })
     })
 
     it('Search for the user by email', function() {
-      usersDB.findUserByEmail(user1.email)
-      .then(user => {
-        should(user).be.null()
-      })
+      return usersDB.findUserByEmail(user1.email)
+        .then(user => {
+          should(user).be.null()
+        })
     })
   })
 
   context('Adding users', function() {
     it('Adding a user', function() {
-      usersDB.registerUser(user1)
-      .then(user => {
-        should(user).not.be.null()
-        userId1 = user._id
-      })
+      return usersDB.registerUser(user1)
+        .then(user => {
+          should(user).not.be.null()
+          userId1 = user.id
+        })
     })
 
     it('Getting the list of users. The length of the list is 1', function() {
-      usersDB.findAllUsersWithoutPassword(false)
-      .then(users => {
-        users.should.be.an.instanceOf(Array).and.have.lengthOf(1)
-        users[0].should.have.not.properties(['password', 'isAdministrator', 'editor'])
-      })
+      return usersDB.findAllUsersWithoutPassword(false)
+        .then(users => {
+          users.should.be.an.instanceOf(Array).and.have.lengthOf(1)
+          users[0].should.have.not.properties(['password', 'isAdministrator', 'editor'])
+        })
     })
 
     it('Search for the user by email', function() {
-      usersDB.findUserByEmail(user1.email)
-      .then(user => {
-        should(user).not.be.null()
-      })
+      return usersDB.findUserByEmail(user1.email)
+        .then(user => {
+          should(user).not.be.null()
+        })
     })
 
     it('Getting the user by id', function() {
-      usersDB.findUserById(userId1)
-      .then(user => {
-        should(user).not.be.null()
-        user.should.have.property('_id')
-        user._id.toString().should.be.equal(userId1.toString())
-      })
+      return usersDB.findUserById(userId1)
+        .then(user => {
+          should(user).not.be.null()
+          user.should.have.property('id')
+          user.id.should.be.equal(userId1)
+          user.should.have.property('email')
+          user.email.should.be.equal(user1.email)
+        })
     })
 
     it('Getting the user by id without password', function() {
@@ -123,18 +125,18 @@ describe('users::db', function() {
       return usersDB.registerUser(user2)
         .then((user) => {
           should(user).not.be.null()
-          userId2 = user._id
+          userId2 = user.id
         })
     })
 
     it('Getting the list of users. The length of the list is 1', function() {
-      usersDB.findAllUsersWithoutPassword(true)
-      .then(users => {
-        users.should.be.an.instanceOf(Array).and.have.lengthOf(2)
-        users.forEach(user => {
-          user.should.have.properties(['password', 'isAdministrator', 'editor'])
-        });
-      })
+      return usersDB.findAllUsersWithoutPassword(true)
+        .then(users => {
+          users.should.be.an.instanceOf(Array).and.have.lengthOf(2)
+          users.forEach(user => {
+            user.should.have.properties(['password', 'isAdministrator'])
+          });
+        })
     })
 
     it('Getting the user by id without password with email', function() {

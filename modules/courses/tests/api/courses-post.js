@@ -35,11 +35,12 @@ describe('POST /courses/courses', function () {
   })
 
   describe('Добавление курсов (POST /courses/courses).', function() {
-    var user1 = {
+    let user1 = {
       email: 'user1@testero',
       password: 'user1',
       passwordDuplicate: 'user1'
-    };
+    }
+    let userId1
 
     before(function() {
       return coursesDB.clearCourses()
@@ -47,7 +48,7 @@ describe('POST /courses/courses', function () {
           return usersDB.registerUser(user1)
         })
         .then(data => {
-          user1._id = data._id;
+          userId1 = data.id
         })
     });
 
@@ -78,7 +79,7 @@ describe('POST /courses/courses', function () {
     context('Попытка добавить курс не преподавателем.', function() {
       before(function(done) {
         agent
-          .post('/users/users/' + user1._id + '/auth')
+          .post('/users/users/' + userId1 + '/auth')
           .send(user1)
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
@@ -115,10 +116,8 @@ describe('POST /courses/courses', function () {
     });
 
     context('Добавление курса преподавателем', function() {
-      before(function(done) {
-        rolesDB.assignRole(user1.email, 'teacher', function() {
-          done();
-        });
+      before(function() {
+        return rolesDB.assignRole(userId1, 'teacher')
       });
 
       it('Возвращается успех.', function(done) {

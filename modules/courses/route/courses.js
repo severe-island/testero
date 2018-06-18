@@ -14,7 +14,7 @@ module.exports = function(connection) {
   const sessions = require('../../users/lib/session')
   sessions.setup(connection)
 
-  router.get('/courses', function(req, res, next) {
+  router.get('/courses', function(req, res) {
     if (!!req.query['title']) { // by title
       coursesDB.findCourses({ title: req.query['title'] }, function(err, courses) {
         if (err) {
@@ -48,74 +48,53 @@ module.exports = function(connection) {
     
     // all:
     
-    coursesDB.findAllCourses(function(err, courses) {
-      if (err) {
-        res.json({ 
-          status: false,
-          msg:
-            process.env.NODE_ENV !== 'production' 
-            ? 'Ошибка базы данных: "' + err.msg + '".'
-            : 'Внутренняя ошибка сервера',
-          level: "danger"
-        });
-        return;
-      }
-      
-      if (courses.length === 0) {
+    return coursesDB.findAllCourses()
+      .then(courses => {
+        if (courses.length === 0) {
+          res.json({ 
+            status: true,
+            msg: "Ещё не зарегистрировано ни одного курса.",
+            level: "info",
+            courses: courses
+          });
+          return;
+        }
+        
         res.json({ 
           status: true,
-          msg: "Ещё не зарегистрировано ни одного курса.",
-          level: "info",
+          msg: "Успешно получен список всех курсов.",
+          level: "success",
           courses: courses
         });
-        return;
-      }
-      
-      res.json({ 
-        status: true,
-        msg: "Успешно получен список всех курсов.",
-        level: "success",
-        courses: courses
+    });
+  });
+
+
+  router.get('/courses/:id', function(req, res) {
+    coursesDB.findCourseById(req.params.id)
+      .then(course => {
+        if (!course) {
+          res.json({
+            status: false,
+            msg: "Курс не был найден.",
+            level: "info"
+          });
+        }
+        else {
+          res.json({
+            status: true,
+            msg: "Курс успешно найден.",
+            level: "success",
+            course: course
+          });
+        }
       });
-    });
   });
 
 
-  router.get('/courses/:id', function(req, res, next) {
-    coursesDB.findCourseById(req.params.id, function(err, course) {
-      if (err) {
-        res.json({
-          status: false,
-          msg:
-            process.env.NODE_ENV !== 'production'
-            ? 'Ошибка базы данных: "' + err.msg + '".'
-            : 'Внутренняя ошибка сервера',
-          level: "danger"
-        });
-        return;
-      }
-      else if (!course) {
-        res.json({
-          status: false,
-          msg: "Курс не был найден.",
-          level: "info"
-        });
-      }
-      else {
-        res.json({
-          status: true,
-          msg: "Курс успешно найден.",
-          level: "success",
-          course: course
-        });
-      }
-    });
-  });
-
-
-  router.post('/courses', function(req, res, next) {
+  router.post('/courses', function(req, res) {
     return sessions.checkSession(req)
-      .then(checkResult => {
+    .then(checkResult => {
       if (!checkResult.status) {
         res.json(checkResult);
         return;
@@ -130,37 +109,28 @@ module.exports = function(connection) {
         return;
       }
       
-      rolesDB.getRolesByEmail(req.session.email, function(err, userRoles) {
-        if (!userRoles || userRoles.indexOf("teacher") < 0) {
-          res.json({
-            status: false,
-            msg: "Вы должны быть преподавателем.",
-            level: "danger"
-          });
-          return;
-        }
-        
-        var author = !!req.body["i-am-author"] ? req.session.email : undefined;
-        coursesDB.add({title: req.body.title, author: author}, function(err, course) {
-          if (err) {
+      return rolesDB.getRolesByUserId(checkResult.user.id)
+        .then(userRoles => {
+          if (!userRoles || userRoles.indexOf("teacher") < 0) {
             res.json({
               status: false,
-              msg:
-                process.env.NODE_ENV !== 'production'
-                ? 'Ошибка базы данных: "' + err.msg + '".'
-                : 'Внутренняя ошибка сервера.',
+              msg: "Вы должны быть преподавателем.",
               level: "danger"
             });
+            return;
           }
-          else {
-            res.json({
-              status: true,
-              msg: "Курс успешно добавлен",
-              level: "success",
-              course: course
-            });
-          }
-        });
+          
+          var author = !!req.body["i-am-author"] ? req.session.email : undefined;
+          
+          return coursesDB.add({title: req.body.title, author: author})
+            .then(course => {
+              res.json({
+                status: true,
+                msg: "Курс успешно добавлен.",
+                level: "success",
+                course: course
+              });
+          });
       });
     });
   });

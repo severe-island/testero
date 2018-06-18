@@ -14,105 +14,111 @@ module.exports = function(connection) {
   const sessions = require('../../users/lib/session')
   sessions.setup(connection)
 
-  router.post('/assignRole', function(req, res, next) {
-    if(!req.session.login) {
-      res.json({
-        status: false,
-        msg: "Сначала нужной войти в систему!",
-        level: "danger"
-      }) 
-      return;
-    }
-    var email = req.body.email;
-    var role = req.body.role;
-    return usersDB.findUserByEmail(email)
-    .then(user => {
-      if(!user) {
-        res.json({
-          status: false,
-          msg: "The users " + email + " is not found",
-          level: "danger"
-        })
-        return;
-      }
-      checkRoles(req.session.email, email, role, function(havePermission) {
-        if(!havePermission)
-        {
+  router.post('/assignRole', function(req, res) {
+    return sessions.checkSession(req)
+      .then(checkResult => {  
+        if (!checkResult.status) {
           res.json({
             status: false,
-            msg: "Недостаточно прав для смены роли!",
+            msg: "Сначала нужной войти в систему!",
             level: "danger"
-          }) 
+          })
           return;
         }
-        rolesDB.assignRole(email, role, function(err) {
-          if(err) {
-            res.json({
-              status: false,
-              msg: "Ошибка добавления роли: "+err.message,
-              level: "danger"
-            })
-            return;
-          }
-          res.json({
-            status: true,
-            msg: "Роль успешно добавлена!",
-            level: "success"
-          }) 
-        })
-      })
-    });
-  });
 
-  function checkRoles(userEmail, targetEmail, targetRole, callback) {
-    return usersDB.findUserByEmail(userEmail)
+        let targetUserId = req.body.userId;
+        let role = req.body.role;
+
+        return usersDB.findUserById(targetUserId)
+          .then(user => {
+            if (!user) {
+              res.json({
+                status: false,
+                msg: "The users with id '" + targetUserId + "' is not found",
+                level: "danger"
+              })
+              return;
+            }
+
+            return checkRoles(checkResult.user.id, targetUserId, role)
+              .then(havePermission => {
+                if (!havePermission) {
+                  res.json({
+                    status: false,
+                    msg: "Недостаточно прав для смены роли!",
+                    level: "danger"
+                  })
+                  return;
+                }
+
+                return rolesDB.assignRole(targetUserId, role)
+                  .then(result => {
+                    res.json({
+                      status: true,
+                      msg: "Роль успешно добавлена!",
+                      level: "success"
+                    })
+                  })
+              })
+          })
+      })
+    })
+
+  function checkRoles(userId, targetUserId, targetRole) {
+    return usersDB.findUserById(userId)
       .then(user => {
-        if(!user) {
-          callback(false);
-          return;
+        if (!user) {
+          return false;
         }
-        if(user.isAdministrator) {
-          callback(true);
-          return;
+
+        if (user.isAdministrator) {
+          return true;
         }
-        rolesDB.getRolesByEmail(userEmail, function(err, userRoles) {
-          if(err) {
-            callback(false);
-            return;
-          }
-          if(!userRoles) {
-            callback(targetRole=="student" && userEmail == targetEmail); 
-            return;
-          }
-          if(userRoles.indexOf("teacher")>-1) {
-            callback(targetRole=="teacher");
-            return;
-          }
-          if(userRoles.indexOf("student")>-1) {
-            callback(targetRole=="student" && userEmail == targetEmail); 
-            return;
-          }
-        })
-    });
+
+        return rolesDB.getRolesByUserId(userId)
+          .then(userRoles => {
+            if (userRoles.length == 0) {
+              return targetRole == "student" && userId.toString() == targetUserId.toString()
+            }
+
+            if (userRoles.indexOf("teacher") > -1) {
+              return targetRole == "teacher"
+            }
+
+            if (userRoles.indexOf("student") > -1) {
+              return targetRole == "student" && userId.toString() == targetUserId.toString()
+            }
+          })
+      })
   }
 
-  router.post('/getRolesByEmail', function(req, res, next) {
-    rolesDB.getRolesByEmail(req.body.email, function(err, userRoles) {
-      if(err) {
-        res.json({
-          status: false,
-          msg: "Ошибка БД: "+err.message,
-          level: "danger"
-        })
-        return;
-      }
-      res.json({
-        status: true,
-        level: 'success',
-        msg: "Роли успешно получены",
-        roles: userRoles
-      });
-    });
+  router.get('/roles/', function(req, res) {
+    let email = req.query['email']
+    let userId = req.query['userId']
+    
+    if (email) {
+      rolesDB.getRolesByEmail(email)
+        .then(userRoles => {
+          res.json({
+            status: true,
+            level: 'success',
+            msg: "Роли успешно получены",
+            roles: userRoles
+          });
+        });
+    }
+    
+    if (userId) {
+      rolesDB.getRolesByUserId(userId)
+        .then(userRoles => {
+          res.json({
+            status: true,
+            level: 'success',
+            msg: "Роли успешно получены",
+            roles: userRoles
+          });
+        });
+    }
   });
 
   return router

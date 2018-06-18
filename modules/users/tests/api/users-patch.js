@@ -42,7 +42,7 @@ describe('PATCH /users/users', function () {
       before('Adding and authorize user', function() {
         return usersDB.registerUser(userData)
             .then(user => {
-                userId = user._id
+                userId = user.id
 
                 return agent
                     .post('/users/users/' + userId + '/auth')

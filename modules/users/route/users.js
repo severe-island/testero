@@ -53,8 +53,6 @@ module.exports = function(connection) {
           return;
         }
         
-        user.id = user._id;
-        
         res.json({
           status: true,
           level: "success",

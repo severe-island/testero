@@ -15,7 +15,7 @@ module.exports = function(connection) {
   usersDB.setup(connection)
   sessions.setup(connection)
 
-  router.post('/courses/:id/subjects', function(req, res, next) {
+  router.post('/courses/:id/subjects', function(req, res) {
     return sessions.checkSession(req)
       .then(checkResult => {
         if (!checkResult.status) {
@@ -41,7 +41,7 @@ module.exports = function(connection) {
           return;
         }
         
-        return usersDB.findUserByEmail(req.session.email)
+        return usersDB.findUserByEmail(checkResult.user.email)
           .then(user => {
             if (!user) {
               res.json({
@@ -52,19 +52,8 @@ module.exports = function(connection) {
               return;
             }
             
-            rolesDB.getRolesByEmail(req.session.email, function(err, roles) {
-              if (err) {
-                res.json({
-                  status: false,
-                  level: "danger",
-                  msg:
-                    process.env.NODE_ENV !== 'production'
-                    ? 'Ошибка базы данных: "' + err.message + '".'
-                    : 'Внутренняя ошибка сервера.'
-                });
-                return;
-              }
-              
+            return rolesDB.getRolesByEmail(checkResult.user.email)
+            .then(roles => {
               if (!roles || roles.indexOf("teacher")) {
                 res.json({
                   status: false,
@@ -74,58 +63,47 @@ module.exports = function(connection) {
                 return;
               }
               
-              coursesDB.findCourseById(req.params.id, function(err, course) {
-                if (err) {
-                  res.json({
-                    status: false,
-                    level: "danger",
-                    msg:
-                      process.env.NODE_ENV !== 'production'
-                      ? 'Ошибка базы данных: "' + err.message + '".'
-                      : 'Внутренняя ошибка сервера.'
-                  });
-                  return;
-                }
-                
-                if (!course) {
-                  res.json({
-                    status: false,
-                    level: "danger",
-                    msg: "Курс не найден."
-                  });
-                  return;
-                }
-                
-                if (course.authors.indexOf(req.session.email) < 0) {
-                  res.json({
-                    status: false,
-                    level: "danger",
-                    msg: "Добавлять темы могут только авторы курса."
-                  });
-                  return;
-                }
-                
-                var subject = {title: req.body.title, course_id: req.params.id};
-                coursesDB.addSubject(subject , function(err, subject) {
-                  if (err) {
+              return coursesDB.findCourseById(req.params.id)
+                .then(course => {
+                  if (!course) {
                     res.json({
                       status: false,
                       level: "danger",
-                      msg:
-                        process.env.NODE_ENV !== 'production'
-                        ? 'Ошибка базы данных: "' + err.message + '".'
-                        : 'Внутренняя ошибка сервера.'
+                      msg: "Курс не найден."
                     });
                     return;
                   }
                   
-                  res.json({
-                    status: true,
-                    level: "success",
-                    msg: "Тема добавлена.",
-                    subject: subject
+                  if (course.authors.indexOf(req.session.email) < 0) {
+                    res.json({
+                      status: false,
+                      level: "danger",
+                      msg: "Добавлять темы могут только авторы курса."
+                    });
+                    return;
+                  }
+                  
+                  var subject = {title: req.body.title, course_id: req.params.id};
+                  coursesDB.addSubject(subject , function(err, subject) {
+                    if (err) {
+                      res.json({
+                        status: false,
+                        level: "danger",
+                        msg:
+                          process.env.NODE_ENV !== 'production'
+                          ? 'Ошибка базы данных: "' + err.message + '".'
+                          : 'Внутренняя ошибка сервера.'
+                      });
+                      return;
+                    }
+                    
+                    res.json({
+                      status: true,
+                      level: "success",
+                      msg: "Тема добавлена.",
+                      subject: subject
+                    });
                   });
-                });
               });
             });
         });

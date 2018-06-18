@@ -54,13 +54,13 @@ describe('DELETE /users/users', function() {
         .then(function() {
           return usersDB.registerUser(admin1)
             .then(user => {
-              admin1._id = user._id;
+              admin1.id = user.id;
             })
             .then(() => {
               return usersDB.registerUser(user1)
             })
             .then(user => {
-              user1._id = user._id;
+              user1.id = user.id;
             })
         })
     })
@@ -86,7 +86,7 @@ describe('DELETE /users/users', function() {
   context('Попытка очистки не администратором', function() {
     before(function(done) {
       agent
-        .post('/users/users/' + user1._id + '/auth')
+        .post('/users/users/' + user1.id + '/auth')
         .send(user1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
@@ -137,7 +137,7 @@ describe('DELETE /users/users', function() {
   context('Зарегистрировано несколько пользователей', function() {
     before(function() {
       return agent
-        .delete('/users/users/' + user1._id + '/auth')
+        .delete('/users/users/' + user1.id + '/auth')
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
@@ -145,7 +145,7 @@ describe('DELETE /users/users', function() {
           res.body.status.should.equal(true, res.body.msg);
           
           return agent
-            .post('/users/users/' + admin1._id + '/auth')
+            .post('/users/users/' + admin1.id + '/auth')
             .set('X-Requested-With', 'XMLHttpRequest')
             .send(admin1)
             .expect('Content-Type', /application\/json/)

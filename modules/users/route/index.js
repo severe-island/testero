@@ -74,7 +74,7 @@ module.exports = function(connection) {
             req.session.login = true;
             req.session.email = email;
             delete data.password;
-            req.session.user_id = data._id;
+            req.session.user_id = data.id;
             res.json({
               msg: msg,
               status: true,
