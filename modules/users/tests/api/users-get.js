@@ -170,9 +170,13 @@ describe('GET /users/users', function () {
       passwordDuplicate: "user1",
       showEmail: true
     }
+    let userId
     
     before(function() {
       return usersDB.registerUser(user)
+        .then(user => {
+          userId = user.id
+        })
     })
     
     context('Пользователь существует', function() {
@@ -209,6 +213,34 @@ describe('GET /users/users', function () {
           });
       });
     });
+
+    context('Вход и поиск самого себя', function() {
+      before('Вход', function() {
+        return agent
+          .post('/users/users/' + userId + '/auth')
+          .send({password: user.password})
+          .set('Accept', 'application/json')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(true, res.body.msg)
+          })
+      })
+
+      it('Поиск самого себя', function() {
+        return agent
+          .get('/users/users/?email=' + user.email)
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(true, res.body.msg);
+            res.body.should.have.property('user');
+            res.body.user.should.have.property('email')
+          });
+      })
+    })
   });
   
   after(function() {
