@@ -19,12 +19,15 @@ $.ajax({
           append: true,
           success: function() {
             for (var i = 0; i < data.courses.length; i++) {
+              let course = data.courses[i]
               $("#courses-list table tbody")
                 .loadTemplate('/courses/html/courses-item.html',
                   {
                     number: i + 1,
-                    title: data.courses[i].title,
-                    authors: ""
+                    title: course.title,
+                    authors: "",
+                    id: course.id,
+                    href: "/#!courses/course?id=" + course.id
                   },
                   {
                     append: true
