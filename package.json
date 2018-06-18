@@ -26,7 +26,8 @@
     "coverage": "NODE_ENV=testing MODE=testing DEBUG=testero istanbul cover _mocha modules/*/tests/unit/*.js modules/*/tests/api/*.js -- --require should -R spec --exit",
     "mutate": "NODE_ENV=testing MODE=testing DEBUG=testero stryker run",
     "postinstall": "sh postinstall.sh",
-    "start": "NODE_ENV=development MODE=development DEBUG=testero node ./bin/www.js",
+    "start": "NODE_ENV=production MODE=production DEBUG=testero node ./bin/www.js",
+    "watch": "NODE_ENV=development MODE=development DEBUG=testero nodemon ./bin/www.js",
     "test": "NODE_ENV=testing MODE=testing DEBUG=testero mocha --require should -R spec --exit --check-leaks modules/*/tests/unit/ modules/*/tests/api/"
   },
   "dependencies": {
@@ -46,13 +47,14 @@
   "devDependencies": {
     "istanbul": "^0.4.5",
     "mocha": "^4.1.0",
+    "nodemon": "^1.17.5",
     "should": "^13.2.1",
-    "stryker": "^0.23.0",
-    "stryker-api": "^0.17.0",
-    "stryker-html-reporter": "^0.14.0",
-    "stryker-javascript-mutator": "^0.7.0",
-    "stryker-mocha-framework": "^0.10.0",
-    "stryker-mocha-runner": "^0.12.0",
+    "stryker": "^0.24.0",
+    "stryker-api": "^0.17.1",
+    "stryker-html-reporter": "^0.14.1",
+    "stryker-javascript-mutator": "^0.7.1",
+    "stryker-mocha-framework": "^0.10.1",
+    "stryker-mocha-runner": "^0.12.1",
     "superagent": "^3.8.3",
     "supertest": "^3.1.0"
   }

@@ -1,0 +1,6 @@
+{
+    "ignore": [
+        "modules/**/tests/*",
+        "public/*"
+    ]
+}
