@@ -137,13 +137,46 @@ function placeTraps(where) {
 
 
 function loadPage(path, params) {
-  function onLoadPageContent() {
-    $.getScript(page.script);
-    if (!(window.history && history.pushState)) {
-      placeTraps('#page-content');
+  function loadPageContentAndRunScript() {
+    function runScript(callback) {
+      if (page.script) {
+        $.getScript(page.script);
+        callback()
+      }
+      else {
+        callback()
+      }
     }
-    $("#content").slideDown("slow");
+
+    function onLoadPageContent() {
+      runScript(() => {
+        if (!(window.history && history.pushState)) {
+          placeTraps('#page-content');
+        }
+        $("#content").slideDown("slow");
+      })
+    }
+
+    if (page.content) {
+      $("#page-content")
+        .loadTemplate(
+          page.content,
+          {},
+          {
+            append: true,
+            success: onLoadPageContent,
+            error: () => {
+              showAlert('Error loading of page content', 'danger', 0)
+            }
+          }
+        );
+    }
+    else {
+      onLoadPageContent();
+    }
   }
+
+
 
   $.ajax({
     url: path,
@@ -216,34 +249,24 @@ function loadPage(path, params) {
                               if (!(window.history && history.pushState)) {
                                 placeTraps('#breadcrumb');
                               }
+                              loadPageContentAndRunScript()
                             }
                           }
                           insertItem(0);
                         }
                       });
                 }
-                
-                if (page.content) {
-                  $("#page-content")
-                    .loadTemplate(
-                      page.content,
-                      {},
-                      {
-                        append: true,
-                        success: onLoadPageContent,
-                        error: onLoadPageContent
-                      }
-                    );
-                }
                 else {
-                  onLoadPageContent();
+                  loadPageContentAndRunScript()
                 }
               },
-              error: onLoadPageContent
+              error: () => {
+                showAlert('Error loading layout', 'danger', 0)
+              }
             });
           }
           else {
-            onLoadPageContent();
+            loadPageContentAndRunScript()
           }
         });
     },
@@ -254,6 +277,15 @@ function loadPage(path, params) {
   });
 }
 
+/**
+ * Set page title from modules. Use it if page title dynamic.
+ * @param {string} title Page title
+ */
+function setPageTitle(title) {
+  document.title = (document.title.split('-')[0] += (' - ' + title));
+  $('#page-title').text(title)
+  $('#breadcrumb-active').text(title)
+}
 
 $(document).ready(function () {
   
