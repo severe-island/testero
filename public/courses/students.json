@@ -1,0 +1,10 @@
+{
+    "title": "Все студенты",
+    "url": "/#!courses/students",
+    "id": "courses-students",
+    "layout": "/app/html/generic-layout.html",
+    "script": "/courses/js/students.js",
+    "breadcrumb": [
+      {"page": "/main.json"}, {"page": "/courses.json"}, {}
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "title": "Добавление студента",
+    "url": "/#!courses/add-student",
+    "id": "courses-add-student",
+    "layout": "/app/html/form-layout.html",
+    "content": "/courses/html/form-add-student.html",
+    "script": "/courses/js/add-student.js",
+    "breadcrumb": [
+      {"page": "/main.json"},
+      {"page": "/courses.json"},
+      {"page": "/courses/students.json"},
+      {}
+    ]
+}
