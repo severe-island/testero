@@ -1,3 +1,7 @@
+"use strict"
+
+/* global $ */
+
 $("#form-add-course").submit(function() {
   $.ajax({
     type: "POST",
@@ -12,7 +16,7 @@ $("#form-add-course").submit(function() {
           .slideDown("slow");
       }
       else {
-        history.pushState({}, "", "/#!courses/course/" + data.course.id);
+        history.pushState({}, "", "/#!courses/course?id=" + data.course.id);
       }
     }
   });

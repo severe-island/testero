@@ -1,3 +1,7 @@
+"use strict"
+
+/* global $ showAlert */
+
 $("#form-add-teacher").submit(function() {
     let email = $('#email').val()
 
@@ -27,7 +31,7 @@ $("#form-add-teacher").submit(function() {
                       }
                       else {
                           showAlert(data.msg, data.level, 1000, () => {
-                            history.pushState({}, "", "/#!courses/teachers");
+                            history.back()
                           })
                         }
                     }
