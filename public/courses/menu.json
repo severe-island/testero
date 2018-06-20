@@ -18,13 +18,5 @@
   {
     "title": "Мой профиль", "url": "/#!courses/my-profile", "id": "courses-my-profile", 
     "glyphicon": "cog", "page": "/courses/my-profile.json"
-  },
-  {
-    "title": "Добавить курс", "url": "/#!courses/add-course", "id": "courses-add-course",
-    "glyphicon": "plus-sign", "page": "/courses/add-course.json"
-  },
-  {
-    "title": "Добавить преподавателя", "url": "/#!courses/add-teacher", "id": "courses-add-teacher",
-    "glyphicon": "plus-sign", "page": "/courses/add-teacher.json"
   }
 ]

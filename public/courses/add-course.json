@@ -6,6 +6,9 @@
   "content": "/courses/html/form-add-course.html",
   "script": "/courses/js/add-course.js",
   "breadcrumb": [
-    {"page": "/main.json"}, {"page": "/courses.json"}, {}
+    {"page": "/main.json"},
+    {"page": "/courses.json"},
+    {"page": "/courses/courses.json"},
+    {}
   ]
 }
