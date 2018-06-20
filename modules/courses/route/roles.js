@@ -82,7 +82,7 @@ module.exports = function(connection) {
             }
 
             if (userRoles.indexOf("teacher") > -1) {
-              return targetRole == "teacher"
+              return targetRole == "teacher" || targetRole == "student"
             }
 
             if (userRoles.indexOf("student") > -1) {

@@ -168,18 +168,32 @@ describe('/courses/assignRole', function() {
               })
           })
       })
-    })
-    
-    context('Назначение роли teacher пользователем без ролей', function() {
-      before('Вход под именем user1', function() {
+
+      after('Выход пользователя user1', function() {
         return agent
-          .post('/users/users/' + userId1 + '/auth')
-          .send({password: user1.password})
+          .delete('/users/users/' + userId1 + '/auth')
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
           .then(res => {
             res.body.status.should.equal(true, res.body.msg)
+          })
+      })
+    })
+    
+    context('Назначение роли teacher пользователем без ролей', function() {
+      before('Очистка ролей и вход под именем user1', function() {
+        return rolesDB.clearRoles()
+          .then(() => {
+            return agent
+              .post('/users/users/' + userId1 + '/auth')
+              .send({password: user1.password})
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .then(res => {
+                res.body.status.should.equal(true, res.body.msg)
+              })
           })
       })
       
@@ -318,16 +332,68 @@ describe('/courses/assignRole', function() {
       })
     })
     
-    context('Назначение роли student самим пользователем', function() {
-      before('Вход под именем user1', function() {
+    context('Назначение роли student самим пользователем без ролей', function() {
+      before('Очистка ролей и вход под именем user1', function() {
+        return rolesDB.clearRoles()
+          .then(() => {
+            return agent
+              .post('/users/users/' + userId1 + '/auth')
+              .send({password: user1.password})
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .then(res => {
+                res.body.status.should.equal(true, res.body.msg)
+              })
+          })
+      })
+      
+      it('Возвращается успех: user1 получил роль student', function() {
         return agent
-          .post('/users/users/' + userId1 + '/auth')
-          .send({password: user1.password})
+          .post('/courses/assignRole')
+          .send({user_id: userId1, role: 'student'})
           .set('X-Requested-With', 'XMLHttpRequest')
           .expect('Content-Type', /application\/json/)
           .expect(200)
           .then(res => {
             res.body.status.should.equal(true, res.body.msg)
+
+            rolesDB.getRolesByUserId(userId1)
+              .then(roles => {
+                roles.should.containEql("student")
+              })
+        })
+      })
+
+      after(function() {
+        return agent
+          .delete('/users/users/' + userId1 + '/auth')
+          .set('Accept', 'application/json')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .expect('Content-Type', /application\/json/)
+          .expect(200)
+          .then(res => {
+            res.body.status.should.equal(true, res.body.msg)
+          })
+      })
+    });
+
+    context('Назначение роли student самим пользователем с ролью teacher', function() {
+      before('Очистка ролей, назначение роли teacher и вход под именем user1', function() {
+        return rolesDB.clearRoles()
+          .then(() => {
+            return rolesDB.assignRole(userId1, 'teacher')
+          })
+          .then(() => {
+            return agent
+              .post('/users/users/' + userId1 + '/auth')
+              .send({password: user1.password})
+              .set('X-Requested-With', 'XMLHttpRequest')
+              .expect('Content-Type', /application\/json/)
+              .expect(200)
+              .then(res => {
+                res.body.status.should.equal(true, res.body.msg)
+              })
           })
       })
       
