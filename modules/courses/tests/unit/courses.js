@@ -7,25 +7,15 @@ const should = require('should')
 const coursesDB = require('../../db/courses')
 
 describe('courses::db::courses', function() {
-  let admin = {
-    email: 'admin@testero',
-    password: 'admin',
-    passwordDuplicate: 'admin'
+  const course1 = {
+    title: 'First course'
   }
-  let adminId
-  let user1 = {
-    email: 'user1@testero',
-    password: 'user1',
-    passwordDuplicate: 'user1'
+  let courseId1
+
+  const subject1 = {
+    title: 'First subject'
   }
-  let userId1
-  let user2 = {
-    email: 'user2@testero',
-    showEmail: true,
-    password: 'user2',
-    passwordDuplicate: 'user2'
-  }
-  let userId2
+  let subjectId1
   
   before(function() {
     const mongoHost = config.db.host || 'localhost'
@@ -39,28 +29,40 @@ describe('courses::db::courses', function() {
       })
       .then(db => {
         coursesDB.setup(db)
-        return coursesDB.clearCourses()
+        return coursesDB.clear()
       })
   })
 
   context('There is no course', function() {
     it('Getting list of courses', function() {
-      return coursesDB.findAllCourses()
+      return coursesDB.findAll()
         .then(courses => {
           courses.should.be.an.instanceOf(Array).and.have.lengthOf(0)
         })
     })
 
     it('Adding of course', function() {
-      return coursesDB.add({})
+      return coursesDB.add(course1)
         .then(course => {
           should(course).not.be.null()
           course.should.have.property('id')
+          courseId1 = course.id
+        })
+    })
+  })
+
+  context('There is no subjects', function() {
+    it('Adding subject to course', function() {
+      return coursesDB.addSubject(courseId1, subject1)
+        .then(subject => {
+          should(subject).not.be.null()
+          subject.should.have.property('id')
+          subjectId1 = subject.id
         })
     })
   })
   
   after(function() {
-    return coursesDB.clearCourses()
+    return coursesDB.clear()
   })
 })

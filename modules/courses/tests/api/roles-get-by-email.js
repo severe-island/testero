@@ -33,7 +33,7 @@ describe('GET /courses/roles/?email=email', function() {
 
         agent = supertest.agent(app)
 
-        return coursesDB.clearCourses()
+        return coursesDB.clear()
           .then(() => {
             return rolesDB.clearRoles()
           })

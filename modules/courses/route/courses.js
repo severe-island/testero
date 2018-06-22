@@ -16,7 +16,7 @@ module.exports = function(connection) {
 
   router.get('/courses', function(req, res) {
     if (!!req.query['title']) { // by title
-      coursesDB.findCourses({ title: req.query['title'] }, function(err, courses) {
+      coursesDB.findAllWithFilter({ title: req.query['title'] }, function(err, courses) {
         if (err) {
           res.json({
             status: false,
@@ -48,7 +48,7 @@ module.exports = function(connection) {
     
     // all:
     
-    return coursesDB.findAllCourses()
+    return coursesDB.findAll()
       .then(courses => {
         if (courses.length === 0) {
           res.json({ 
@@ -71,7 +71,7 @@ module.exports = function(connection) {
 
 
   router.get('/courses/:id', function(req, res) {
-    coursesDB.findCourseById(req.params.id)
+    coursesDB.findById(req.params.id)
       .then(course => {
         if (!course) {
           res.json({

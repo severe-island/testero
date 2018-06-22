@@ -5,13 +5,16 @@ const mongodb = require('mongodb')
 /** @type {mongodb.Collection<any>} */
 let collection
 
+const subjectsDB = require('./subjects')
+
 /** @param {mongodb.Db} db */
-module.exports.setup = function(db) {
+module.exports.setup = function (db) {
   collection = db.collection('courses')
+  subjectsDB.setup(db)
 }
 
 
-exports.findAllCourses = function() {
+exports.findAll = function () {
   return collection.find({})
     .toArray()
     .then(courses => {
@@ -24,8 +27,8 @@ exports.findAllCourses = function() {
 }
 
 
-exports.findCourses = function (filter, callback) {
-  collection.find(filter).toArray(function(err, courses) { 
+exports.findAllWithFilter = function (filter, callback) {
+  collection.find(filter).toArray(function (err, courses) {
     if (err) {
       console.log('Ошибка получения курсов: "' + err + '"');
     }
@@ -34,7 +37,7 @@ exports.findCourses = function (filter, callback) {
 };
 
 
-exports.findCourse = function(filter, callback) {
+exports.findWithFilter = function (filter, callback) {
   collection.findOne(filter, (err, course) => {
     callback(err, course)
   })
@@ -44,8 +47,10 @@ exports.findCourse = function(filter, callback) {
  * 
  * @param {string} id 
  */
-exports.findCourseById = function(id) {
-  return collection.findOne({_id: new mongodb.ObjectID(id)})
+exports.findById = function (id) {
+  return collection.findOne({
+      _id: new mongodb.ObjectID(id)
+    })
     .then(course => {
       if (course) {
         course.id = course._id.toString()
@@ -56,14 +61,14 @@ exports.findCourseById = function(id) {
 }
 
 
-exports.add = function(course) {
+exports.add = function (course) {
   if (course.author) {
     course.authors = [course.author];
     delete course.author;
   }
   course.created_at = new Date();
   course.updated_at = null;
-  course.subjects = [ ];
+  course.subjects = [];
   return collection.insertOne(course)
     .then(result => {
       let course = result.ops[0]
@@ -74,33 +79,64 @@ exports.add = function(course) {
 };
 
 
-/*exports.addCourse = function(title, author, callback) {
-  var course = { title: title };
-  if (author) {
-    course.authors = [author];
-  }
-  course.created_at = new Date();
-  course.updated_at = null;
-  course.subjects = [ ];
-  collection.insert(course, function (err, newCourse) {
-    callback(err, newCourse);
-  });
-};*/
-
-
-exports.addSubject = function(subject, callback) {
+exports.addSubject = function (course_id, subject) {
   var updated_at = new Date();
   subject.created_at = updated_at;
-  collection.update({ _id: subject.course_id }, { $set: {updated_at: updated_at} }, { });
-  collection.update({ _id: subject.course_id }, { $push: { subjects: subject } }, {}, callback);
+  return subjectsDB.add(subject)
+    .then(result => {
+      return collection.updateOne({
+          _id: new mongodb.ObjectID(course_id)
+        }, {
+          $set: {
+            updated_at: updated_at
+          }
+        }, {})
+        .then(() => {
+          return collection.updateOne({
+            _id: new mongodb.ObjectID(course_id)
+          }, {
+            $push: {
+              subjects: subject.id
+            }
+          }, {})
+        })
+        .then(() => {
+          return result
+        })
+    })
 };
 
 
-exports.updateCourse = function(course, callback) {
+exports.addAuthor = function (course_id, author_email) {
+  var updated_at = new Date();
+
+  return collection.update({
+      _id: new mongodb.ObjectID(course_id)
+    }, {
+      $set: {
+        updated_at: updated_at
+      }
+    }, {})
+    .then(() => {
+      return collection.update({
+        _id: new mongodb.ObjectID(course_id)
+      }, {
+        $push: {
+          authors: author_email
+        }
+      }, {})
+    })
+};
+
+
+exports.update = function (course, callback) {
   course.updated_at = new Date();
-  collection.update({ _id: new mongodb.ObjectID(course.id) }, course, { }, callback);
+  collection.update({
+    _id: new mongodb.ObjectID(course.id)
+  }, course, {}, callback);
 };
 
-module.exports.clearCourses = function() {
-  return collection.deleteMany({ })
+
+module.exports.clear = function () {
+  return collection.deleteMany({})
 }

@@ -13,12 +13,29 @@ const usersDB = require('../../../users/db')
 describe('POST /courses/courses/:id/subjects', function () {
   let app
   let agent
-  let user1 = {
+
+  const user1 = {
     email: 'user1@user1',
-    password: 'user1',
-    passwordDuplicate: 'user1'
+    password: 'user1'
   }
   let userId1
+
+  const user2 = {
+    email: 'user2@user2',
+    password: 'user2'
+  }
+  let userId2
+
+  const course1 = {
+    title: 'Course1',
+    'i-am-author': true,
+    author: user1.email
+  }
+  let courseId1
+
+  const subject1 = {
+    title: 'Subject1'
+  }
 
   before(function() {
     const mongoHost = config.db.host || 'localhost'
@@ -39,76 +56,63 @@ describe('POST /courses/courses/:id/subjects', function () {
         
         agent = supertest.agent(app)
       
-        return coursesDB.clearCourses()
+        return coursesDB.clear()
+          .then(() => {
+            return usersDB.clearUsers()
+          })
           .then(() => {
             return usersDB.registerUser(user1)
-            .then(data => {
-              userId1 = data.id
-            })
+          })
+          .then(data => {
+            userId1 = data.id
+            return usersDB.registerUser(user2)
+          })
+          .then(data => {
+            userId2 = data.id
           })
       })
   })
-  
-  var course1;
-  var subject1 = {title: 'Subject1'};
-  
+
   context('Зарегистрирован некий курс', function() {
     before(function() {
-      return coursesDB.add({title: 'Course1', 'i-am-author': true, author: user1.email})
+      return coursesDB.add(course1)
         .then(data => {
-          course1 = data;
-          subject1.course_id = data.id;
+          courseId1 = data.id;
       });
     });
 
-    it('Пользователь не авторизован: отказ', function(done) {
-      agent
+    it('Пользователь не авторизован: отказ', function() {
+      return agent
         .post('/courses/courses/' + course1.id + '/subjects')
         .send(subject1)
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function (err, res) {
-          if (err) {
-            throw err;
-          }
-          
+        .then(res => {
           res.body.status.should.equal(false, res.body.msg);
           res.body.should.not.have.property('subject');
-          
-          done();
         });
     });
     
-    it('Пользователь авторизован, но не преподаватель: отказ', function(done) {
-      agent
-        .post('/users/login')
-        .send(user1)
+    it('Пользователь авторизован, но не преподаватель: отказ', function() {
+      return agent
+        .post('/users/users/' + userId1 + '/auth')
+        .send({password: user1.password})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
-        .end(function(err, res) {
-          if (err) {
-            throw err;
-          }
-
+        .then(res => {
           res.body.status.should.equal(true, res.body.msg);
           
-          agent
-            .post('/courses/courses/' + course1.id + '/subjects')
+          return agent
+            .post('/courses/courses/' + courseId1 + '/subjects')
             .send(subject1)
             .set('X-Requested-With', 'XMLHttpRequest')
             .expect('Content-Type', /application\/json/)
             .expect(200)
-            .end(function (err, res) {
-              if (err) {
-                throw err;
-              }
-
+            .then(res => {
               res.body.status.should.equal(false, res.body.msg);
               res.body.should.not.have.property('subject');
-
-              done();
             });
         });
     });
@@ -117,7 +121,7 @@ describe('POST /courses/courses/:id/subjects', function () {
       return rolesDB.assignRole(userId1, 'teacher')
         .then(() => {
           return agent
-            .post('/courses/courses/' + course1.id + '/subjects')
+            .post('/courses/courses/' + courseId1 + '/subjects')
             .send(subject1)
             .set('X-Requested-With', 'XMLHttpRequest')
             .expect('Content-Type', /application\/json/)
@@ -131,21 +135,55 @@ describe('POST /courses/courses/:id/subjects', function () {
     
     it('Не задана тема: отказ', function() {
       return agent
-        .post('/courses/courses/' + course1.id + '/subjects')
+        .post('/courses/courses/' + courseId1 + '/subjects')
         .send({})
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /application\/json/)
         .expect(200)
         .then(res => {
           res.body.status.should.equal(false, res.body.msg)
-          res.body.should.not.have.property('subject')
         });
     });
+
+    it('Пользователь преподаватель, но не автор курса: отказ', function() {
+      return agent
+        .delete('/users/users/' + userId1 + '/auth')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.status.should.equal(true, res.body.msg);
+
+          return rolesDB.assignRole(userId2, 'teacher')
+            .then(() => {
+              return agent
+                .post('/users/users/' + userId2 + '/auth')
+                .send({password: user2.password})
+                .set('X-Requested-With', 'XMLHttpRequest')
+                .expect('Content-Type', /application\/json/)
+                .expect(200)
+                .then(res => {
+                  res.body.status.should.equal(true, res.body.msg);
+                  
+                  return agent
+                    .post('/courses/courses/' + courseId1 + '/subjects')
+                    .send(subject1)
+                    .set('X-Requested-With', 'XMLHttpRequest')
+                    .expect('Content-Type', /application\/json/)
+                    .expect(200)
+                    .then(res => {
+                      res.body.status.should.equal(false, res.body.msg);
+                      res.body.should.not.have.property('subject');
+                    });
+                })
+            })
+        })
+    })
   });
   
   context('Нет ни одного курса', function() {
     before(function() {
-      return coursesDB.clearCourses()
+      return coursesDB.clear()
     })
     
     it('Попытка добавить к несуществующему курсу тему', function() {

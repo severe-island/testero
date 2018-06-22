@@ -29,7 +29,7 @@ describe('GET /courses/courses', function () {
         agent = supertest.agent(app)
       })
       .then(() => {
-        return coursesDB.clearCourses()
+        return coursesDB.clear()
       })
   })
   
@@ -103,7 +103,7 @@ describe('GET /courses/courses', function () {
       });
       
       after(function() {
-        return coursesDB.clearCourses()
+        return coursesDB.clear()
       })
     })
   })
@@ -179,7 +179,7 @@ describe('GET /courses/courses', function () {
   describe('Поиск курсов по названию (GET /courses/courses/?title=title', function() {
     context('Нет ни одного курса', function() {
       before(function() {
-        return coursesDB.clearCourses();
+        return coursesDB.clear();
       });
       
       it('Курс не найден', function(done) {
@@ -298,6 +298,6 @@ describe('GET /courses/courses', function () {
   });
   
   after(function() {
-    return coursesDB.clearCourses()
+    return coursesDB.clear()
   })
 })

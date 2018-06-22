@@ -43,7 +43,7 @@ describe('POST /courses/courses', function () {
     let userId1
 
     before(function() {
-      return coursesDB.clearCourses()
+      return coursesDB.clear()
         .then(() => {
           return usersDB.registerUser(user1)
         })
@@ -173,7 +173,7 @@ describe('POST /courses/courses', function () {
   })
 
   after(function() {
-    return coursesDB.clearCourses()
+    return coursesDB.clear()
       .then(() => {
         return usersDB.clearUsers()
       })

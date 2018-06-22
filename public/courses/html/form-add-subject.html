@@ -1,0 +1,16 @@
+<form id="form-add-subject" >
+    <div class="form-group has-feedback" id="form-group-title">
+      <label>Название темы:</label>
+      <input type="text" class="form-control" placeholder="Введите название темы"
+             name="title" id="title"/>
+      <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="i-am-author" name="i-am-author"/>
+        Автором темы буду я
+      </label>
+    </div>
+    <input type='hidden' data-value="course_id" name='course_id' id='course_id'/>
+    <input class="btn btn-default btn-primary" type="submit" value="Добавить"/>
+</form>

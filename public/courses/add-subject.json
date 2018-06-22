@@ -1,0 +1,11 @@
+{
+    "title": "Добавление новой темы",
+    "url": "/#!courses/add-subject",
+    "id": "courses-add-subject",
+    "layout": "/app/html/form-layout.html",
+    "content": "/courses/html/form-add-subject.html",
+    "script": "/courses/js/add-subject.js",
+    "breadcrumb": [
+      {"page": "/main.json"}, {"page": "/courses.json"}, {}
+    ]
+}
