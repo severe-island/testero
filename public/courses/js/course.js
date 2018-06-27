@@ -24,7 +24,6 @@ $.ajax({
                             if (data.status) {
                                 if (data.subjects.length > 0) {
                                     getSubjects(data.subjects, (subjects) => {
-                                        console.dir(subjects)
                                         $('#page-content').loadTemplate(
                                           '/courses/html/course-subjects.html',
                                           {},
