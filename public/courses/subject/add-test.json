@@ -1,0 +1,13 @@
+{
+    "title": "Добавление теста",
+    "url": "/#!courses/subject/add-course",
+    "id": "courses-subject-add-course",
+    "layout": "/app/html/form-layout.html",
+    "content": "/courses/subject/html/form-add-test.html",
+    "script": "/courses/subject/js/add-test.js",
+    "breadcrumb": [
+        { "page": "/main.json" },
+        { "page": "/courses.json" },
+        {}
+    ]
+}

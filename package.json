@@ -28,7 +28,7 @@
     "postinstall": "sh postinstall.sh",
     "start": "NODE_ENV=production MODE=production DEBUG=testero node ./bin/www.js",
     "watch": "NODE_ENV=development MODE=development DEBUG=testero nodemon ./bin/www.js",
-    "test": "NODE_ENV=testing MODE=testing DEBUG=testero mocha --require should -R spec --exit --check-leaks modules/*/tests/unit/ modules/*/tests/api/"
+    "test": "NODE_ENV=testing MODE=testing DEBUG=testero mocha --require should -R spec --exit --check-leaks modules/*/tests/unit/ modules/*/tests/api/ modules/*/tests/api/**/"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",

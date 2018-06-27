@@ -1,0 +1,12 @@
+{
+    "title": "Тест",
+    "url": "/#!courses/test",
+    "id": "courses-test",
+    "layout": "/app/html/generic-layout.html",
+    "script": "/courses/js/test.js",
+    "breadcrumb": [
+        { "page": "/main.json" },
+        { "page": "/courses.json"},
+        {}
+    ]
+}

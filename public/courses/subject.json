@@ -1,0 +1,9 @@
+{
+  "url": "/#!courses/subject",
+  "id": "courses-subject",
+  "layout": "/app/html/generic-layout.html",
+  "script": "/courses/js/subject.js",
+  "breadcrumb": [
+    {"page": "/main.json"}, {"page": "/courses.json"}, {}
+  ]
+}

@@ -2,12 +2,15 @@
 
 const mongodb = require('mongodb')
 
+const testsDB = require('../db/tests')
+
 /** @type {mongodb.Collection<any>} */
 let collection
 
 /** @param {mongodb.Db} db */
 module.exports.setup = function(db) {
   collection = db.collection('subjects')
+  testsDB.setup(db)
 }
 
 
@@ -55,6 +58,34 @@ exports.add = function(subject) {
         delete subject._id
         return subject
       });
+}
+
+
+exports.addTest = function (subject_id, test) {
+  var updated_at = new Date();
+  test.created_at = updated_at;
+  return testsDB.add(test)
+    .then(result => {
+      return collection.updateOne({
+          _id: new mongodb.ObjectID(subject_id)
+        }, {
+          $set: {
+            updated_at: updated_at
+          }
+        }, {})
+        .then(() => {
+          return collection.updateOne({
+            _id: new mongodb.ObjectID(subject_id)
+          }, {
+            $push: {
+              tests: test.id
+            }
+          }, {})
+        })
+        .then(() => {
+          return result
+        })
+    })
 }
 
 
