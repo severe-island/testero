@@ -7,7 +7,8 @@ $('#form-add-subject').submit(() => {
         type: 'POST',
         url: '/courses/courses/' + app.params.course_id +'/subjects',
         data: {
-            title: $('#title').val()
+            title: $('#title').val(),
+            'i-am-author': $('#i-am-author').val()
         },
         success: (data) => {
             if (data.status) {

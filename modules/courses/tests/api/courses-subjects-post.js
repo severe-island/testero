@@ -34,7 +34,8 @@ describe('POST /courses/courses/:id/subjects', function () {
   let courseId1
 
   const subject1 = {
-    title: 'Subject1'
+    title: 'Subject1',
+    author: user1.email
   }
 
   before(function() {

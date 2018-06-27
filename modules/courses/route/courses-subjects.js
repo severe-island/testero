@@ -47,15 +47,6 @@ module.exports = function(connection) {
           return;
         }
         
-        if (!req.params.id) {
-          res.json({
-            status: false,
-            level: "danger",
-            msg: "Не задан ID курса."
-          });
-          return;
-        }
-        
         if (!req.body.title) {
           res.json({
             status: false,
@@ -63,6 +54,19 @@ module.exports = function(connection) {
             msg: "Не задано название темы."
           });
           return;
+        }
+
+        let author = req.body.author
+        if (!author && !req.body['i-am-author']) {
+          res.json({
+            status: false,
+            level: "danger",
+            msg: "Не задан автор темы."
+          });
+          return;
+        }
+        else if (req.body['i-am-author']) {
+          author = checkResult.user.email
         }
         
         return usersDB.findUserByEmail(checkResult.user.email)
@@ -107,7 +111,11 @@ module.exports = function(connection) {
                     return;
                   }
                   
-                  var subject = {title: req.body.title, course_id: req.params.id};
+                  let subject = {
+                    title: req.body.title,
+                    author: author
+                  };
+
                   return coursesDB.addSubject(course_id, subject)
                     .then(subject => {
                       res.json({
