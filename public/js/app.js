@@ -42,6 +42,32 @@ function showAlert(msg, type, delay, callback) {
 }
 
 
+function insertAlert(msg, type, delay, callback) {
+  $('#page-content').loadTemplate(
+    '/app/html/alert.html',
+    {},
+    {
+      append: true,
+      success: function() {
+        $("#alert")
+          .addClass("alert-" + type)
+          .html(msg);
+        $("#content")
+          .slideDown("slow", function () {
+            if (!!delay) {
+              $(this).delay(delay)
+                .hide("slow");
+            }
+            if (callback !== undefined) {
+              callback();
+            }
+          });
+      }
+    }
+  );
+}
+
+
 function getMe(callback) {
   if (!localStorage.user_id) {
     callback({
