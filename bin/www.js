@@ -26,46 +26,46 @@ const mongoPort = config.db.port || '27017'
 const dbName = config.db.name || 'production'
 const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
-    if (err) {
-      throw err
-    }
-
-    const db = client.db(dbName)
-
-    /**
-     * Create HTTP server.
-     */
-    const app = require('../app')(db)
-    app.set('port', port);
-
-    const server = http.createServer(app);
-
-    server.on('error', onError);
-    
-    server.on('listening', onListening);
-
-    server.on('close', () => {
-      console.log("Close connection to database.")
-      console.log("Close server.")
-      client.close()
-    })
-
-    console.log('Server started...')
-    server.listen(port)
-
-    /**
-     * Event listener for HTTP server "listening" event.
-     */
-
-    function onListening() {
-      var addr = server.address();
-      var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-      debug('Listening on ' + bind);
-    }
+mongodb.MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+  if (err) {
+    throw err
   }
+
+  const db = client.db(dbName)
+
+  /**
+   * Create HTTP server.
+   */
+  const app = require('../app')(db)
+  app.set('port', port);
+
+  const server = http.createServer(app);
+
+  server.on('error', onError);
+
+  server.on('listening', onListening);
+
+  server.on('close', () => {
+    console.log("Close connection to database.")
+    console.log("Close server.")
+    client.close()
+  })
+
+  console.log('Server started...')
+  server.listen(port)
+
+  /**
+   * Event listener for HTTP server "listening" event.
+   */
+
+  function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+  }
+}
 )
 
 /**

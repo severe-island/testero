@@ -1,7 +1,7 @@
 {
   "name": "testero",
   "description": "Testero -- system for conduct classes in the computer lab.",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "license": "MIT",
   "contributors": [
     {
@@ -31,24 +31,24 @@
     "test": "NODE_ENV=testing MODE=testing DEBUG=testero mocha --require should -R spec --exit --check-leaks modules/*/tests/unit/ modules/*/tests/api/ modules/*/tests/api/**/"
   },
   "dependencies": {
-    "bootstrap": "^3.3.7",
-    "config": "^1.30.0",
-    "connect-redis": "^3.3.3",
-    "cookie-parser": "^1.4.3",
-    "debug": "^3.1.0",
-    "express": "^4.16.3",
-    "express-session": "^1.15.6",
-    "jquery": "^3.3.1",
+    "bootstrap": "^3.4.1",
+    "config": "^1.31.0",
+    "connect-redis": "^3.4.2",
+    "cookie-parser": "^1.4.4",
+    "debug": "^3.2.6",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "jquery": "^3.4.1",
     "jquery.loadtemplate": "^1.5.10",
-    "mongodb": "^3.1.0-beta4",
-    "morgan": "^1.9.0",
+    "mongodb": "^3.4.1",
+    "morgan": "^1.9.1",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "istanbul": "^0.4.5",
     "mocha": "^4.1.0",
-    "nodemon": "^1.17.5",
-    "should": "^13.2.1",
+    "nodemon": "^1.19.4",
+    "should": "^13.2.3",
     "stryker": "^0.24.0",
     "stryker-api": "^0.17.1",
     "stryker-html-reporter": "^0.14.1",
@@ -56,6 +56,6 @@
     "stryker-mocha-framework": "^0.10.1",
     "stryker-mocha-runner": "^0.12.1",
     "superagent": "^3.8.3",
-    "supertest": "^3.1.0"
+    "supertest": "^3.4.2"
   }
 }
