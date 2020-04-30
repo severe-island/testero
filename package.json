@@ -38,7 +38,7 @@
     "debug": "^3.2.6",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "jquery.loadtemplate": "^1.5.10",
     "mongodb": "^3.4.1",
     "morgan": "^1.9.1",
