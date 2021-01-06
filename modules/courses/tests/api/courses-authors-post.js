@@ -82,15 +82,16 @@ describe('POST /courses/courses/:id/authors', function () {
     });
 
     it('Пользователь не авторизован: отказ', function() {
-      return agent
-        .post('/courses/courses/' + courseId1 + '/authors')
-        .send({email: user2.email})
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .expect('Content-Type', /application\/json/)
-        .expect(200)
-        .then(res => {
-          res.body.status.should.equal(false, res.body.msg);
-        });
+	return agent
+            .post('/courses/courses/' + courseId1 + '/authors')
+            .send({email: user2.email})
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then(res => {
+		res.body.should.have.property('status')
+		res.body.status.should.equal(false, res.body.msg);
+            });
     });
     
     it('Пользователь авторизован, но не является автором: отказ', function() {

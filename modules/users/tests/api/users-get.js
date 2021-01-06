@@ -156,6 +156,18 @@ describe('GET /users/users', function () {
               res.body.user.showEmail.should.equal(userData.showEmail);
             })
       })
+
+	it('Пользователь не найден. ID корректен, но пользователя с таким ID не существует', function() {
+	    return agent
+            .get('/users/users/' + '123456789012')
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then(res => {
+		res.body.status.should.equal(false, res.body.msg);
+		res.body.should.have.not.property('user')
+            })
+	})
     })
 
     after('Cleaning the collection users', function() {

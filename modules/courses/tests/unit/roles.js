@@ -2,30 +2,32 @@
 
 const config = require('config')
 const mongodb = require('mongodb')
-const should = require('should')
 
+const userDB = require('../../../users/db')
 const rolesDB = require('../../db/roles')
 
 describe('courses::db::roles', function() {
-  let admin = {
-    email: 'admin@testero',
-    password: 'admin',
-    passwordDuplicate: 'admin'
-  }
-  let adminId
-  let user1 = {
-    email: 'user1@testero',
-    password: 'user1',
-    passwordDuplicate: 'user1'
-  }
-  let userId1
-  let user2 = {
-    email: 'user2@testero',
-    showEmail: true,
-    password: 'user2',
-    passwordDuplicate: 'user2'
-  }
-  let userId2
+    let admin = {
+	email: 'admin@testero',
+	password: 'admin',
+	passwordDuplicate: 'admin'
+    }
+    let adminId
+
+    let user1 = {
+	email: 'user1@testero',
+	password: 'user1',
+	passwordDuplicate: 'user1'
+    }
+    let userId1
+
+    let user2 = {
+	email: 'user2@testero',
+	showEmail: true,
+	password: 'user2',
+	passwordDuplicate: 'user2'
+    }
+    let userId2
   
   before(function() {
     const mongoHost = config.db.host || 'localhost'
@@ -43,7 +45,13 @@ describe('courses::db::roles', function() {
       })
   })
 
-  context('Пользователь без назначенных ролей', function() {
+    context('Пользователь без назначенных ролей', function() {
+	before(function() {
+	    return userDB.registerUser(user1).then(res => {
+		userId1 = res.id
+	    })
+	})
+
     it('Назначение роли student самому себе', function() {
       return rolesDB.assignRole(userId1, 'student')
         .then(() => {
