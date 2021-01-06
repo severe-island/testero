@@ -23,7 +23,7 @@
     "testero": "./bin/www.js"
   },
   "scripts": {
-    "coverage": "NODE_ENV=testing MODE=testing DEBUG=testero istanbul cover _mocha modules/*/tests/unit/*.js modules/*/tests/api/*.js -- --require should -R spec --exit",
+    "coverage": "NODE_ENV=testing MODE=testing DEBUG=testero nyc npm run test",
     "mutate": "NODE_ENV=testing MODE=testing DEBUG=testero stryker run",
     "postinstall": "sh postinstall.sh",
     "start": "NODE_ENV=production MODE=production DEBUG=testero node ./bin/www.js",
@@ -32,30 +32,31 @@
   },
   "dependencies": {
     "bootstrap": "^3.4.1",
-    "config": "^1.31.0",
-    "connect-redis": "^3.4.2",
+    "config": "^3.3.3",
+    "connect-redis": "^5.0.0",
     "cookie-parser": "^1.4.4",
-    "debug": "^3.2.6",
+    "debug": "^4.3.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "jquery": "^3.4.1",
     "jquery.loadtemplate": "^1.5.10",
     "mongodb": "^3.4.1",
     "morgan": "^1.9.1",
+    "redis": "^3.0.2",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
-    "istanbul": "^0.4.5",
-    "mocha": "^4.1.0",
-    "nodemon": "^1.19.4",
+    "mocha": "^5.2.0",
+    "nodemon": "^2.0.6",
+    "nyc": "^15.1.0",
     "should": "^13.2.3",
-    "stryker": "^0.24.0",
-    "stryker-api": "^0.17.1",
-    "stryker-html-reporter": "^0.14.1",
-    "stryker-javascript-mutator": "^0.7.1",
-    "stryker-mocha-framework": "^0.10.1",
-    "stryker-mocha-runner": "^0.12.1",
-    "superagent": "^3.8.3",
-    "supertest": "^3.4.2"
+    "stryker": "^0.35.1",
+    "stryker-api": "^0.24.1",
+    "stryker-html-reporter": "^0.18.1",
+    "stryker-javascript-mutator": "^0.14.1",
+    "stryker-mocha-framework": "^0.15.1",
+    "stryker-mocha-runner": "^0.17.1",
+    "superagent": "^6.1.0",
+    "supertest": "^6.0.1"
   }
 }

@@ -3,7 +3,7 @@ module.exports = function(config) {
     testRunner: "mocha",
     mutator: "javascript",
     transpilers: [],
-    reporter: ["html", "clear-text", "progress"],
+    reporters: ["html", "clear-text", "progress"],
     testFramework: "mocha",
     coverageAnalysis: "perTest",
     mutate: [

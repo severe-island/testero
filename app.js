@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser')
 const favicon = require('serve-favicon')
 const logger = require('morgan')
 const session = require('express-session')
+const redis = require('redis')
+
 const RedisStore = require('connect-redis')(session)
 
 const config = require('config')
@@ -24,8 +26,9 @@ module.exports = function(connection) {
   app.use(cookieParser());
   app.use(session({
     secret: 'sksskjfsdfkn2131',
-    store: new RedisStore({
-      prefix: 'testero:session:'
+      store: new RedisStore({
+	  client: redis.createClient(),
+	  prefix: 'testero:session:'
     }),
     resave: true,
     saveUninitialized: false
