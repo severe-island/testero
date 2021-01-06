@@ -108,24 +108,18 @@ exports.addSubject = function (course_id, subject) {
 
 
 exports.addAuthor = function (course_id, author_email) {
-  var updated_at = new Date();
+  const updated_at = new Date();
 
-  return collection.update({
+  return collection.updateOne({
       _id: new mongodb.ObjectID(course_id)
     }, {
       $set: {
         updated_at: updated_at
-      }
-    }, {})
-    .then(() => {
-      return collection.update({
-        _id: new mongodb.ObjectID(course_id)
-      }, {
-        $push: {
+      },
+	$push: {
           authors: author_email
         }
-      }, {})
-    })
+    }, {})
 };
 
 

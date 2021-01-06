@@ -29,7 +29,7 @@ exports.assignRole = function(userId, role) {
       }
       else {
         return collection.insertOne(
-          {user_id: userId, roles: [role], created_at: date, update_at: null})
+          {user_id: userId, roles: [role], created_at: date})
       }
   })
 }

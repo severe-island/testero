@@ -74,49 +74,51 @@ module.exports.findUserByEmailWithoutPassword = function (userEmail, admin) {
  * @param {boolean} admin 
  */
 module.exports.findUserByIdWithoutPassword = function(id, admin) {
-  if (admin) {
-    return collection.findOne(
-      { _id: new mongodb.ObjectID(id) },
-      { projection: { password: 0 } })
-      .then(user => {
-        if (user) {
-          user.id = user._id.toString()
-          delete user._id
-        }
-        return user
-      })
-  }
-  else {
-    return collection.findOne(
-      { $and: [
-          { _id: new mongodb.ObjectID(id) },
-          {$or: [
-            {removed: { $exists: false } },
-            { not: { removed: true } } ]} ] },
-      { projection: { password: 0, isAdministrator : 0, editor: 0 } })
-      .then(user => {
-        if (user) {
-          if (!user.showEmail) {
-            delete user.email;
-          }
-          user.id = user._id.toString()
-          delete user._id
-        }
-        return user
-      });
-  }
+    const _id = new mongodb.ObjectID(id)
+    if (admin) {
+	return collection.findOne(
+	    { _id: _id },
+	    { projection: { password: 0 } })
+	    .then(user => {
+		if (user) {
+		    user.id = user._id.toString()
+		    delete user._id
+		}
+		return user
+	    })
+    }
+    else {
+	return collection.findOne(
+	    { $and: [
+		{ _id: _id },
+		{$or: [
+		    {removed: { $exists: false } },
+		    { not: { removed: true } } ]} ] },
+	    { projection: { password: 0, isAdministrator : 0, editor: 0 } })
+	    .then(user => {
+		if (user) {
+		    if (!user.showEmail) {
+			delete user.email;
+		    }
+		    user.id = user._id.toString()
+		    delete user._id
+		}
+		return user
+	    });
+    }
 };
 
 
 /** @param {string} userId */
 module.exports.findUserById = function (userId) {
-  return collection.findOne({ _id: new mongodb.ObjectID(userId) })
-    .then(user => {
-      if (user) {
-        user.id = user._id.toString()
-        delete user._id
-      }
-      return user
+    const _id = new mongodb.ObjectID(userId)
+    return collection.findOne({ _id: _id })
+	.then(user => {
+	    if (user) {
+		user.id = user._id.toString()
+		delete user._id
+	    }
+	    return user
     })
 }
 
