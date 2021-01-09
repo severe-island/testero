@@ -25,7 +25,8 @@ Bootstrap, jQuery, NoSQL.
 - Симоненко Евгений А. (@easimonenko) <easimonenko@mail.ru>: основатель,
   руководитель, архитектор проекта, разработчик: разработчик веб-интерфейса
   (HTML5, Bootstrap, jQuery), разработчик серверной части (Node.js с Express),
-  базы данных (NeDB), тестировщик (интерфейс пользователя, Mocha + Should);
+  базы данных (MongoDB, NeDB),
+  тестировщик (интерфейс пользователя, Mocha + Should);
 - Байдин Константин (@2DKot) <sparhoks@mail.ru>: основной соразработчик до июля
   2015: разработчик серверной части (Node.js с Express), базы данных (NeDB, а
   также MongoDB), тестировщик (серверная часть, Mocha + Should);
@@ -39,4 +40,4 @@ Bootstrap, jQuery, NoSQL.
 
 ---
 
-(c) 2015 -- 2018, Severe Island Team
+(c) 2015, Severe Island Team; 2015-2021, Evgeny A. Simonenko
