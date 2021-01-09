@@ -6,10 +6,12 @@ const mongodb = require('mongodb')
 const db = require('../db')
 
 /**
- * @param {mongodb.Db} connection
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} mongoDBConnection
+ * @param {Settings} settings
  */
-module.exports.setup = function(connection) {
-  db.setup(connection)
+module.exports.setup = function(settings) {
+  db.setup({mongoDBConnection: settings.mongoDBConnection})
 }
 
 

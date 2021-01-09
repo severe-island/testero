@@ -19,15 +19,27 @@ describe('POST /courses/courses', function () {
     const dbName = config.db.name || 'tester-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+    return mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
       .then(client => {
         const db = client.db(dbName)
 
-        coursesDB.setup(db)
-        rolesDB.setup(db)
-        usersDB.setup(db)
+        /**
+         * @typedef {Object} Settings
+         * @property {mongodb.Db} settings.mongoDBConnection
+         * @type {Settings} settings
+         */
+        const settings = {
+          mongoDBConnection: db
+        }
 
-        app = require('../../../../app')(db)
+        coursesDB.setup(settings)
+        rolesDB.setup(settings)
+        usersDB.setup(settings)
+
+        app = require('../../../../app')(settings)
         app.use(cookieParser())
         
         agent = supertest.agent(app)

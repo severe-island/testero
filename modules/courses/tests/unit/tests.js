@@ -21,25 +21,26 @@ describe('courses::db::tests', function () {
     let testId1
 
     before(function () {
-        const mongoHost = config.db.host || 'localhost'
-        const mongoPort = config.db.port || '27017'
-        const dbName = config.db.name || 'testero-testing'
-        const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+      const mongoHost = config.db.host || 'localhost'
+      const mongoPort = config.db.port || '27017'
+      const dbName = config.db.name || 'testero-testing'
+      const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-        return mongodb.MongoClient.connect(mongoUrl, {
-                useNewUrlParser: true
+      return mongodb.MongoClient.connect(mongoUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      })
+        .then(client => {
+          return client.db(dbName)
+        })
+        .then(db => {
+          subjectsDB.setup({mongoDBConnection: db})
+          testsDB.setup({mongoDBConnection: db})
+          return testsDB.clear()
+            .then(() => {
+              return subjectsDB.clear()
             })
-            .then(client => {
-                return client.db(dbName)
-            })
-            .then(db => {
-                subjectsDB.setup(db)
-                testsDB.setup(db)
-                return testsDB.clear()
-                    .then(() => {
-                        return subjectsDB.clear()
-                    })
-            })
+        })
     })
 
     context('There is any subject', function () {

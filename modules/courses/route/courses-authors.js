@@ -7,13 +7,18 @@ const rolesDB = require('../db/roles')
 const usersDB = require('../../users/db')
 const sessions = require('../../users/lib/session')
 
-module.exports = function (connection) {
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports = function(settings) {
     const router = express.Router()
 
-    coursesDB.setup(connection)
-    rolesDB.setup(connection)
-    usersDB.setup(connection)
-    sessions.setup(connection)
+    coursesDB.setup(settings)
+    rolesDB.setup(settings)
+    usersDB.setup(settings)
+    sessions.setup(settings)
 
     router.get('/courses/:id/authors', function (req, res) {
         const course_id = req.params.id

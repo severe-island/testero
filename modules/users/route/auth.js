@@ -2,13 +2,18 @@
 
 const express = require('express')
 
-module.exports = function(connection) {
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports = function(settings) {
   const router = express.Router()
 
   const db = require('../db')
-  db.setup(connection)
+  db.setup(settings)
   const lib = require('../lib/session')
-  lib.setup(connection)
+  lib.setup(settings)
 
   router.get('/users/:id/auth', function(req, res) {
     return db.findUserById(req.params.id)

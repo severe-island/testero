@@ -17,21 +17,31 @@ describe('GET /courses/subjects', function () {
         const dbName = config.db.name || 'testero-testing'
         const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-        return mongodb.MongoClient.connect(mongoUrl, {
-                useNewUrlParser: true
-            })
-            .then(client => {
-                const db = client.db(dbName)
+      return mongodb.MongoClient.connect(mongoUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      })
+        .then(client => {
+          const db = client.db(dbName)
 
-                subjectsDB.setup(db)
+          /**
+           * @typedef {Object} Settings
+           * @property {mongodb.Db} settings.mongoDBConnection
+           * @type {Settings} settings
+           */
+          const settings = {
+            mongoDBConnection: db
+          }
 
-                app = require('../../../../app')(db)
-                app.use(cookieParser())
+          subjectsDB.setup(settings)
 
-                agent = supertest.agent(app)
+          app = require('../../../../app')(settings)
+          app.use(cookieParser())
 
-                return subjectsDB.clear()
-            })
+          agent = supertest.agent(app)
+
+          return subjectsDB.clear()
+        })
     })
 
     const subject1 = {

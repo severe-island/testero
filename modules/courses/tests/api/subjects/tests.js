@@ -16,38 +16,48 @@ describe('GET /courses/subjects/:id/tests', function () {
     let agent
 
     before(function () {
-        const mongoHost = config.db.host || 'localhost'
-        const mongoPort = config.db.port || '27017'
-        const dbName = config.db.name || 'testero-testing'
-        const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+      const mongoHost = config.db.host || 'localhost'
+      const mongoPort = config.db.port || '27017'
+      const dbName = config.db.name || 'testero-testing'
+      const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-        return mongodb.MongoClient.connect(mongoUrl, {
-                useNewUrlParser: true
+      return mongodb.MongoClient.connect(mongoUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      })
+        .then(client => {
+          const db = client.db(dbName)
+
+          /**
+           * @typedef {Object} Settings
+           * @property {mongodb.Db} settings.mongoDBConnection
+           * @type {Settings} settings
+           */
+          const settings = {
+            mongoDBConnection: db
+          }
+
+          rolesDB.setup(settings)
+          subjectsDB.setup(settings)
+          testsDB.setup(settings)
+          usersDB.setup(settings)
+
+          app = require('../../../../../app')(settings)
+          app.use(cookieParser())
+
+          agent = supertest.agent(app)
+
+          return testsDB.clear()
+            .then(() => {
+              return subjectsDB.clear()
             })
-            .then(client => {
-                const db = client.db(dbName)
-
-                rolesDB.setup(db)
-                subjectsDB.setup(db)
-                testsDB.setup(db)
-                usersDB.setup(db)
-
-                app = require('../../../../../app')(db)
-                app.use(cookieParser())
-
-                agent = supertest.agent(app)
-
-                return testsDB.clear()
-                    .then(() => {
-                        return subjectsDB.clear()
-                    })
-                    .then(() => {
-                        return rolesDB.clearRoles()
-                    })
-                    .then(() => {
-                        return usersDB.clearUsers()
-                    })
+            .then(() => {
+              return rolesDB.clearRoles()
             })
+            .then(() => {
+              return usersDB.clearUsers()
+            })
+        })
     })
 
     let user1 = {

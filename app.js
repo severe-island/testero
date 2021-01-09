@@ -13,8 +13,12 @@ const RedisStore = require('connect-redis')(session)
 
 const config = require('config')
 
-module.exports = function(connection) {
-
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} settings.mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports = function(settings) {
   var app = express();
 
   if (config.mode !== "testing") {
@@ -42,7 +46,7 @@ module.exports = function(connection) {
       const files = fs.readdirSync(modulePath)
       if (files) {
         files.forEach(function (file) {
-          const nextModule = require(modulePath + '/' + file)(connection)
+          const nextModule = require(modulePath + '/' + file)(settings)
           app.use('/' + moduleName, nextModule)
         });
       }

@@ -31,12 +31,19 @@ mongodb.MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopolog
     throw err
   }
 
-  const db = client.db(dbName)
+  /**
+   * @typedef {Object} Settings
+   * @property {mongodb.Db} settings.mongoDBConnection
+   * @param {Settings} settings
+   */
+  const settings = {
+    mongoDBConnection: client.db(dbName)
+  }
 
   /**
    * Create HTTP server.
    */
-  const app = require('../app')(db)
+  const app = require('../app')(settings)
   app.set('port', port);
 
   const server = http.createServer(app);

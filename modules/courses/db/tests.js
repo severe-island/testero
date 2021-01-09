@@ -5,9 +5,13 @@ const mongodb = require('mongodb')
 /** @type {mongodb.Collection<any>} */
 let collection
 
-/** @param {mongodb.Db} db */
-module.exports.setup = function(db) {
-  collection = db.collection('tests')
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} settings.mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports.setup = function(settings) {
+  collection = settings.mongoDBConnection.collection('tests')
 }
 
 

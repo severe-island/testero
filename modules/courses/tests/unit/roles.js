@@ -35,22 +35,25 @@ describe('courses::db::roles', function() {
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+    return mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
       .then(client => {
         return client.db(dbName)
       })
       .then(db => {
-        rolesDB.setup(db)
+        rolesDB.setup({mongoDBConnection: db})
         return rolesDB.clearRoles()
       })
   })
 
-    context('Пользователь без назначенных ролей', function() {
-	before(function() {
-	    return userDB.registerUser(user1).then(res => {
-		userId1 = res.id
-	    })
-	})
+  context('Пользователь без назначенных ролей', function() {
+    before(function() {
+      return userDB.registerUser(user1).then(res => {
+        userId1 = res.id
+      })
+    })
 
     it('Назначение роли student самому себе', function() {
       return rolesDB.assignRole(userId1, 'student')

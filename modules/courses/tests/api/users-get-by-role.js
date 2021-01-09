@@ -3,7 +3,6 @@
 const config = require('config')
 const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
-const should = require('should')
 const supertest = require('supertest')
 
 const rolesDB = require('../../db/roles')
@@ -39,15 +38,26 @@ describe('GET /courses/roles/?role=role', function() {
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+    return mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
       .then(client => {
         return client.db(dbName)
       })
       .then(db => {
-        rolesDB.setup(db)
-        usersDB.setup(db)
+        /**
+         * @typedef {Object} Settings
+         * @property {mongodb.Db} settings.mongoDBConnection
+         * @type {Settings} settings
+         */
+        const settings = {
+          mongoDBConnection: db
+        }
+        rolesDB.setup(settings)
+        usersDB.setup(settings)
 
-        app = require('../../../../app')(db)
+        app = require('../../../../app')(settings)
         app.use(cookieParser())
 
         agent = supertest.agent(app)

@@ -17,17 +17,29 @@ describe('Модуль users', function() {
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
+    mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }, (err, client) => {
       if (err) {
         throw err
       }
 
       const db = client.db(dbName)
 
-      usersDB = require('../../db')
-      usersDB.setup(db)
+      /**
+       * @typedef {Object} Settings
+       * @property {mongodb.Db} settings.mongoDBConnection
+       * @type {Settings} settings
+       */
+      const settings = {
+        mongoDBConnection: db
+      }
 
-      app = require('../../../../app')(db)
+      usersDB = require('../../db')
+      usersDB.setup(settings)
+
+      app = require('../../../../app')(settings)
       app.use(cookieParser())
       agent = supertest.agent(app)
       

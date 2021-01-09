@@ -7,10 +7,14 @@ const testsDB = require('../db/tests')
 /** @type {mongodb.Collection<any>} */
 let collection
 
-/** @param {mongodb.Db} db */
-module.exports.setup = function(db) {
-  collection = db.collection('subjects')
-  testsDB.setup(db)
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} settings.mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports.setup = function(settings) {
+  collection = settings.mongoDBConnection.collection('subjects')
+  testsDB.setup(settings)
 }
 
 

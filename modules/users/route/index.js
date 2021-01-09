@@ -2,13 +2,18 @@
 
 const express = require('express')
 
-module.exports = function(connection) {
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports = function(settings) {
   const router = express.Router()
 
   const db = require('../db')
-  db.setup(connection)
+  db.setup({mongoDBConnection: settings.mongoDBConnection})
   const lib = require('../lib/session')
-  lib.setup(connection)
+  lib.setup({mongoDBConnection: settings.mongoDBConnection})
 
   router.post('/login', function(req, res, next) {
     return lib.checkSession(req)

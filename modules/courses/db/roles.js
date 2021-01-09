@@ -7,10 +7,14 @@ let collection
 
 const usersDB = require('../../users/db')
 
-/** @param {mongodb.Db} db */
-module.exports.setup = function(db) {
-  collection = db.collection('roles')
-  usersDB.setup(db)
+/**
+ * @typedef {Object} Settings
+ * @property {mongodb.Db} settings.mongoDBConnection
+ * @param {Settings} settings
+ */
+module.exports.setup = function(settings) {
+  collection = settings.mongoDBConnection.collection('roles')
+  usersDB.setup(settings)
 }
 
 /**

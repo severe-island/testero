@@ -3,7 +3,6 @@
 const config = require('config')
 const cookieParser = require('cookie-parser')
 const mongodb = require('mongodb')
-const should = require('should')
 const supertest = require('supertest')
 
 const coursesDB = require('../../db/courses')
@@ -43,15 +42,27 @@ describe('POST /courses/courses/:id/authors', function () {
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-    return mongodb.MongoClient.connect(mongoUrl, {useNewUrlParser: true})
+    return mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
       .then(client => {
         const db = client.db(dbName)
-        
-        coursesDB.setup(db)
-        rolesDB.setup(db)
-        usersDB.setup(db)
 
-        app = require('../../../../app')(db)
+        /**
+         * @typedef {Object} Settings
+         * @property {mongodb.Db} settings.mongoDBConnection
+         * @type {Settings} settings
+         */
+        const settings = {
+          mongoDBConnection: db
+        }
+
+        coursesDB.setup(settings)
+        rolesDB.setup(settings)
+        usersDB.setup(settings)
+
+        app = require('../../../../app')(settings)
         app.use(cookieParser())
         
         agent = supertest.agent(app)
@@ -82,16 +93,16 @@ describe('POST /courses/courses/:id/authors', function () {
     });
 
     it('Пользователь не авторизован: отказ', function() {
-	return agent
-            .post('/courses/courses/' + courseId1 + '/authors')
-            .send({email: user2.email})
-            .set('X-Requested-With', 'XMLHttpRequest')
-            .expect('Content-Type', /application\/json/)
-            .expect(200)
-            .then(res => {
-		res.body.should.have.property('status')
-		res.body.status.should.equal(false, res.body.msg);
-            });
+      return agent
+        .post('/courses/courses/' + courseId1 + '/authors')
+        .send({email: user2.email})
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /application\/json/)
+        .expect(200)
+        .then(res => {
+          res.body.should.have.property('status')
+          res.body.status.should.equal(false, res.body.msg);
+        });
     });
     
     it('Пользователь авторизован, но не является автором: отказ', function() {

@@ -23,15 +23,15 @@ describe('courses::db::courses', function() {
     const dbName = config.db.name || 'testero-testing'
     const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
 
-      return mongodb.MongoClient.connect(mongoUrl, {
-	  useNewUrlParser: true,
-	  useUnifiedTopology: true
-      })
+    return mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
       .then(client => {
         return client.db(dbName)
       })
       .then(db => {
-        coursesDB.setup(db)
+        coursesDB.setup({mongoDBConnection: db})
         return coursesDB.clear()
       })
   })
