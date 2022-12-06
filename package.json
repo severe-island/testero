@@ -36,7 +36,7 @@
     "connect-redis": "^5.0.0",
     "cookie-parser": "^1.4.4",
     "debug": "^4.3.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "express-session": "^1.17.0",
     "jquery": "^3.4.1",
     "jquery.loadtemplate": "^1.5.10",
